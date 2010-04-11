@@ -1,5 +1,5 @@
 #include "scheduler_test_thread.h"
-#include "utils/sqlite_query.h"
+#include "../utils/sqlite_query.h"
 #include "scheduler_db_helpers.h"
 
 SchedulerTestThread::SchedulerTestThread(ScheduledResultSaver *pSaver, SQLiteDB *pDB, TestType testType, unsigned long testID)

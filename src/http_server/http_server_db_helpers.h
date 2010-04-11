@@ -3,7 +3,7 @@
 #define HTTP_SERVER_DB_HELPERS_H
 
 #include "http_engine.h"
-#include "utils/sqlite_query.h"
+#include "../utils/sqlite_query.h"
 #include "http_server_request.h"
 
 bool createNeededTables(SQLiteDB *pDB);

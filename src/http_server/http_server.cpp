@@ -1,8 +1,8 @@
-#include "utils/socket.h"
+#include "../utils/socket.h"
 #include "http_server.h"
 #include "http_server_request_thread.h"
 
-#include "utils/sqlite_db.h"
+#include "../utils/sqlite_db.h"
 
 #include "http_server_db_helpers.h"
 

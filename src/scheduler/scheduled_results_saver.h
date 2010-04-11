@@ -6,9 +6,9 @@
 
 #include "http_engine.h"
 
-#include "utils/thread.h"
+#include "../utils/thread.h"
 
-#include "utils/sqlite_query.h"
+#include "../utils/sqlite_query.h"
 
 enum TestType
 {

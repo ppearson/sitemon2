@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "http_server_request.h"
-#include "utils/string_helper.h"
+#include "../utils/string_helper.h"
 
 HTTPServerRequest::HTTPServerRequest(const std::string &request) : m_request(request), m_post(false)
 {

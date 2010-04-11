@@ -6,9 +6,9 @@
 
 #include <ctime>
 
-#include "utils/thread.h"
+#include "../utils/thread.h"
 
-#include "utils/sqlite_db.h"
+#include "../utils/sqlite_db.h"
 
 #include "scheduled_results_saver.h"
 

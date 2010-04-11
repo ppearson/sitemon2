@@ -2,7 +2,7 @@
 #ifndef SCHEDULER_DB_HELPERS_H
 #define SCHEDULER_DB_HELPERS_H
 
-#include "utils/sqlite_query.h"
+#include "../utils/sqlite_query.h"
 #include "scheduler.h"
 #include "http_response.h"
 

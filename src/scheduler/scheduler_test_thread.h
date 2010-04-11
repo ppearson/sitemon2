@@ -1,8 +1,8 @@
 #ifndef SCHEDULER_TEST_THREAD_H
 #define SCHEDULER_TEST_THREAD_H
 
-#include "utils/sqlite_db.h"
-#include "utils/thread.h"
+#include "../utils/sqlite_db.h"
+#include "../utils/thread.h"
 #include "http_engine.h"
 #include "scheduler.h"
 

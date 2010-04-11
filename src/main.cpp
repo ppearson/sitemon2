@@ -4,9 +4,9 @@
 #include "script.h"
 #include "config.h"
 #include "sitemon.h"
-#include "http_server.h"
+#include "http_server/http_server.h"
 #include "utils/socket.h"
-#include "scheduler.h"
+#include "scheduler/scheduler.h"
 
 #ifdef _MSC_VER
 BOOL CtrlHandler(DWORD fdwCtrlType);
