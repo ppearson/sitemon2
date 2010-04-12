@@ -28,8 +28,7 @@ struct DBConn
 class SQLiteDB
 {
 public:
-	SQLiteDB(const std::string &path);
-	SQLiteDB(Mutex &mutex, const std::string &path);
+	SQLiteDB(const std::string &path, bool useMutex = false);
 	~SQLiteDB();
 	
 	DBConn *getDBConnection(bool write = false);
@@ -40,7 +39,7 @@ protected:
 	
 	std::string		m_path;
 	bool			m_useMutex;
-	Mutex			&m_mutex;
+	Mutex			m_mutex;
 	
 	std::list<DBConn *> m_aAvailableConnections;
 	

@@ -461,7 +461,7 @@ bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 	
 	sql.append(szRowID);
 	
-	SQLiteQuery q(*pDB, true);
+	SQLiteQuery q(*pDB);
 	
 	q.getResult(sql);
 	if (!q.fetchNext())

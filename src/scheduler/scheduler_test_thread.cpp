@@ -24,9 +24,14 @@ void SchedulerTestThread::run()
 
 	sql.append(szRowID);
 
-	SQLiteQuery q(*m_pMainDB, true);
+	SQLiteQuery q(*m_pMainDB);
 
-	q.getResult(sql);
+	if (!q.getResult(sql))
+	{
+		printf("Problem getting params needed from db for scheduled test...\n");
+		return;
+	}
+
 	if (q.fetchNext())
 	{
 		long enabled = q.getLong();

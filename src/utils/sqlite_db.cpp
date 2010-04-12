@@ -9,12 +9,7 @@
 
 #include "sqlite_db.h"
 
-SQLiteDB::SQLiteDB(const std::string &path) : m_path(path), m_useMutex(false), m_mutex(m_mutex)
-{
-	
-}
-
-SQLiteDB::SQLiteDB(Mutex &mutex, const std::string &path) : m_mutex(mutex), m_useMutex(true), m_path(path)
+SQLiteDB::SQLiteDB(const std::string &path, bool useMutex) : m_path(path), m_useMutex(useMutex)
 {
 	
 }
@@ -98,21 +93,21 @@ DBConn *SQLiteDB::getDBConnection(bool write)
 //		m_aAvailableConnections.push_back(pConn);
 	}
 	
-	if (m_useMutex)
+/*	if (m_useMutex)
 	{
 		m_mutex.unlock();
 	}
-	
+*/	
 	return pConn;
 }
 
 void SQLiteDB::releaseDBConnection(DBConn *pConn, bool cache)
 {
-	if (m_useMutex)
+/*	if (m_useMutex)
 	{
 		m_mutex.lock();
 	}
-
+*/
 	if (!cache)
 	{
 		sqlite3_close(pConn->m_pDB);

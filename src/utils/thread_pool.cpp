@@ -54,8 +54,7 @@ int ThreadController::getThread()
 		
 //		
 		m_threadAvailable.wait();
-		m_threadAvailable.reset();
-		
+				
 		m_lock.lock();
 		
 		// find the thread that's available
@@ -69,6 +68,8 @@ int ThreadController::getThread()
 				break;
 			}
 		}
+		
+		m_threadAvailable.reset();
 		
 		m_lock.unlock();
 	}
@@ -87,7 +88,6 @@ void ThreadController::freeThread(int thread)
 	
 	m_lock.unlock();
 	
-//	m_threadAvailable.reset();
 	m_threadAvailable.set();
 }
 
@@ -99,14 +99,19 @@ ThreadPoolThread::ThreadPoolThread(Task *pTask, ThreadPool *pThreadPool, int thr
 
 void ThreadPoolThread::run()
 {
-	// call ThreadPool subclass's doTask method
-	if (m_pThreadPool)
+	// while we have a task
+	while (m_pTask && m_pThreadPool)
+	{
+		// call ThreadPool subclass's doTask method
 		m_pThreadPool->doTask(m_pTask, m_threadID);
-	
-	// thread's task is finished, so clean up Task and free thread so it can be used for another task
-	
-	delete m_pTask;
-	
+
+		delete m_pTask;
+
+		// to save constantly creating and destroying loads of threads, try and reuse them if there's work to do...
+		m_pTask = m_pThreadPool->getNextTask();
+	}
+
+	// otherwise, free the thread		
 	m_pThreadPool->freeThread(m_threadID);
 }
 
@@ -131,6 +136,23 @@ void ThreadPool::addTask(Task *pTask)
 	m_lock.unlock();
 }
 
+Task *ThreadPool::getNextTask()
+{
+	Task *pTask = NULL;
+
+	m_lock.lock();
+
+	if (!m_aTasks.empty())
+	{
+		pTask = m_aTasks.front();
+		m_aTasks.pop_front();
+	}
+
+	m_lock.unlock();
+
+	return pTask;
+}
+
 void ThreadPool::startPoolAndWaitForCompletion()
 {
 	ThreadPoolThread *m_pThreads[MAX_THREADS];
@@ -140,25 +162,34 @@ void ThreadPool::startPoolAndWaitForCompletion()
 	{
 		threadID = m_controller.getThread();
 		
-		if (threadID != -1) // might want to break out here
+		if (threadID != -1)
 		{
 			m_lock.lock();
-			
-			Task *pTask = m_aTasks.front();
-			
-			if (!pTask)
-				continue;
-			
-			m_pThreads[threadID] = new ThreadPoolThread(pTask, this, threadID);
-			
-			if (m_pThreads[threadID])
+
+			if (!m_aTasks.empty())
 			{
-				m_pThreads[threadID]->start();
+				Task *pTask = m_aTasks.front();
+				
+				if (!pTask)
+					continue;
+				
+				m_pThreads[threadID] = new ThreadPoolThread(pTask, this, threadID);
+				
+				if (m_pThreads[threadID])
+				{
+					m_pThreads[threadID]->start();
+				}
+				
+				m_aTasks.pop_front();
 			}
 			
-			m_aTasks.pop_front();			
-			
 			m_lock.unlock();			
+		}
+		else
+		{
+			// something weird happened - we shouldn't have got here, but we often do...
+			
+			sleep(1);
 		}
 	}
 	

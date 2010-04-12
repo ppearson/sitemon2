@@ -118,7 +118,10 @@ bool updateScheduledSingleTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 	time_t timeNow;
 	time(&timeNow);
 	
-	q.getResult(sql);
+	// sometimes if db is locked, even a read can't be done as sqlite can't read the db schema
+	if (!q.getResult(sql))
+		return false;
+
 	while (q.fetchNext())
 	{
 		long testID = q.getLong();

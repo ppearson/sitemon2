@@ -31,7 +31,7 @@ SQLiteQuery::~SQLiteQuery()
 	}
 }
 
-bool SQLiteQuery::execute(const std::string &sql, bool retry)
+bool SQLiteQuery::execute(const std::string &sql)
 {
 	m_lastQuery = sql;
 	
@@ -80,10 +80,23 @@ bool SQLiteQuery::execute(const std::string &sql, bool retry)
 	return false;
 }
 
+void SQLiteQuery::sleep(long ms)
+{
+	sqlite3_sleep(ms);
+}
+
 int SQLiteQuery::busyCallback(void *pArg, int busy)
 {
 	sqlite3_sleep(50);
-	printf("SQLiteQuery::busyCallback...\n");
+	if (busy == 50)
+	{
+		printf("SQLiteQuery::busyCallback...\n");
+	}
+	else if (busy > 100)
+	{
+		return 0;
+	}
+
 	return 1;
 }
 
@@ -97,6 +110,10 @@ sqlite3_stmt *SQLiteQuery::getResult(const std::string &sql)
 	}
 	else
 	{
+		// occasionally sqlite3_prepare fails because the DB is locked and it can't read the DB schema event to
+		// do a read...
+		sqlite3_busy_handler(m_pConn->m_pDB, busyCallback, 0);
+
 		const char *s = NULL;
 		int rc = sqlite3_prepare(m_pConn->m_pDB, sql.c_str(), sql.size(), &m_result, &s);
 		if (rc != SQLITE_OK)

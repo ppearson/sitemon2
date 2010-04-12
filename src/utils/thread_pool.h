@@ -60,6 +60,8 @@ class ThreadPool
 public:
 	ThreadPool(int threads = 2);
 	virtual ~ThreadPool();
+
+	Task *getNextTask();
 	
 	void addTask(Task *pTask);
 	void startPoolAndWaitForCompletion();

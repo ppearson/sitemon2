@@ -54,7 +54,7 @@ void ScheduledResultSaver::storeResults()
 		
 		sql.append(szTemp);
 		
-		if (q.execute(sql, true))
+		if (q.execute(sql))
 		{
 			long runID = q.getInsertRowID();
 			
@@ -72,8 +72,8 @@ void ScheduledResultSaver::storeResults()
 						compResult.lookupTime, compResult.connectTime, compResult.dataStartTime, compResult.totalTime, compResult.contentSize, compResult.downloadSize);
 				sqlComponentResults.append(szTemp);
 				
-				q.execute(sqlComponentResults, true);			
-			}			
+				q.execute(sqlComponentResults);	
+			}
 		
 			// we can delete it now
 						
