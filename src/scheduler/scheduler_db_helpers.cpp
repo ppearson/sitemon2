@@ -113,54 +113,56 @@ bool updateScheduledSingleTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 
 	std::string sql = "select rowid, enabled, description, url, interval from scheduled_single_tests";
 
-	SQLiteQuery q(*pDB);
-
 	time_t timeNow;
 	time(&timeNow);
 	
-	// sometimes if db is locked, even a read can't be done as sqlite can't read the db schema
-	if (!q.getResult(sql))
-		return false;
-
-	while (q.fetchNext())
 	{
-		long testID = q.getLong();
-		long enabled = q.getLong();
-		std::string description = q.getString();
-		std::string url = q.getString();
-		long interval = q.getLong();
+		SQLiteQuery q(*pDB);
+		
+		// sometimes if db is locked, even a read can't be done as sqlite can't read the db schema
+		if (!q.getResult(sql))
+			return false;
 
-		if (description.empty())
-			description = " ";
-
-		if (url.empty())
-			continue;
-
-		std::map<unsigned long, unsigned long>::iterator itFind = aCurrentPositions.find(testID);
-
-		if (itFind != aCurrentPositions.end())
+		while (q.fetchNext())
 		{
-			unsigned long currentPos = (*itFind).second;
+			long testID = q.getLong();
+			long enabled = q.getLong();
+			std::string description = q.getString();
+			std::string url = q.getString();
+			long interval = q.getLong();
 
-			ScheduledItem &currentItem = items.at(currentPos);
+			if (description.empty())
+				description = " ";
 
-			if (enabled == 0) // this is now disabled, so lets remove it
+			if (url.empty())
+				continue;
+
+			std::map<unsigned long, unsigned long>::iterator itFind = aCurrentPositions.find(testID);
+
+			if (itFind != aCurrentPositions.end())
 			{
-				continue; // don't remove it from map so we can remove it from vector
+				unsigned long currentPos = (*itFind).second;
+
+				ScheduledItem &currentItem = items.at(currentPos);
+
+				if (enabled == 0) // this is now disabled, so lets remove it
+				{
+					continue; // don't remove it from map so we can remove it from vector
+				}
+
+				currentItem.setInterval(interval);
+				currentItem.setDescription(description);
+
+				aCurrentPositions.erase(itFind);	
 			}
+			else if (enabled == 1) // new one, so create it if needed
+			{
+				ScheduledItem newItem(pos++, description, interval, timeNow);
+				newItem.setTestType(SINGLE_TEST);
+				newItem.setTestID(testID);
 
-			currentItem.setInterval(interval);
-			currentItem.setDescription(description);
-
-			aCurrentPositions.erase(itFind);	
-		}
-		else if (enabled == 1) // new one, so create it if needed
-		{
-			ScheduledItem newItem(pos++, description, interval, timeNow);
-			newItem.setTestType(SINGLE_TEST);
-			newItem.setTestID(testID);
-
-			aNewTests.push_back(newItem);
+				aNewTests.push_back(newItem);
+			}
 		}
 	}
 

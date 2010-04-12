@@ -23,53 +23,60 @@ void SchedulerTestThread::run()
 	sprintf(szRowID, "%ld", m_testID);
 
 	sql.append(szRowID);
+	
+	long enabled = 0;
+	std::string description;
+	std::string url;
+	std::string expectedPhrase;
+	long acceptCompressed = 0;
+	long downloadComponents = 0;
 
-	SQLiteQuery q(*m_pMainDB);
-
-	if (!q.getResult(sql))
+	// scope the SQLiteQuery object so it goes out of scope (and therefore releases the DB connection) ASAP
+	// otherwise, it hangs around blocking db access until all the test threads have finished downloading and
+	// parsing HTML...
 	{
-		printf("Problem getting params needed from db for scheduled test...\n");
-		return;
-	}
+		SQLiteQuery q(*m_pMainDB);
 
-	if (q.fetchNext())
-	{
-		long enabled = q.getLong();
-		std::string description = q.getString();
-		std::string url = q.getString();
-		std::string expectedPhrase = q.getString();
-		long acceptCompressed = q.getLong();
-		long downloadComponents = q.getLong();
-
-		if (enabled == 0)
+		if (!q.getResult(sql))
 		{
+			printf("Problem getting params needed from db for scheduled test...\n");
 			return;
 		}
 
-		HTTPEngine engine;
-
-		HTTPRequest request(url);
-		if (acceptCompressed == 1)
-			request.setAcceptCompressed(true);
-		if (downloadComponents == 1)
-			request.setDownloadContent(true);
-
-		request.setExpectedPhrase(expectedPhrase);
-
-		HTTPResponse response;
-
-		engine.performRequest(request, response);
-		
-		if (m_pSaver)
+		if (!q.fetchNext())
 		{
-			m_pSaver->addResult(response, m_testType, m_testID);
-		}		
+			return;
+		}
+		
+		enabled = q.getLong();
+		description = q.getString();
+		url = q.getString();
+		expectedPhrase = q.getString();
+		acceptCompressed = q.getLong();
+		downloadComponents = q.getLong();
 	}
-}
 
+	if (enabled == 0)
+	{
+		return;
+	}
 
-void SchedulerTestThread::runTest()
-{
+	HTTPEngine engine;
 
+	HTTPRequest request(url);
+	if (acceptCompressed == 1)
+		request.setAcceptCompressed(true);
+	if (downloadComponents == 1)
+		request.setDownloadContent(true);
 
+	request.setExpectedPhrase(expectedPhrase);
+
+	HTTPResponse response;
+
+	engine.performRequest(request, response);
+	
+	if (m_pSaver)
+	{
+		m_pSaver->addResult(response, m_testType, m_testID);
+	}
 }

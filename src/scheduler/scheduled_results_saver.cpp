@@ -36,9 +36,23 @@ void ScheduledResultSaver::storeResults()
 {
 	m_mutex.lock();
 	
+	if (m_aResults.empty())
+	{
+		m_mutex.unlock();
+		return;
+	}
+	
 	SQLiteQuery q(*m_pMainDB, true);
 
 	std::vector<ScheduledResult>::iterator it = m_aResults.begin();
+	
+	// use transactions
+	if (!q.execute("BEGIN IMMEDIATE"))
+	{
+		printf("problem starting results saving transaction\n");
+		m_mutex.unlock();
+		return;
+	}
 	
 	char szTemp[1024];
 	for (; it != m_aResults.end();)
@@ -75,7 +89,7 @@ void ScheduledResultSaver::storeResults()
 				q.execute(sqlComponentResults);	
 			}
 		
-			// we can delete it now
+			// we can delete it now, although we don't know for certain that the commit was successful...
 						
 			it = m_aResults.erase(it);			
 		}
@@ -85,6 +99,13 @@ void ScheduledResultSaver::storeResults()
 
 			++it;
 		}
+	}
+	
+	if (!q.execute("COMMIT"))
+	{
+		printf("problem committing results transaction\n");
+		m_mutex.unlock();
+		return;
 	}
 	
 	m_mutex.unlock();
