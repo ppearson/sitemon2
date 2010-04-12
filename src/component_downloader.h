@@ -7,13 +7,15 @@
 class ComponentTask : public Task
 {
 public:
-	ComponentTask(const std::string &url);
+	ComponentTask(const std::string &url, const std::string &referrer = "");
 	virtual ~ComponentTask() { }
 	
 	std::string &	getURL() { return m_url; }
+	std::string &	getReferrer() { return m_referrer; }
 	
 protected:
-	std::string		m_url;	
+	std::string		m_url;
+	std::string		m_referrer;
 };
 
 static size_t writeBodyData(void *buffer, size_t size, size_t nmemb, void *userp);

@@ -205,6 +205,14 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 	if (request.getDownloadContent())
 	{
 		downloadContent(m_handle, response, request.getAcceptCompressed());
+		
+		response.totalDownloadSize += response.componentDownloadSize;
+		response.totalContentSize += response.componentContentSize;
+		
+		if (response.componentProblem)
+		{
+			response.errorCode = HTTP_OK_MISSING_COMPONENTS;
+		}
 	}
 	
 	curl_easy_cleanup(m_handle);

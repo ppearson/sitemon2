@@ -18,6 +18,7 @@ bool addSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 bool editSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
 
 bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output);
+bool getSingleScheduledTestComponentsList(SQLiteDB *pDB, long testID, long runID, std::string &output);
 bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string &output);
 
 #endif

@@ -9,7 +9,7 @@ HTMLParser::HTMLParser(const std::string &content, const std::string &currentPat
 {
 	int lastSlash = currentPath.rfind("/");
 	
-	if (lastSlash != currentPath.size() - 1)
+	if (lastSlash != currentPath.size() - 1 && lastSlash != 6)
 		m_currentPath = currentPath.substr(0, lastSlash);
 	else
 		m_currentPath = currentPath;

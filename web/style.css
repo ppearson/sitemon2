@@ -38,7 +38,7 @@ color: #000;
 }
 
 table {
-/*	width:90%;*/
+	width:90%;
 	float: left;
 	border-top:1px solid 000080;
 	border-right:1px solid 000080;
@@ -52,6 +52,12 @@ border-bottom:1px solid #000080;
 border-left:1px solid #000080;
 padding:.1em 1em;
 text-align:center;
+}
+td#l {
+	text-align:left;
+}
+td#r {
+	text-align:right;
 }
 tr {
 border-bottom:1px solid #000080;

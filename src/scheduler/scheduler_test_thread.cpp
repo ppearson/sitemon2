@@ -16,7 +16,7 @@ void SchedulerTestThread::run()
 	if (m_testType == SCRIPT_TEST)
 		return;
 	
-	std::string sql = "select enabled, description, url, referer, expected_phrase, accept_compressed from scheduled_single_tests where rowid = ";
+	std::string sql = "select enabled, description, url, expected_phrase, accept_compressed, download_components from scheduled_single_tests where rowid = ";
 
 	char szRowID[16];
 	memset(szRowID, 0, 16);
@@ -32,9 +32,9 @@ void SchedulerTestThread::run()
 		long enabled = q.getLong();
 		std::string description = q.getString();
 		std::string url = q.getString();
-		std::string referrer = q.getString();
 		std::string expectedPhrase = q.getString();
 		long acceptCompressed = q.getLong();
+		long downloadComponents = q.getLong();
 
 		if (enabled == 0)
 		{
@@ -46,9 +46,10 @@ void SchedulerTestThread::run()
 		HTTPRequest request(url);
 		if (acceptCompressed == 1)
 			request.setAcceptCompressed(true);
+		if (downloadComponents == 1)
+			request.setDownloadContent(true);
 
 		request.setExpectedPhrase(expectedPhrase);
-		request.setReferrer(referrer);
 
 		HTTPResponse response;
 

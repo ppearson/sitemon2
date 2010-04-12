@@ -13,13 +13,14 @@
 <br><a href="add_monitor_test">Add a test</a><br>
 <table>
 <tr>
-	<th scope="col">Test ID</th>
-	<th scope="col">Enabled</th>
-	<th scope="col">Description</th>
-	<th scope="col">URL</th>
-	<th scope="col">Interval</th>
-	<th scope="col">Accept Compressed</th>
-	<th scope="col">View Results</th>
+	<th scope="col" width="60">Test ID</th>
+	<th scope="col" width="50">Enabled</th>
+	<th scope="col" width="120">Description</th>
+	<th scope="col" width="290">URL</th>
+	<th scope="col" width="50">Interval</th>
+	<th scope="col" width="110">Accept Compressed</th>
+	<th scope="col" width="110">Download Components</th>
+	<th scope="col" width="90">View Results</th>
 </tr>
 <%%>
 </table>

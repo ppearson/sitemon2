@@ -23,6 +23,9 @@
 	<th scope="col">Total time</th>
 	<th scope="col">Download Size</th>
 	<th scope="col">Content Size</th>
+	<th scope="col">Component Download Size</th>
+	<th scope="col">Component Content Size</th>
+	<th scope="col">Components</th>
 </tr>
 <%2%>
 </table>

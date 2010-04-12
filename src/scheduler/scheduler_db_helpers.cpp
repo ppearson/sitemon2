@@ -13,7 +13,7 @@ bool createNeededSchedulerTables(SQLiteDB *pDB)
 
 bool createScheduledSingleTestsTable(SQLiteDB *pDB)
 {
-	std::string sql = "create table if not exists scheduled_single_tests (enabled integer, description string, url string, referer string, expected_phrase string, interval integer, accept_compressed integer)";
+	std::string sql = "create table if not exists scheduled_single_tests (enabled integer, description string, url string, expected_phrase string, interval integer, accept_compressed integer, download_components integer)";
 	
 	if (pDB)
 	{
@@ -28,9 +28,14 @@ bool createScheduledSingleTestsTable(SQLiteDB *pDB)
 bool createScheduledSingleTestResultsTable(SQLiteDB *pDB)
 {
 	std::string sql1 = "create table if not exists scheduled_single_test_results (test_id integer, run_time date, error_code integer, response_code integer, lookup_time double,"
-					"connect_time double, data_start_time double, total_time double, redirect_count integer, content_size integer, download_size integer)";
+					"connect_time double, data_start_time double, total_time double, redirect_count integer, content_size integer, download_size integer, component_content_size integer, component_download_size integer)";
 	
 	std::string sql2 = "create index if not exists single_test_results on scheduled_single_test_results(test_id)";
+	
+	std::string sqlComponentResults = "create table if not exists scheduled_single_test_component_results (test_id integer, run_id integer, error_code integer, response_code integer,"
+										"url string, lookup_time double, connect_time double, data_start_time double, total_time double, content_size integer, download_size integer)";
+	
+	std::string sqlComponentResultsIndex = "create index if not exists single_test_component_results on scheduled_single_test_component_results(test_id, run_id)";
 	
 	if (pDB)
 	{
@@ -38,8 +43,10 @@ bool createScheduledSingleTestResultsTable(SQLiteDB *pDB)
 		
 		bool ret1 = q.execute(sql1);
 		bool ret2 = q.execute(sql2);
+		bool ret3 = q.execute(sqlComponentResults);
+		bool ret4 = q.execute(sqlComponentResultsIndex);
 		
-		return ret1 && ret2;
+		return ret1 && ret2 && ret3 && ret4;
 	}	
 	
 	return false;

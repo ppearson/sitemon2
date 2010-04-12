@@ -1,7 +1,7 @@
 
 #include "component_downloader.h"
 
-ComponentTask::ComponentTask(const std::string &url) : m_url(url)
+ComponentTask::ComponentTask(const std::string &url, const std::string &referrer) : m_url(url), m_referrer(referrer)
 {
 
 }
@@ -69,6 +69,11 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	
 	if (curl_easy_setopt(pThisHandle, CURLOPT_URL, pThisTask->getURL().c_str()) != 0)
 		return;
+	
+	if (!pThisTask->getReferrer().empty())
+	{
+		curl_easy_setopt(pThisHandle, CURLOPT_REFERER, pThisTask->getReferrer().c_str());
+	}
 	
 	if (m_acceptCompressed)
 	{

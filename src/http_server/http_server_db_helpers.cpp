@@ -21,7 +21,7 @@ bool createNeededTables(SQLiteDB *pDB)
 bool createSingleTestHistoryTable(SQLiteDB *pDB)
 {
 	std::string sql = "create table if not exists single_test_history (run_time date, requested_url string, final_url string, error_code integer, return_code integer, lookup_time double,"
-					   "connect_time double, data_start_time double, total_time double, redirect_count integer, content_size integer, download_size integer)";
+					   "connect_time double, data_start_time double, total_time double, redirect_count integer, content_size integer, download_size integer, component_content_size integer, component_download_size integer)";
 	
 	if (pDB)
 	{
@@ -42,8 +42,8 @@ bool addResponseToSingleTestHistoryTable(SQLiteDB *pDB, HTTPResponse &response)
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "'%s', '%s', %ld, %ld, %f, %f, %f, %f, %ld, %ld, %ld)", response.requestedURL.c_str(), response.finalURL.c_str(), response.errorCode, response.responseCode, response.lookupTime, response.connectTime,
-			response.dataStartTime, response.totalTime, response.redirectCount, response.contentSize, response.downloadSize);
+	sprintf(szTemp, "'%s', '%s', %ld, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", response.requestedURL.c_str(), response.finalURL.c_str(), response.errorCode, response.responseCode, response.lookupTime, response.connectTime,
+			response.dataStartTime, response.totalTime, response.redirectCount, response.contentSize, response.downloadSize, response.componentContentSize, response.componentDownloadSize);
 	
 	sql.append(szTemp);
 	
@@ -58,7 +58,7 @@ bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, int offset)
 		return false;
 	
 	std::string sql = "select rowid, datetime(run_time,'localtime') as rtime, requested_url, error_code, return_code, total_time, download_size,"
-							"content_size from single_test_history limit 20 offset ";
+							"content_size, component_download_size, component_content_size from single_test_history limit 20 offset ";
 	
 	char szOffset[8];
 	memset(szOffset, 0, 8);
@@ -85,6 +85,8 @@ bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, int offset)
 		float totalTime = q.getDouble();
 		long downloadSize = q.getLong();
 		long contentSize = q.getLong();
+		long componentDownloadSize = q.getLong();
+		long componentContentSize = q.getLong();
 
 		memset(szResult, 0, 6);
 		if (errorCode == 0)
@@ -96,8 +98,9 @@ bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, int offset)
 			sprintf(szResult, "%ld", errorCode);
 		}
 
-		sprintf(szTemp, "<tr>\n <td><a href=\"/single_details?runid=%ld\">%ld</a></td>\n <td>%s</td>\n <td>%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td></tr>\n",
-						runID, runID, time.c_str(), url.c_str(), szResult, returnCode, totalTime, downloadSize, contentSize);
+		sprintf(szTemp, "<tr>\n <td><a href=\"/single_details?runid=%ld\">%ld</a></td>\n <td>%s</td>\n <td>%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>"
+				"\n <td>%ld</td>\n <td>%ld</td></tr>\n <td>%ld</td></tr>\n <td>%ld</td></tr>\n",
+						runID, runID, time.c_str(), url.c_str(), szResult, returnCode, totalTime, downloadSize, contentSize, componentDownloadSize, componentContentSize);
 		
 		output.append(szTemp);		
 	}
@@ -113,7 +116,7 @@ bool formatDBSingleTestResponseToHTMLDL(SQLiteDB *pDB, long rowID, std::string &
 	sprintf(szRowID, "%ld", rowID);
 	
 	std::string sql = "select datetime(run_time,'localtime') as rtime, requested_url, final_url, error_code, return_code, lookup_time, connect_time, data_start_time, total_time,"
-						"redirect_count, download_size, content_size from single_test_history where rowid = ";
+						"redirect_count, download_size, content_size, component_download_size, component_content_size from single_test_history where rowid = ";
 	sql.append(szRowID);
 	
 	SQLiteQuery q(*pDB);
@@ -139,6 +142,8 @@ bool formatDBSingleTestResponseToHTMLDL(SQLiteDB *pDB, long rowID, std::string &
 		addLongToDL(format, "Redirect count");
 		addLongToDL(format, "Download size");
 		addLongToDL(format, "Content size");
+		addLongToDL(format, "Component ownload size");
+		addLongToDL(format, "Component content size");
 		format += "</dl>\n";
 		
 		std::string time = q.getString();
@@ -153,6 +158,8 @@ bool formatDBSingleTestResponseToHTMLDL(SQLiteDB *pDB, long rowID, std::string &
 		long redirectCount = q.getLong();
 		long downloadSize = q.getLong();
 		long contentSize = q.getLong();
+		long componentDownloadSize = q.getLong();
+		long componentContentSize = q.getLong();
 
 		char szResult[6];
 		memset(szResult, 0, 6);
@@ -166,7 +173,7 @@ bool formatDBSingleTestResponseToHTMLDL(SQLiteDB *pDB, long rowID, std::string &
 		}
 		
 		sprintf(szTemp, format.c_str(), time.c_str(), requested_url.c_str(), final_url.c_str(), szResult, responseCode, lookupTime, connectTime,
-				dataStartTime, totalTime, redirectCount, contentSize, downloadSize);
+				dataStartTime, totalTime, redirectCount, contentSize, downloadSize, componentContentSize, componentDownloadSize);
 		
 		output.assign(szTemp);
 		
@@ -185,7 +192,7 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 	if (!pDB)
 		return false;
 	
-	std::string sql = "select rowid, enabled, description, url, interval, accept_compressed from scheduled_single_tests limit 40";// offset ";
+	std::string sql = "select rowid, enabled, description, url, interval, accept_compressed, download_components from scheduled_single_tests limit 40";// offset ";
 	
 /*	char szOffset[8];
 	memset(szOffset, 0, 8);
@@ -209,6 +216,7 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 		std::string url = q.getString();
 		long interval = q.getLong();
 		long acceptCompressed = q.getLong();
+		long downloadComponents = q.getLong();
 
 		if (description.empty())
 			description = " ";
@@ -217,11 +225,12 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 			url = " ";
 		
 		std::string strEnabled = (enabled == 1) ? "YES" : "NO";
-
 		std::string strAcceptCompressed = (acceptCompressed == 1) ? "YES" : "NO";
+		std::string strDownloadComponents = (downloadComponents == 1) ? "YES" : "NO";
 
-		sprintf(szTemp, "<tr>\n <td><a href=\"/edit_monitor_test?test_id=%ld\">Edit</a></td>\n <td>%s</td>\n <td>%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%s</td>\n <td><a href=\"/view_monitortest?testid=%ld\">Results</a></td>\n</tr>\n",
-						testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), testID);
+		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_monitor_test?test_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
+				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_monitortest?testid=%ld\">Results</a></td>\n</tr>\n",
+						testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
 		
 		output.append(szTemp);		
 	}
@@ -240,17 +249,19 @@ bool addSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 	std::string desc = request.getParam("description");
 	std::string url = request.getParam("url");
 	std::string interval = request.getParam("interval");
-	std::string referrer = request.getParam("referrer");
 	std::string expectedPhrase = request.getParam("expected_phrase");
 	long compressed = 0;
 	if (request.getParam("accept_compressed") == "on")
 		compressed = 1;
+	long downloadComponents = 0;
+	if (request.getParam("download_components") == "on")
+		downloadComponents = 1;
 
 	std::string sql = "insert into scheduled_single_tests values (1, ";
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "'%s', '%s', '%s', '%s', %s, %ld)", desc.c_str(), url.c_str(), referrer.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed);
+	sprintf(szTemp, "'%s', '%s', '%s', %s, %ld, %ld)", desc.c_str(), url.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, downloadComponents);
 	
 	sql.append(szTemp);
 	
@@ -274,18 +285,20 @@ bool editSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::str
 	std::string desc = request.getParam("description");
 	std::string url = request.getParam("url");
 	std::string interval = request.getParam("interval");
-	std::string referrer = request.getParam("referrer");
 	std::string expectedPhrase = request.getParam("expected_phrase");
 	long compressed = 0;
 	if (request.getParam("accept_compressed") == "on")
 		compressed = 1;
+	long downloadComponents = 0;
+	if (request.getParam("download_components") == "on")
+		downloadComponents = 1;
 	
 	std::string sql = "update scheduled_single_tests set ";
 	
 	char szTemp[2048];
 	memset(szTemp, 0, 2048);
-	sprintf(szTemp, "enabled = %ld, description = '%s', url = '%s', referer = '%s', expected_phrase = '%s', interval = %s, accept_compressed = %ld where rowid = %ld", enabled, desc.c_str(),
-			url.c_str(), referrer.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, rowid);
+	sprintf(szTemp, "enabled = %ld, description = '%s', url = '%s', expected_phrase = '%s', interval = %s, accept_compressed = %ld, download_components = ld where rowid = %ld", enabled, desc.c_str(),
+			url.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, downloadComponents, rowid);
 	
 	sql.append(szTemp);
 	
@@ -322,7 +335,8 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 		}		
 	}
 	
-	std::string sql = "select datetime(run_time,'localtime') as rtime, error_code, response_code, lookup_time, connect_time, data_start_time, total_time, download_size, content_size from scheduled_single_test_results where test_id = ";
+	std::string sql = "select rowid, datetime(run_time,'localtime') as rtime, error_code, response_code, lookup_time, connect_time, data_start_time, total_time,"
+						"download_size, content_size, component_download_size, component_content_size from scheduled_single_test_results where test_id = ";
 	sql.append(szTestID);
 	sql += " order by rowid desc limit 40";
 	
@@ -337,7 +351,74 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 	{
 		memset(szTemp, 0, 2048);
 
+		long rowID = q.getLong();
 		std::string time = q.getString();
+		long errorCode = q.getLong();
+		long responseCode = q.getLong();
+		float lookupTime = q.getDouble();
+		float connectTime = q.getDouble();
+		float dataStartTime = q.getDouble();
+		float totalTime = q.getDouble();
+		long downloadSize = q.getLong();
+		long contentSize = q.getLong();
+		long componentDownloadSize = q.getLong();
+		long componentContentSize = q.getLong();
+		
+		char szResult[6];
+		memset(szResult, 0, 6);
+		if (errorCode == 0)
+		{
+			strcat(szResult, "OK");
+		}
+		else
+		{
+			sprintf(szResult, "%ld", errorCode);
+		}
+
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n"
+				"<td>%ld</td>\n <td><a href=\"/single_components?test_id=%ld&run_id=%ld\">View</a></td>\n</tr>\n", time.c_str(), szResult,
+				responseCode, lookupTime, connectTime, dataStartTime, totalTime, downloadSize, contentSize, componentDownloadSize, componentContentSize, testID, rowID);
+		
+		output.append(szTemp);		
+	}
+
+	return true;
+}
+
+bool getSingleScheduledTestComponentsList(SQLiteDB *pDB, long testID, long runID, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+	
+	char szTestID[12];
+	memset(szTestID, 0, 12);
+	sprintf(szTestID, "%ld", testID);
+	
+	char szRunID[12];
+	memset(szRunID, 0, 12);
+	sprintf(szRunID, "%ld", runID);
+	
+	std::string sql = "select url, error_code, response_code, lookup_time, connect_time, data_start_time, total_time,"
+	"download_size, content_size from scheduled_single_test_component_results where test_id = ";
+	sql.append(szTestID);
+	sql += " and run_id = ";
+	sql.append(szRunID);
+		
+	SQLiteQuery q(*pDB);
+	
+	output = "";
+	
+	char szTemp[2048];
+	
+	q.getResult(sql);
+	while (q.fetchNext())
+	{
+		memset(szTemp, 0, 2048);
+		
+		std::string url = q.getString();
 		long errorCode = q.getLong();
 		long responseCode = q.getLong();
 		float lookupTime = q.getDouble();
@@ -357,13 +438,13 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 		{
 			sprintf(szResult, "%ld", errorCode);
 		}
-
-		sprintf(szTemp, "<tr>\n <td>%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n</tr>\n",
-						time.c_str(), szResult, responseCode, lookupTime, connectTime, dataStartTime, totalTime, downloadSize, contentSize);
+		
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n</tr>\n",
+				url.c_str(), szResult, responseCode, totalTime, downloadSize, contentSize);
 		
 		output.append(szTemp);		
 	}
-
+	
 	return true;
 }
 
@@ -372,7 +453,7 @@ bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 	if (!pDB)
 		return false;
 	
-	std::string sql = "select enabled, interval, description, url, referer, expected_phrase, accept_compressed from scheduled_single_tests where rowid = ";
+	std::string sql = "select enabled, interval, description, url, expected_phrase, accept_compressed, download_components from scheduled_single_tests where rowid = ";
 	
 	char szRowID[16];
 	memset(szRowID, 0, 16);
@@ -396,6 +477,7 @@ bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 	std::string referrer = q.getString();
 	std::string expectedPhrase = q.getString();
 	long acceptCompressed = q.getLong();
+	long downloadComponents = q.getLong();
 		
 	HTTPFormGenerator formGen("edit_monitor_test", "Update", true);
 	
@@ -438,18 +520,19 @@ bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 	formInterval.addOption("30");
 	formInterval.addOption("60");
 	
-	HTTPFormTextItem formReferrer("Referrer", "referrer", 50, referrer);
 	HTTPFormTextItem formExpectedPhrase("Expected Phrase", "expected_phrase", 60, expectedPhrase);
 	HTTPFormCheckItem formAcceptCompressed("Accept compressed content", "accept_compressed", acceptCompressed == 1);
+	HTTPFormCheckItem formDownloadComponents("Download components", "download_components", downloadComponents == 1);
+	
 	HTTPFormHiddenItem formTestID("test_id", testID);
 	
 	formGen.addItem(formEnabled);
 	formGen.addItem(formDescription);
 	formGen.addItem(formURL);
 	formGen.addItem(formInterval);
-	formGen.addItem(formReferrer);
 	formGen.addItem(formExpectedPhrase);
 	formGen.addItem(formAcceptCompressed);
+	formGen.addItem(formDownloadComponents);
 	formGen.addItem(formTestID);
 	
 	output = formGen.getGeneratedCode();	

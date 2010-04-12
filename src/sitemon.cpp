@@ -107,7 +107,7 @@ bool performConcurrentScriptRequest(Script &script, int threads, const std::stri
 	return true;
 }
 
-void outputResponse(HTTPRequest &request, const HTTPResponse &response)
+void outputResponse(HTTPRequest &request, HTTPResponse &response)
 {
 	std::cout << "Final URL:\t\t" << response.finalURL << "\n";
 	std::cout << "Respone code:\t\t" << response.responseCode << "\n\n";
@@ -142,7 +142,22 @@ void outputResponse(HTTPRequest &request, const HTTPResponse &response)
 		
 		if (response.componentProblem)
 		{
-			std::cout << "Issues downloading one or more components...\n";
+			std::cout << "Issues downloading one or more components:\n";
+			
+			const std::vector<HTTPComponentResponse> &components = response.getComponents();
+			
+			std::vector<HTTPComponentResponse>::const_iterator it = components.begin();
+			for (; it != components.end(); ++it)
+			{
+				const HTTPComponentResponse &compResponse = *it;
+				
+				if (compResponse.errorCode != HTTP_OK || compResponse.responseCode != 200)
+				{
+					printf("%i\t%ld\t%s\n", compResponse.errorCode, compResponse.responseCode, compResponse.requestedURL.c_str());					
+				}				
+			}
+			
+			
 		}
 	}
 }

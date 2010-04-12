@@ -17,16 +17,16 @@ bool generateAddSingleScheduledTestForm(std::string &output)
 	interval.addOption("30");
 	interval.addOption("60");
 	
-	HTTPFormTextItem referrer("Referrer", "referrer", 60);
 	HTTPFormTextItem expectedPhrase("Expected Phrase", "expected_phrase", 60);
 	HTTPFormCheckItem acceptCompressed("Accept compressed content", "accept_compressed", true);
+	HTTPFormCheckItem downloadComponents("Download components", "download_components", true);
 	
 	formGen.addItem(description);
 	formGen.addItem(url);
 	formGen.addItem(interval);
-	formGen.addItem(referrer);
 	formGen.addItem(expectedPhrase);
 	formGen.addItem(acceptCompressed);
+	formGen.addItem(downloadComponents);
 	
 	output = formGen.getGeneratedCode();	
 	

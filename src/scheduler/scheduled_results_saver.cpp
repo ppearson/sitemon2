@@ -40,22 +40,41 @@ void ScheduledResultSaver::storeResults()
 
 	std::vector<ScheduledResult>::iterator it = m_aResults.begin();
 	
+	char szTemp[1024];
 	for (; it != m_aResults.end();)
 	{
 		ScheduledResult &result = *it;
 		
 		std::string sql = "insert into scheduled_single_test_results values (";
 		
-		char szTemp[1024];
 		memset(szTemp, 0, 1024);
-		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %ld, %ld, %f, %f, %f, %f, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp, result.m_response.errorCode,
+		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %ld, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp, result.m_response.errorCode,
 				result.m_response.responseCode, result.m_response.lookupTime, result.m_response.connectTime, result.m_response.dataStartTime,result.m_response.totalTime,
-				result.m_response.redirectCount, result.m_response.contentSize, result.m_response.downloadSize);
+				result.m_response.redirectCount, result.m_response.contentSize, result.m_response.downloadSize, result.m_response.componentContentSize, result.m_response.componentDownloadSize);
 		
 		sql.append(szTemp);
 		
 		if (q.execute(sql, true))
 		{
+			long runID = q.getInsertRowID();
+			
+			// save component results if needed
+			
+			const std::vector<HTTPComponentResponse> &components = result.m_response.getComponents();
+			
+			std::vector<HTTPComponentResponse>::const_iterator itComponent = components.begin();
+			for (; itComponent != components.end(); ++itComponent)
+			{
+				const HTTPComponentResponse &compResult = *itComponent;
+				std::string sqlComponentResults = "insert into scheduled_single_test_component_results values(";
+				memset(szTemp, 0, 1024);
+				sprintf(szTemp, "%ld, %ld, %ld, %ld, '%s', %f, %f, %f, %f, %ld, %ld)", result.m_testID, runID, compResult.errorCode, compResult.responseCode, compResult.requestedURL.c_str(),
+						compResult.lookupTime, compResult.connectTime, compResult.dataStartTime, compResult.totalTime, compResult.contentSize, compResult.downloadSize);
+				sqlComponentResults.append(szTemp);
+				
+				q.execute(sqlComponentResults, true);			
+			}			
+		
 			// we can delete it now
 						
 			it = m_aResults.erase(it);			

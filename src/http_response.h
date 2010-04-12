@@ -16,6 +16,7 @@
 enum HTTPResponseError
 {
 	HTTP_OK = 0,
+	HTTP_OK_MISSING_COMPONENTS = 1,
 	HTTP_COULDNT_RESOLVE_HOST = -1,
 	HTTP_COULDNT_CONNECT = -2,
 	HTTP_TIMEOUT = -3,
@@ -82,6 +83,9 @@ public:
 
 	long		contentSize;
 	long		downloadSize;
+	
+	long		componentContentSize;
+	long		componentDownloadSize;
 	
 	long		totalContentSize;
 	long		totalDownloadSize;

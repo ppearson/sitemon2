@@ -178,6 +178,19 @@ void HTTPServerRequestThread::run()
 			HTTPServerTemplateFileResponse resp(filePath, dataContent);
 			response = resp.responseString();
 		}
+		else if (request.getPath() == "/single_components" && request.hasParams())
+		{
+			long runID = atoi(request.getParam("run_id").c_str());
+			long testID = atoi(request.getParam("test_id").c_str());
+			
+			std::string filePath = m_webContentPath + "single_components.tplt";
+			
+			std::string dataContent;
+			getSingleScheduledTestComponentsList(m_pMainDB, testID, runID, dataContent);
+			
+			HTTPServerTemplateFileResponse resp(filePath, dataContent);
+			response = resp.responseString();			
+		}
 		else
 		{
 			std::string requestedPath = request.getPath();
