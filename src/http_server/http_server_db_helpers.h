@@ -6,7 +6,7 @@
 #include "../utils/sqlite_query.h"
 #include "http_server_request.h"
 
-bool createNeededTables(SQLiteDB *pDB);
+bool createNeededHTTPServerTables(SQLiteDB *pDB);
 bool createSingleTestHistoryTable(SQLiteDB *pDB);
 bool addResponseToSingleTestHistoryTable(SQLiteDB *pDB, HTTPResponse &response);
 

@@ -30,8 +30,6 @@ bool HTTPServer::start()
 		return false;
 	}
 	
-	createNeededTables(m_pMainDB);
-	
 	while (true)
 	{
 		Socket *newSock = new Socket();

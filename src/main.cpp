@@ -8,6 +8,9 @@
 #include "utils/socket.h"
 #include "scheduler/scheduler.h"
 
+#include "scheduler/scheduler_db_helpers.h"
+#include "http_server/http_server_db_helpers.h"
+
 #ifdef _MSC_VER
 BOOL CtrlHandler(DWORD fdwCtrlType);
 #endif
@@ -112,6 +115,15 @@ int main(int argc, char *const argv[])
 		{
 			pMainDB = new SQLiteDB(dbPath);
 		}
+		
+		if (!pMainDB->isThreadSafe())
+		{
+			std::cout << "SQLite is not thread safe!\n";
+		}
+		
+		// create the needed tables first
+		createNeededHTTPServerTables(pMainDB);
+		createNeededSchedulerTables(pMainDB);
 		
 		Scheduler schedulerThread(pMainDB);
 		schedulerThread.start();

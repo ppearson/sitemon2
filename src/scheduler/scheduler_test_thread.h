@@ -15,8 +15,6 @@ public:
 	virtual ~SchedulerTestThread() { }
 	
 	virtual void run();
-
-	void runTest();
 	
 protected:
 	SQLiteDB	*m_pMainDB;

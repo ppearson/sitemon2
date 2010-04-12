@@ -11,7 +11,7 @@
 #include "http_server_html_formatters.h"
 #include "http_form_generator.h"
 
-bool createNeededTables(SQLiteDB *pDB)
+bool createNeededHTTPServerTables(SQLiteDB *pDB)
 {
 	createSingleTestHistoryTable(pDB);
 	

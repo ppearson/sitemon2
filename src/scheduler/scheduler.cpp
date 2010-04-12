@@ -25,7 +25,7 @@ void Scheduler::run()
 		m_pSaver->start();
 	}
 	
-	createNeededSchedulerTables(m_pMainDB);
+//	createNeededSchedulerTables(m_pMainDB);
 	
 	buildScheduledItemsFromDB(m_pMainDB);	
 	

@@ -145,14 +145,14 @@ bool ComponentDownloader::extractResponseFromCURLHandle(CURL *handle, HTTPCompon
 //	curl_easy_getinfo(handle, CURLINFO_REDIRECT_COUNT, &response.redirectCount);
 //	curl_easy_getinfo(handle, CURLINFO_REDIRECT_TIME, &response.redirectTime);
 	
-	curl_easy_getinfo(handle, CURLINFO_SIZE_DOWNLOAD, &download);
-	response.downloadSize = (long)download;
+	if (!curl_easy_getinfo(handle, CURLINFO_SIZE_DOWNLOAD, &download))
+		response.downloadSize = (long)download;
 	
-	curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
-	response.contentType.assign(content_type);
+	if (!curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type) && content_type)
+		response.contentType.assign(content_type);
 	
-	curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &actual_url);
-	response.finalURL.assign(actual_url);
+	if (!curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &actual_url) && actual_url)
+		response.finalURL.assign(actual_url);
 	
 	return true;
 }
