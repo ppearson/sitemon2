@@ -40,14 +40,11 @@ public:
 	bool extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response);
 
 	cdLocks m_locks;
+	void share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
+	void share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
 
 protected:
-	static void share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
-	static void share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
-	
-protected:
 	CURLSH *m_CURLSharedData;
-	cdLocks	m_lock;
 	CURL *m_aCURLHandles[2];
 	HTTPResponse &	m_response;
 	

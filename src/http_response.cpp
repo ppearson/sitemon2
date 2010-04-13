@@ -24,6 +24,7 @@ HTTPResponse::HTTPResponse(bool storeHeader, bool storeBody) : contentSize(0), d
 
 void HTTPResponse::addComponent(HTTPComponentResponse &component)
 {
+	m_lock.lock();
 	if (component.errorCode == HTTP_OK)
 	{
 		if (component.responseCode == 200)
@@ -41,5 +42,7 @@ void HTTPResponse::addComponent(HTTPComponentResponse &component)
 		componentProblem = true;
 	}
 	
+		
 	m_aComponents.push_back(component);
+	m_lock.unlock();
 }

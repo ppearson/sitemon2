@@ -155,8 +155,6 @@ Task *ThreadPool::getNextTask()
 
 void ThreadPool::startPoolAndWaitForCompletion()
 {
-	ThreadPoolThread *m_pThreads[MAX_THREADS];
-	
 	int threadID = -1;
 	while (!m_aTasks.empty())
 	{
@@ -189,7 +187,7 @@ void ThreadPool::startPoolAndWaitForCompletion()
 		{
 			// something weird happened - we shouldn't have got here, but we often do...
 			
-			sleep(1);
+			Thread::sleep(1);
 		}
 	}
 	
@@ -207,4 +205,8 @@ void ThreadPool::startPoolAndWaitForCompletion()
 void ThreadPool::freeThread(int threadID)
 {
 	m_controller.freeThread(threadID);
+	
+	// clean up the thread handle so we don't bother waiting on it
+	
+	m_pThreads[threadID] = NULL;
 }

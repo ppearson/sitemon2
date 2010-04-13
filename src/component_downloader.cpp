@@ -14,10 +14,16 @@ ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &res
 	// However, only the thread which did the initial request for the HTML got the cookie back, hence the need to share it
 	
 	m_CURLSharedData = curl_share_init();
-	curl_share_setopt(m_CURLSharedData, CURLSHOPT_LOCKFUNC, share_lock);
-	curl_share_setopt(m_CURLSharedData, CURLSHOPT_USERDATA, &m_CURLSharedData);
-	curl_share_setopt(m_CURLSharedData, CURLSHOPT_UNLOCKFUNC, share_unlock);
-	curl_share_setopt(m_CURLSharedData, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
+	if (m_CURLSharedData)
+	{
+		// OS X doesn't seem to need these - it crashes with them anyway...
+#ifdef _MSC_VER
+		curl_share_setopt(m_CURLSharedData, CURLSHOPT_LOCKFUNC, &ComponentDownloader::share_lock);
+		curl_share_setopt(m_CURLSharedData, CURLSHOPT_USERDATA, &m_locks);
+		curl_share_setopt(m_CURLSharedData, CURLSHOPT_UNLOCKFUNC, &ComponentDownloader::share_unlock);
+#endif
+//		curl_share_setopt(m_CURLSharedData, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
+	}
 	
 	// reuse the original curl handle for the first thread, and init second one
 	m_aCURLHandles[0] = mainCURLHandle;
@@ -25,7 +31,7 @@ ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &res
 	
 	for (int i = 0; i < 2; i++)
 	{
-		curl_easy_setopt(m_aCURLHandles[i], CURLOPT_SHARE, m_CURLSharedData);
+//		curl_easy_setopt(m_aCURLHandles[i], CURLOPT_SHARE, m_CURLSharedData);
 	}
 }
 
@@ -179,12 +185,13 @@ static size_t writeBodyData(void *buffer, size_t size, size_t nmemb, void *userp
 
 void ComponentDownloader::share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
 {
-	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+//	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+	cdLocks *pLocks = &m_locks;
 	if (data == CURL_LOCK_DATA_SHARE)
 	{
 		pLocks->shareLock.lock();
 	}
-	else if (data = CURL_LOCK_DATA_COOKIE)
+	else if (data == CURL_LOCK_DATA_COOKIE)
 	{
 		pLocks->cookieLock.lock();
 	}
@@ -192,12 +199,13 @@ void ComponentDownloader::share_lock(CURL *handle, curl_lock_data data, curl_loc
 
 void ComponentDownloader::share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
 {
-	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+//	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+	cdLocks *pLocks = &m_locks;
 	if (data == CURL_LOCK_DATA_SHARE)
 	{
 		pLocks->shareLock.unlock();
 	}
-	else if (data = CURL_LOCK_DATA_COOKIE)
+	else if (data == CURL_LOCK_DATA_COOKIE)
 	{
 		pLocks->cookieLock.unlock();
 	}

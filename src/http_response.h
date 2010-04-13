@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "utils/mutex.h"
+
 enum HTTPResponseError
 {
 	HTTP_OK = 0,
@@ -104,6 +106,7 @@ public:
 	std::vector<HTTPComponentResponse> &getComponents() { return m_aComponents; }
 	
 protected:
+	Mutex	m_lock;
 	std::vector<HTTPComponentResponse> m_aComponents;
 };
 

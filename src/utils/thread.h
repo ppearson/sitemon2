@@ -13,8 +13,7 @@
 class Thread
 {
 public:
-	Thread();
-	
+	Thread();	
 	virtual ~Thread();
 
 	static void sleep(int seconds);

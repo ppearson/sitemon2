@@ -11,18 +11,15 @@
 #define SQLITE_DB_H
 
 #include <string>
-#include <list>
 
 #include "sqlite3.h"
-
 #include "mutex.h"
 
 struct DBConn
 {
-	DBConn() : m_inUse(false) { }
+	DBConn() { }
 	
 	sqlite3 *	m_pDB;
-	bool		m_inUse;
 };
 
 class SQLiteDB
@@ -32,7 +29,7 @@ public:
 	~SQLiteDB();
 	
 	DBConn *getDBConnection(bool write = false);
-	void releaseDBConnection(DBConn *pConn, bool cache = false);
+	void releaseDBConnection(DBConn *pConn);
 	
 	bool isThreadSafe() { return sqlite3_threadsafe() != 0; }
 	
@@ -41,10 +38,7 @@ protected:
 	
 	std::string		m_path;
 	bool			m_useMutex;
-	Mutex			m_mutex;
-	
-	std::list<DBConn *> m_aAvailableConnections;
-	
+	Mutex			m_mutex;	
 };
 
 
