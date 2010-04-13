@@ -43,6 +43,7 @@
 		D0B9788011722F3E00FA5B5A /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0B9785C11722F3D00FA5B5A /* tinyxml.cpp */; };
 		D0B9788111722F3E00FA5B5A /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0B9785E11722F3D00FA5B5A /* tinyxmlerror.cpp */; };
 		D0B9788211722F3E00FA5B5A /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0B9785F11722F3D00FA5B5A /* tinyxmlparser.cpp */; };
+		D0F49FF61174D90700447E77 /* misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0F49FF51174D90700447E77 /* misc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -128,6 +129,8 @@
 		D0B9785D11722F3D00FA5B5A /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
 		D0B9785E11722F3D00FA5B5A /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
 		D0B9785F11722F3D00FA5B5A /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		D0F49FF41174D90700447E77 /* misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = misc.h; sourceTree = "<group>"; };
+		D0F49FF51174D90700447E77 /* misc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -263,6 +266,8 @@
 				D0B9785D11722F3D00FA5B5A /* tinyxml.h */,
 				D0B9785E11722F3D00FA5B5A /* tinyxmlerror.cpp */,
 				D0B9785F11722F3D00FA5B5A /* tinyxmlparser.cpp */,
+				D0F49FF41174D90700447E77 /* misc.h */,
+				D0F49FF51174D90700447E77 /* misc.cpp */,
 			);
 			name = utils;
 			path = src/utils;
@@ -346,6 +351,7 @@
 				D0B9788011722F3E00FA5B5A /* tinyxml.cpp in Sources */,
 				D0B9788111722F3E00FA5B5A /* tinyxmlerror.cpp in Sources */,
 				D0B9788211722F3E00FA5B5A /* tinyxmlparser.cpp in Sources */,
+				D0F49FF61174D90700447E77 /* misc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

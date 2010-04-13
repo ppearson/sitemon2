@@ -7,14 +7,7 @@
  *
  */
 
-#ifndef _MSC_VER
-#include <sys/select.h>
-#include <sys/time.h>
-#include <unistd.h>
-#else
-#include <direct.h>
-#endif
-
+#include "utils/misc.h"
 #include "script.h"
 
 void Script::copyScript(Script *pScript)
@@ -33,7 +26,7 @@ bool Script::loadScriptFile(const std::string &file)
 	if (file[0] != '/')
 #endif
 	{
-		char *szCurrentDir = _getcwd(NULL, 0);
+		char *szCurrentDir = getCurrentDirectory();
 		if (szCurrentDir == 0)
 		{
 			printf("can't get current dir - try using a full path\n");
@@ -41,11 +34,6 @@ bool Script::loadScriptFile(const std::string &file)
 		}
 
 		std::string strFullPath = szCurrentDir;
-#ifdef _MSC_VER
-		strFullPath += "\\";
-#else
-		strFullPath += "/";
-#endif
 		strFullPath += file;
 
 		finalPath = strFullPath;

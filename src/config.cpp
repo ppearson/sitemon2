@@ -1,6 +1,4 @@
-#ifdef _MSC_VER
-#include <direct.h>
-#endif
+#include "utils/misc.h"
 
 #include "config.h"
 
@@ -14,18 +12,13 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 	}
 	else
 	{
-		char *szCurrentDir = _getcwd(NULL, 0);
+		char *szCurrentDir = getCurrentDirectory();
 		if (szCurrentDir == 0)
 		{
 			return false;
 		}
 		
 		finalPath = szCurrentDir;
-#ifdef _MSC_VER
-		finalPath += "\\";
-#else
-		finalPath += "/";
-#endif
 		
 		finalPath += "sm_config.xml";
 	}

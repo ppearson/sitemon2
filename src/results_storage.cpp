@@ -7,10 +7,7 @@
  *
  */
 
-#ifdef _MSC_VER
-#include <direct.h>
-#endif
-
+#include "utils/misc.h"
 #include "results_storage.h"
 
 void ConcurrentHitResults::addResult(int step, HTTPResponse &response)
@@ -58,7 +55,7 @@ bool ConcurrentHitResults::outputResultsToCSV(std::string path)
 	if (path[0] != '/')
 #endif
 	{
-		char *szCurrentDir = _getcwd(NULL, 0);
+		char *szCurrentDir = getCurrentDirectory();
 		if (szCurrentDir == 0)
 		{
 			printf("can't get current dir - try using a full path\n");
@@ -66,11 +63,6 @@ bool ConcurrentHitResults::outputResultsToCSV(std::string path)
 		}
 		
 		std::string strFullPath = szCurrentDir;
-#ifdef _MSC_VER
-		strFullPath += "\\";
-#else
-		strFullPath += "/";
-#endif
 		strFullPath += path;
 		
 		finalPath = strFullPath;
