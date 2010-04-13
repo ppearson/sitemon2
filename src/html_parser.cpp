@@ -65,6 +65,15 @@ bool HTMLParser::parse()
 							m_aScripts.insert(fullPath);
 						}
 					}
+					
+					// we can ignore the stuff within the opening and closing tags, as we don't want to parse this
+					
+					int finalEnd = m_content.find("</script>", tagEnd);
+					
+					if (finalEnd != -1)
+					{
+						tagEnd = finalEnd + 9;
+					}
 				}
 				
 				pos = tagEnd;
