@@ -14,7 +14,7 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 	}
 	else
 	{
-		char *szCurrentDir = getcwd(NULL, 0);
+		char *szCurrentDir = _getcwd(NULL, 0);
 		if (szCurrentDir == 0)
 		{
 			return false;

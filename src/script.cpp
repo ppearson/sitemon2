@@ -33,7 +33,7 @@ bool Script::loadScriptFile(const std::string &file)
 	if (file[0] != '/')
 #endif
 	{
-		char *szCurrentDir = getcwd(NULL, 0);
+		char *szCurrentDir = _getcwd(NULL, 0);
 		if (szCurrentDir == 0)
 		{
 			printf("can't get current dir - try using a full path\n");

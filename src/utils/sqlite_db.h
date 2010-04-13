@@ -34,7 +34,7 @@ public:
 	DBConn *getDBConnection(bool write = false);
 	void releaseDBConnection(DBConn *pConn, bool cache = false);
 	
-	bool isThreadSafe() { return sqlite3_threadsafe(); }
+	bool isThreadSafe() { return sqlite3_threadsafe() != 0; }
 	
 protected:
 	SQLiteDB(const SQLiteDB &db) : m_mutex(m_mutex) { }

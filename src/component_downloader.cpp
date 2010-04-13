@@ -59,10 +59,16 @@ bool ComponentDownloader::downloadComponents()
 
 void ComponentDownloader::doTask(Task *pTask, int threadID)
 {
+	if (!pTask)
+		return;
+
 	HTTPComponentResponse newResponse;
 	
 	ComponentTask *pThisTask = static_cast<ComponentTask*>(pTask);
 	CURL *pThisHandle = m_aCURLHandles[threadID];
+
+	if (pThisHandle == NULL)
+		return;
 	
 	if (curl_easy_setopt(pThisHandle, CURLOPT_USERAGENT, "Mozilla/5.0") != 0)
 		return;
@@ -171,12 +177,28 @@ static size_t writeBodyData(void *buffer, size_t size, size_t nmemb, void *userp
 	return full_size;
 }
 
-void share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
+void ComponentDownloader::share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
 {
-	
+	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+	if (data == CURL_LOCK_DATA_SHARE)
+	{
+		pLocks->shareLock.lock();
+	}
+	else if (data = CURL_LOCK_DATA_COOKIE)
+	{
+		pLocks->cookieLock.lock();
+	}
 }
 
-void share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
+void ComponentDownloader::share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
 {
-	
+	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+	if (data == CURL_LOCK_DATA_SHARE)
+	{
+		pLocks->shareLock.unlock();
+	}
+	else if (data = CURL_LOCK_DATA_COOKIE)
+	{
+		pLocks->cookieLock.unlock();
+	}
 }

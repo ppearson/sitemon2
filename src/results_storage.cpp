@@ -58,7 +58,7 @@ bool ConcurrentHitResults::outputResultsToCSV(std::string path)
 	if (path[0] != '/')
 #endif
 	{
-		char *szCurrentDir = getcwd(NULL, 0);
+		char *szCurrentDir = _getcwd(NULL, 0);
 		if (szCurrentDir == 0)
 		{
 			printf("can't get current dir - try using a full path\n");

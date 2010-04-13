@@ -297,7 +297,7 @@ bool editSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::str
 	
 	char szTemp[2048];
 	memset(szTemp, 0, 2048);
-	sprintf(szTemp, "enabled = %ld, description = '%s', url = '%s', expected_phrase = '%s', interval = %s, accept_compressed = %ld, download_components = ld where rowid = %ld", enabled, desc.c_str(),
+	sprintf(szTemp, "enabled = %ld, description = '%s', url = '%s', expected_phrase = '%s', interval = %s, accept_compressed = %ld, download_components = %ld where rowid = %ld", enabled, desc.c_str(),
 			url.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, downloadComponents, rowid);
 	
 	sql.append(szTemp);
@@ -474,7 +474,6 @@ bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 	long interval = q.getLong();
 	std::string description = q.getString();
 	std::string url = q.getString();
-	std::string referrer = q.getString();
 	std::string expectedPhrase = q.getString();
 	long acceptCompressed = q.getLong();
 	long downloadComponents = q.getLong();
