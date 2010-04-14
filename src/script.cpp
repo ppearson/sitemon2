@@ -10,6 +10,11 @@
 #include "utils/misc.h"
 #include "script.h"
 
+Script::Script(HTTPRequest *pRequest)
+{
+	m_aSteps.push_back(*pRequest);
+}
+
 void Script::copyScript(Script *pScript)
 {
 	m_aSteps = pScript->m_aSteps;
@@ -159,5 +164,15 @@ void Script::setAcceptCompressed(bool acceptCompressed)
 	for (; it != m_aSteps.end(); ++it)
 	{
 		it->setAcceptCompressed(acceptCompressed);
+	}
+}
+
+void Script::setDownloadContent(bool downloadContent)
+{
+	std::vector<HTTPRequest>::iterator it = m_aSteps.begin();
+	
+	for (; it != m_aSteps.end(); ++it)
+	{
+		it->setDownloadContent(downloadContent);
 	}
 }

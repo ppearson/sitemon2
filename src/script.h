@@ -19,6 +19,7 @@ class Script
 {
 public:
 	Script() { }
+	Script(HTTPRequest *pRequest);
 
 	void copyScript(Script *pScript);
 	
@@ -29,6 +30,7 @@ public:
 
 	// functions to set stuff for all steps
 	void setAcceptCompressed(bool acceptCompressed);
+	void setDownloadContent(bool downloadContent);
 
 protected:
 	void loadRequestElement(TiXmlElement *pElement);

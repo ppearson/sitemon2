@@ -30,7 +30,7 @@ int main(int argc, char *const argv[])
 	
 	bool acceptCompressed = false;
 	bool downloadContent = false;
-	
+
 	bool runWeb = false;
 
 	int threads = 0;
@@ -181,6 +181,11 @@ int main(int argc, char *const argv[])
 		if (acceptCompressed)
 		{
 			script.setAcceptCompressed(true);
+		}
+		
+		if (downloadContent)
+		{
+			script.setDownloadContent(true);
 		}
 
 		// add stuff here to read the script file and see if there are any concurrent params

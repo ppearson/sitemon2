@@ -1,20 +1,10 @@
-/*
- *  results_storage.h
- *  sitemon
- *
- *  Created by Peter Pearson on 02/04/2010.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
-#ifdef _MSC_VER
-#pragma warning (disable : 4786)
-#endif
+#ifndef RESULTS_STORAGE_H
+#define RESULTS_STORAGE_H
 
 #include <vector>
 #include <map>
 
-#include "http_response.h"
+#include "../http_response.h"
 
 class ConcurrentHitResults
 {
@@ -29,3 +19,5 @@ public:
 protected:
 	std::map<int, std::vector<HTTPResponse> > m_aResults;	
 };
+
+#endif

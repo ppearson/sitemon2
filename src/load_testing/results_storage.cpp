@@ -7,7 +7,7 @@
  *
  */
 
-#include "utils/misc.h"
+#include "../utils/misc.h"
 #include "results_storage.h"
 
 void ConcurrentHitResults::addResult(int step, HTTPResponse &response)
@@ -87,14 +87,14 @@ bool ConcurrentHitResults::outputResultsToCSV(std::string path)
 		std::vector<HTTPResponse> &responses = (*itStep).second;
 		
 		fprintf(fp, "Step %i\n", step);
-		fprintf(fp, "Thread, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
+		fprintf(fp, "Thread, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
 		
 		std::vector<HTTPResponse>::iterator itResp = responses.begin();
 		
 		for (; itResp != responses.end(); ++itResp)
 		{
 			HTTPResponse &resp = (*itResp);
-			fprintf(fp, "Thread %i, %ld, %f, %f, %f, %f, %ld,\n", resp.m_thread, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
+			fprintf(fp, "Thread %i, %ld, %ld, %f, %f, %f, %f, %ld,\n", resp.m_thread, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
 						resp.totalTime, resp.contentSize);
 			
 		}		

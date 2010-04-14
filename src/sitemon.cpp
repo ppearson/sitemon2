@@ -1,7 +1,7 @@
 #include "http_engine.h"
 #include "sitemon.h"
-#include "hit_load_request_thread.h"
-#include "results_storage.h"
+#include "load_testing/hit_test_engine.h"
+#include "load_testing/results_storage.h"
 #include "html_parser.h"
 
 bool performSingleRequest(HTTPRequest &request, bool outputHeader)
@@ -54,56 +54,19 @@ bool performScriptRequest(Script &script)
 
 bool performConcurrentScriptRequest(Script &script, int threads, const std::string &outputPath)
 {
-#ifdef _MSC_VER
-	thread_setup();
-#endif
-
-	std::vector<HitLoadRequestThread *> aThreads;
+	HitTestEngine engine;
+	engine.initialise(script, threads);
 	
-	int threadCount = 0;
-
-	for (int i = 0; i < threads; i++)
+	if (engine.start())
 	{
-		RequestThreadData *data = new RequestThreadData(i + 1, &script, 0);
-	
-		HitLoadRequestThread *newThread = new HitLoadRequestThread(data);
-
-		if (newThread)
+		if (!outputPath.empty())
 		{
-			threadCount++;
-
-			aThreads.push_back(newThread);
+			ConcurrentHitResults &results = engine.getResults();
+			
+			results.outputResultsToCSV(outputPath);
 		}
 	}
 	
-	printf("Created %i threads...\n", threadCount);
-	
-	std::vector<HitLoadRequestThread *>::iterator it = aThreads.begin();
-	for (; it != aThreads.end(); ++it)
-	{
-		(*it)->start();
-	}
-	
-	ConcurrentHitResults results;
-
-	for (it = aThreads.begin(); it != aThreads.end(); ++it)
-	{
-		(*it)->waitForCompletion();
-		results.addResults((*it)->getResponses());
-		delete *it;
-	}
-
-#ifdef _MSC_VER
-	thread_cleanup();
-#endif
-	
-	if (!outputPath.empty())
-	{
-		results.outputResultsToCSV(outputPath);
-	}
-	
-	printf("All threads finished.\n");
-
 	return true;
 }
 
