@@ -1,3 +1,21 @@
+/*
+ Sitemon
+ Copyright 2010 Peter Pearson.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ You may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ 
+ */
+
 #include "socket.h"
 #include <errno.h>
 
@@ -243,7 +261,6 @@ std::string Socket::getClientAddress()
 #else
 		struct sockaddr_in addr;
 #endif
-		char *Addr = 0;
 		int addrLen = sizeof(addr);
 		
 		int ret = getpeername(m_sock, (sockaddr*)&addr, (socklen_t*)&addrLen);
@@ -262,6 +279,7 @@ std::string Socket::getClientAddress()
 						  NI_NUMERICHOST|NI_NUMERICSERV);
 
 #else
+		char *Addr = 0;
 		hostent* hostinfo;
 		if ((hostinfo = gethostbyaddr((char *) &addr.sin_addr, 4, AF_INET)) != NULL)
 		{
