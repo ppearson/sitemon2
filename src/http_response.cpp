@@ -24,10 +24,9 @@ HTTPResponse::HTTPResponse(bool storeHeader, bool storeBody) : contentSize(0), d
 
 void HTTPResponse::addComponent(HTTPComponentResponse &component)
 {
-	m_lock.lock();
 	if (component.errorCode == HTTP_OK)
 	{
-		if (component.responseCode == 200)
+		if (component.responseCode == 200 || component.responseCode == 301 || component.responseCode == 302)
 		{
 			componentContentSize += component.contentSize;
 			componentDownloadSize += component.downloadSize;
@@ -44,5 +43,5 @@ void HTTPResponse::addComponent(HTTPComponentResponse &component)
 	
 		
 	m_aComponents.push_back(component);
-	m_lock.unlock();
 }
+

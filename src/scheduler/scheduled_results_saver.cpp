@@ -1,7 +1,7 @@
 
 #include "scheduled_results_saver.h"
 
-ScheduledResult::ScheduledResult(HTTPResponse response, TestType type, unsigned long testID) : m_response(response), m_testType(type), m_testID(testID)
+ScheduledResult::ScheduledResult(HTTPResponse &response, TestType type, unsigned long testID) : m_response(response), m_testType(type), m_testID(testID)
 {
 	
 }
@@ -15,7 +15,7 @@ void ScheduledResultSaver::run()
 {
 	while (m_isRunning)
 	{
-		sleep(30); // sleep for 20 secs
+		sleep(30); // sleep for 30 secs
 		
 		storeResults();
 	}

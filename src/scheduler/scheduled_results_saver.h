@@ -19,7 +19,7 @@ enum TestType
 class ScheduledResult
 {
 public:
-	ScheduledResult(HTTPResponse response, TestType type, unsigned long testID);
+	ScheduledResult(HTTPResponse &response, TestType type, unsigned long testID);
 	
 	TestType	m_testType;
 	unsigned long	m_testID;

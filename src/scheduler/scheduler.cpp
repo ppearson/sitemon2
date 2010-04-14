@@ -54,7 +54,7 @@ void Scheduler::run()
 				}
 				
 				item.incrementNextTime();				
-			}			
+			}
 		}
 		
 		m_scheduledItemsLock.unlock();

@@ -9,6 +9,10 @@ ComponentTask::ComponentTask(const std::string &url, const std::string &referrer
 ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &response, bool acceptCompressed) : ThreadPool(),
 											m_response(response), m_acceptCompressed(acceptCompressed)
 {
+	// reuse the original curl handle for the first thread, and init second one
+	m_aCURLHandles[0] = mainCURLHandle;
+	m_aCURLHandles[1] = curl_easy_init();
+
 	// needed to share cookie info between threads - we need to do this because some content management systems with
 	// personalisation (I'm looking at you Fatwire) require cookies in order to respond correctly with content to requests.
 	// However, only the thread which did the initial request for the HTML got the cookie back, hence the need to share it
@@ -18,20 +22,15 @@ ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &res
 	{
 		// OS X doesn't seem to need these - it crashes with them anyway...
 #ifdef _MSC_VER
-		curl_share_setopt(m_CURLSharedData, CURLSHOPT_LOCKFUNC, &ComponentDownloader::share_lock);
+		curl_share_setopt(m_CURLSharedData, CURLSHOPT_LOCKFUNC, share_lock);
 		curl_share_setopt(m_CURLSharedData, CURLSHOPT_USERDATA, &m_locks);
-		curl_share_setopt(m_CURLSharedData, CURLSHOPT_UNLOCKFUNC, &ComponentDownloader::share_unlock);
+		curl_share_setopt(m_CURLSharedData, CURLSHOPT_UNLOCKFUNC, share_unlock);
+		curl_share_setopt(m_CURLSharedData, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
 #endif
-//		curl_share_setopt(m_CURLSharedData, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
-	}
-	
-	// reuse the original curl handle for the first thread, and init second one
-	m_aCURLHandles[0] = mainCURLHandle;
-	m_aCURLHandles[1] = curl_easy_init();	
-	
-	for (int i = 0; i < 2; i++)
-	{
-//		curl_easy_setopt(m_aCURLHandles[i], CURLOPT_SHARE, m_CURLSharedData);
+		for (int i = 0; i < 2; i++)
+		{
+			curl_easy_setopt(m_aCURLHandles[i], CURLOPT_SHARE, m_CURLSharedData);
+		}
 	}
 }
 
@@ -46,7 +45,10 @@ ComponentDownloader::~ComponentDownloader()
 		}
 	}
 	
-	curl_share_cleanup(m_CURLSharedData);
+	if (m_CURLSharedData)
+	{
+		curl_share_cleanup(m_CURLSharedData);
+	}
 }
 
 void ComponentDownloader::addURL(const std::string &url)
@@ -138,7 +140,9 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	
 //	printf("T: %i, Res: %ld for: %s\n", threadID, newResponse.responseCode, pThisTask->getURL().c_str());
 	
-	m_response.addComponent(newResponse);	
+	m_lock.lock();
+	m_response.addComponent(newResponse);
+	m_lock.unlock();
 }
 
 bool ComponentDownloader::extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response)
@@ -183,10 +187,10 @@ static size_t writeBodyData(void *buffer, size_t size, size_t nmemb, void *userp
 	return full_size;
 }
 
-void ComponentDownloader::share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
+static void share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
 {
-//	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
-	cdLocks *pLocks = &m_locks;
+	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+//	cdLocks *pLocks = &m_locks;
 	if (data == CURL_LOCK_DATA_SHARE)
 	{
 		pLocks->shareLock.lock();
@@ -197,10 +201,10 @@ void ComponentDownloader::share_lock(CURL *handle, curl_lock_data data, curl_loc
 	}
 }
 
-void ComponentDownloader::share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
+static void share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr)
 {
-//	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
-	cdLocks *pLocks = &m_locks;
+	cdLocks *pLocks = static_cast<cdLocks*>(userptr);
+//	cdLocks *pLocks = &m_locks;
 	if (data == CURL_LOCK_DATA_SHARE)
 	{
 		pLocks->shareLock.unlock();

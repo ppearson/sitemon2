@@ -19,7 +19,8 @@ protected:
 };
 
 static size_t writeBodyData(void *buffer, size_t size, size_t nmemb, void *userp);
-
+static void share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
+static void share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
 struct cdLocks
 {
 	Mutex	shareLock;
@@ -39,15 +40,13 @@ public:
 	
 	bool extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response);
 
-	cdLocks m_locks;
-	void share_lock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
-	void share_unlock(CURL *handle, curl_lock_data data, curl_lock_access locktype, void *userptr);
-
 protected:
 	CURLSH *m_CURLSharedData;
+	cdLocks m_locks;
+
 	CURL *m_aCURLHandles[2];
+	Mutex	m_lock;
 	HTTPResponse &	m_response;
-	
 	bool	m_acceptCompressed;
 };
 

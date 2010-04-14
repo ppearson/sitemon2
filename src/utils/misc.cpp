@@ -11,7 +11,11 @@
 char *getCurrentDirectory(bool appendFinal)
 {
 #ifdef _MSC_VER	
+#if _MSC_VER > 1200
 	char *szCurrentDir = _getcwd(NULL, 0);
+#else
+	char *szCurrentDir = getcwd(NULL, 0);
+#endif
 #else
 	char *szCurrentDir = getcwd(NULL, 0);
 #endif
