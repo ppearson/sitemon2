@@ -42,15 +42,13 @@ void HitLoadRequestThread::run()
 	
 	for (int i = 0; i < runs; i++)
 	{
-		HTTPEngine engine(false);
-		
-		engine.initCURLHandle();
+		HTTPEngine engine;
 		
 		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it)
 		{
 			HTTPRequest &request = *it;
 			
-			HTTPResponse response; // don't store content
+			HTTPResponse response;
 			response.m_thread = m_threadID;
 
 			if (m_debugging)

@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "CURL_STATICLIB" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "CURL_STATICLIB" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
 # ADD RSC /l 0x809 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -75,7 +75,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ssleay32.lib libeay32.lib libs\libcurld.lib ws2_32.lib libs\zlibd.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib ssleay32.lib libeay32.lib libs\libcurld.lib ws2_32.lib libs\zlibd.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -86,237 +86,293 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "utils source"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\utils\mutex.cpp
+SOURCE=.\src\component_downloader.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\socket.cpp
+SOURCE=.\src\config.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\sqlite3.c
+SOURCE=.\src\utils\event.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\sqlite_db.cpp
+SOURCE=.\src\load_testing\hit_load_request_thread.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\sqlite_query.cpp
+SOURCE=.\src\load_testing\hit_test_engine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\thread.cpp
+SOURCE=.\src\html_parser.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\tinyxml.cpp
+SOURCE=.\src\http_engine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\tinyxmlerror.cpp
+SOURCE=.\src\http_server\http_form_generator.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\tinyxmlparser.cpp
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=.\config.cpp
+SOURCE=.\src\http_request.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\hit_load_request_thread.cpp
+SOURCE=.\src\http_response.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_engine.cpp
+SOURCE=.\src\http_server\http_server.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_form_generator.cpp
+SOURCE=.\src\http_server\http_server_db_helpers.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_request.cpp
+SOURCE=.\src\http_server\http_server_html_formatters.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_response.cpp
+SOURCE=.\src\http_server\http_server_request.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server.cpp
+SOURCE=.\src\http_server\http_server_request_thread.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_db_helpers.cpp
+SOURCE=.\src\http_server\http_server_responses.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_html_formatters.cpp
+SOURCE=.\src\main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_request.cpp
+SOURCE=.\src\utils\misc.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_request_thread.cpp
+SOURCE=.\src\utils\mutex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_responses.cpp
+SOURCE=.\src\load_testing\results_storage.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\main.cpp
+SOURCE=.\src\scheduler\scheduled_results_saver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\results_storage.cpp
+SOURCE=.\src\scheduler\scheduler.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduled_results_saver.cpp
+SOURCE=.\src\scheduler\scheduler_db_helpers.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduler.cpp
+SOURCE=.\src\scheduler\scheduler_test_thread.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduler_db_helpers.cpp
+SOURCE=.\src\script.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduler_test_thread.cpp
+SOURCE=.\src\sitemon.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\script.cpp
+SOURCE=.\src\utils\socket.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\sitemon.cpp
+SOURCE=.\src\utils\sqlite3.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\sqlite_db.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\sqlite_query.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\string_helper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\thread.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\thread_pool.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\tinyxml.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\tinyxmlerror.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\tinyxmlparser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\uri_helper.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Group "utils headers"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\utils\mutex.h
+SOURCE=.\src\component_downloader.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\socket.h
+SOURCE=.\src\config.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\sqlite3.h
+SOURCE=.\src\utils\event.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\sqlite_db.h
+SOURCE=.\src\load_testing\hit_load_request_thread.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\sqlite_query.h
+SOURCE=.\src\load_testing\hit_test_engine.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\thread.h
+SOURCE=.\src\html_parser.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\utils\tinyxml.h
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=.\config.h
+SOURCE=.\src\http_engine.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\hit_load_request_thread.h
+SOURCE=.\src\http_server\http_form_generator.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_engine.h
+SOURCE=.\src\http_request.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_form_generator.h
+SOURCE=.\src\http_response.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_request.h
+SOURCE=.\src\http_server\http_server.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_response.h
+SOURCE=.\src\http_server\http_server_db_helpers.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server.h
+SOURCE=.\src\http_server\http_server_html_formatters.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_db_helpers.h
+SOURCE=.\src\http_server\http_server_request.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_html_formatters.h
+SOURCE=.\src\http_server\http_server_request_thread.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_request.h
+SOURCE=.\src\http_server\http_server_responses.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_request_thread.h
+SOURCE=.\src\utils\misc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\http_server_responses.h
+SOURCE=.\src\utils\mutex.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\results_storage.h
+SOURCE=.\src\load_testing\results_storage.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduled_results_saver.h
+SOURCE=.\src\scheduler\scheduled_results_saver.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduler.h
+SOURCE=.\src\scheduler\scheduler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduler_db_helpers.h
+SOURCE=.\src\scheduler\scheduler_db_helpers.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\scheduler_test_thread.h
+SOURCE=.\src\scheduler\scheduler_test_thread.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\script.h
+SOURCE=.\src\script.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\sitemon.h
+SOURCE=.\src\sitemon.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\socket.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\sqlite3.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\sqlite_db.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\sqlite_query.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\string_helper.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\thread.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\thread_pool.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\tinyxml.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\uri_helper.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

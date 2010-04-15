@@ -21,12 +21,12 @@
 
 #include "../utils/thread.h"
 
-#include "script.h"
-#include "http_engine.h"
+#include "../script.h"
+#include "../http_engine.h"
 
 struct RequestThreadData
 {
-	RequestThreadData(int thread, Script *pScript, int repeats = 0) : m_thread(thread), m_pScript(pScript), m_repeats(repeats) { }
+	RequestThreadData(int thread, Script *pScript, int repeats = 0) : m_thread(thread), m_pScript(pScript), m_repeats(repeats), m_debugging(false) { }
 	
 	bool m_debugging;
 	

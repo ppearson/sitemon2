@@ -25,6 +25,8 @@
 #include <vector>
 #include <set>
 
+#include "../utils/thread.h"
+
 #include "../http_request.h"
 #include "../http_response.h"
 #include "../script.h"

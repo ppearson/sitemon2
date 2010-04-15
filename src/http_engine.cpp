@@ -25,17 +25,15 @@
 
 // when creating threads, we want the CURL handle within the thread to create the handle
 // so init it later on
-HTTPEngine::HTTPEngine(bool threaded)
-{
-	if (!threaded)
-	{
-		m_handle = curl_easy_init();
-	}
-}
-
-void HTTPEngine::initCURLHandle()
+HTTPEngine::HTTPEngine()
 {
 	m_handle = curl_easy_init();
+}
+
+HTTPEngine::~HTTPEngine()
+{
+	if (m_handle)
+		curl_easy_cleanup(m_handle);
 }
 
 bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
@@ -189,8 +187,6 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 			break;
 		}
 
-		curl_easy_cleanup(m_handle);
-
 		return false;
 	}
 
@@ -223,8 +219,6 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 			response.errorCode = HTTP_OK_MISSING_COMPONENTS;
 		}
 	}
-	
-	curl_easy_cleanup(m_handle);
 
 	return true;
 }

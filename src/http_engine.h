@@ -32,9 +32,9 @@ static std::string buildParametersString(HTTPRequest &request);
 class HTTPEngine
 {
 public:
-	HTTPEngine(bool threaded = false);
+	HTTPEngine();
+	~HTTPEngine();
 	
-	void initCURLHandle();
 	bool performRequest(HTTPRequest &request, HTTPResponse &response);
 	
 protected:

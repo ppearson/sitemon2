@@ -18,9 +18,9 @@
 
 #include "hit_test_engine.h"
 
-#include "http_engine.h"
+#include "../http_engine.h"
 #include "hit_load_request_thread.h"
-#include "html_parser.h"
+#include "../html_parser.h"
 
 HitTestEngine::HitTestEngine()
 {
@@ -76,7 +76,7 @@ bool HitTestEngine::start()
 	for (int i = 0; i < m_numberOfThreads; i++)
 	{
 		RequestThreadData *data = new RequestThreadData(i + 1, m_pScript, m_repeats);
-		
+	
 		HitLoadRequestThread *newThread = new HitLoadRequestThread(data);
 		
 		if (newThread)
