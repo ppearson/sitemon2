@@ -63,7 +63,8 @@ bool performScriptRequest(Script &script)
 		}
 		else
 		{
-			std::cout << response.errorString << "\n";
+			std::cout << "Error code: " << response.errorCode << "\t:\t" << response.errorString << "\n";
+			break;
 		}
 	}
 

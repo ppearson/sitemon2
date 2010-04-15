@@ -129,6 +129,18 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 		{
 			request.setReferrer(content);
 		}
+		else if (elementName == "expected_phrase")
+		{
+			request.setExpectedPhrase(content);
+		}
+		else if (elementName == "connect_timeout")
+		{
+			if (!content.empty())
+			{
+				long timeout = atol(content.c_str());
+				request.setConnectTimeout(timeout);
+			}
+		}
 	}
 	
 	m_aSteps.push_back(request);

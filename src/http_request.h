@@ -71,6 +71,8 @@ public:
 	const std::string getExpectedPhrase() { return m_expectedPhrase; }
 	bool getDownloadContent() { return m_downloadContent; }
 	
+	long getConnectTimeout() { return m_connectTimeout; }
+	
 	void setRequestType(RequestType requestType) { m_requestType = requestType; }
 	void setDescription(std::string &description) { m_description = description; }
 	void setUrl(std::string &url) { m_url = url; }
@@ -87,6 +89,8 @@ public:
 	void setStoreBody(bool storeBody) { m_storeBody = storeBody; }
 	void setExpectedPhrase(std::string &expectedPhrase) { m_expectedPhrase = expectedPhrase; }
 	void setDownloadContent(bool downloadContent) { m_downloadContent = downloadContent; }
+	
+	void setConnectTimeout(long timeout) { m_connectTimeout = timeout; }
 
 	void addParameter(std::string &name, std::string &value);
 	void addCookie(std::string &name, std::string &value);
@@ -102,6 +106,8 @@ public:
 	
 protected:
 	RequestType		m_requestType;
+	
+	long			m_connectTimeout;
 
 	std::string		m_description;
 	

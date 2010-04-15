@@ -202,6 +202,7 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 			if (response.content.find(expectedPhrase) == -1)
 			{
 				response.errorCode = HTTP_EXPECTED_PHRASE_NOT_FOUND;
+				response.errorString = "Expected phrase not found.";
 				return false; // for things like scripts, we want to fail here
 			}
 		}
