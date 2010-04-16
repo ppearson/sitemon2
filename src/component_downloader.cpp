@@ -38,16 +38,19 @@ ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &res
 	if (m_CURLSharedData)
 	{
 		// OS X doesn't seem to need these - it crashes with them anyway...
+/*
 #ifdef _MSC_VER
 		curl_share_setopt(m_CURLSharedData, CURLSHOPT_LOCKFUNC, share_lock);
 		curl_share_setopt(m_CURLSharedData, CURLSHOPT_USERDATA, &m_locks);
 		curl_share_setopt(m_CURLSharedData, CURLSHOPT_UNLOCKFUNC, share_unlock);
 		curl_share_setopt(m_CURLSharedData, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
-#endif
+
 		for (int i = 0; i < 2; i++)
 		{
 			curl_easy_setopt(m_aCURLHandles[i], CURLOPT_SHARE, m_CURLSharedData);
 		}
+#endif
+*/
 	}
 }
 
@@ -122,6 +125,10 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	
 	curl_easy_setopt(pThisHandle, CURLOPT_NOSIGNAL, 1L);
 	
+	curl_easy_setopt(pThisHandle, CURLOPT_CONNECTTIMEOUT, 30);
+	
+	curl_easy_setopt(pThisHandle, CURLOPT_TIMEOUT, 120);
+	
 	int res = curl_easy_perform(pThisHandle);
 	
 	if (res != 0)
@@ -156,7 +163,7 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	}
 	
 //	printf("T: %i, Res: %ld for: %s\n", threadID, newResponse.responseCode, pThisTask->getURL().c_str());
-	
+
 	m_lock.lock();
 	m_response.addComponent(newResponse);
 	m_lock.unlock();

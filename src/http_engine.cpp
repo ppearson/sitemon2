@@ -16,15 +16,14 @@
  
  */
 
-#include <ctime>
 #include "http_engine.h"
+
+#include <ctime>
 #include <iostream>
 
 #include "html_parser.h"
 #include "component_downloader.h"
 
-// when creating threads, we want the CURL handle within the thread to create the handle
-// so init it later on
 HTTPEngine::HTTPEngine()
 {
 	m_handle = curl_easy_init();
@@ -50,50 +49,50 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 	if (curl_easy_setopt(handle, CURLOPT_USERAGENT, "Mozilla/5.0") != 0)//"SiteMon" "/" "0.5") != 0)
 		return false;
 
-	std::string url = request.getUrl();	
-
+	m_url = request.getUrl();	
+	
 	if (request.hasParameters())
 	{
-		std::string params = buildParametersString(request);
-
+		m_parametersString = buildParametersString(request);
+		
 		if (request.getRequestType() == HTTP_POST)
 		{
 			if (curl_easy_setopt(handle, CURLOPT_POST, 1L) != 0)
 				return false;
-
-			if (curl_easy_setopt(handle, CURLOPT_POSTFIELDS, params.c_str()) != 0)
+			
+			if (curl_easy_setopt(handle, CURLOPT_POSTFIELDS, m_parametersString.c_str()) != 0)
 				return false;
 		}
 		else
 		{
-			url += "?";
-			url += params;
+			m_url += "?";
+			m_url += m_parametersString;
 		}
 	}
 	
-	if (curl_easy_setopt(handle, CURLOPT_URL, url.c_str()) != 0)
+	if (curl_easy_setopt(handle, CURLOPT_URL, m_url.c_str()) != 0)
 		return false;
 	
 	// blank to enable CURL's cookie handler
 	curl_easy_setopt(handle, CURLOPT_COOKIEFILE, "");
-
+	
 	if (request.hasCookies())
 	{
-		std::string cookies;
 		std::vector<HTTPCookie>::iterator it = request.cookies_begin();
-
+		
+		m_cookies = "";
 		for (; it != request.cookies_end(); ++it)
 		{
-			cookies += (*it).name;
-			cookies += "=";
-			cookies += (*it).value;
-			cookies += "; ";
+			m_cookies += (*it).name;
+			m_cookies += "=";
+			m_cookies += (*it).value;
+			m_cookies += "; ";
 		}
-
-		if (curl_easy_setopt(handle, CURLOPT_COOKIE, cookies.c_str()) != 0)
+		
+		if (curl_easy_setopt(handle, CURLOPT_COOKIE, m_cookies.c_str()) != 0)
 			return false;
 	}
-
+	
 	if (request.getAcceptCompressed())
 	{
 		if (curl_easy_setopt(handle, CURLOPT_ENCODING, "gzip, deflate") != 0)

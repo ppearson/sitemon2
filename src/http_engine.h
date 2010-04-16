@@ -44,7 +44,14 @@ protected:
 	void downloadContent(CURL *mainHandle, HTTPResponse &response, bool acceptCompressed);
 	
 protected:
-	CURL *	m_handle;	
+	CURL *	m_handle;
+
+	// these are member variables because the parameters and cookies strings don't seem
+	// to be copied by CURL, so they have to stay in scope otherwise things crash in multithreaded
+	// scenarios
+	std::string		m_parametersString;
+	std::string		m_url;
+	std::string		m_cookies;
 	
 };
 
