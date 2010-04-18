@@ -29,15 +29,20 @@ URIBuilder::URIBuilder(const std::string &base, const std::string &relative) : m
 
 std::string URIBuilder::getFullLocation()
 {
-	if (m_relative.substr(0, 7) == "http://")
+	if (m_relative.substr(0, 7) == "http://" || m_relative.substr(0, 8) == "https://")
 	{
 		return m_relative;
 	}
 	
-	if (m_base.substr(0, 7) != "http://")
+	if (m_base.substr(0, 7) != "http://" && m_base.substr(0, 8) != "https://")
 		return "";
 	
-	const std::string &itemsString = m_base.substr(7);
+	bool bSecure = false;
+	
+	if (m_base.find("https://") != -1)
+		bSecure = true;
+	
+	const std::string &itemsString = bSecure ? m_base.substr(8) : m_base.substr(7);
 	
 	std::vector<std::string> aParts;
 	
@@ -49,7 +54,16 @@ std::string URIBuilder::getFullLocation()
 	// first part is hostname
 	m_hostname = aParts[0];
 	
-	std::string fullLocation = "http://" + m_hostname;
+	std::string fullLocation;
+	
+	if (bSecure)
+	{
+		fullLocation = "https://" + m_hostname;
+	}
+	else
+	{
+		fullLocation = "http://" + m_hostname;
+	}
 	
 	std::copy(aParts.begin() + 1, aParts.end(), std::inserter(m_aParts, m_aParts.end()));
 	

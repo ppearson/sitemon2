@@ -37,20 +37,19 @@ bool HTMLParser::parse()
 {
 	int pos = 0;
 	int tagStart = 0;
-	
+	int tagEnd = 0;
 	int tagNameEnd = 0;
 	
 	while ((tagStart = m_content.find("<", pos)) != -1)
 	{
 		tagStart++;
 		tagNameEnd = m_content.find(" ", tagStart);
+		tagEnd = m_content.find(">", tagStart);
 		
-		if (tagNameEnd != -1)
+		if (tagNameEnd != -1 && tagNameEnd < tagEnd)
 		{
 			std::string tagName = m_content.substr(tagStart, tagNameEnd - tagStart);
 			toLower(tagName);
-			
-			int tagEnd = m_content.find(">", tagStart);
 			
 			if (tagEnd != -1)
 			{
@@ -96,11 +95,15 @@ bool HTMLParser::parse()
 				
 				pos = tagEnd;
 			}
+			else
+			{
+				// unmatched tag, so break out
+				break;
+			}
 		}
 		else
 		{
-			// unmatched tag, so break out
-			break;
+			pos = tagEnd;
 		}
 	}	
 	
