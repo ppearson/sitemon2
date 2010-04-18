@@ -73,6 +73,10 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 	if (curl_easy_setopt(handle, CURLOPT_URL, m_url.c_str()) != 0)
 		return false;
 	
+	curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT, request.getConnectTimeout());
+	
+	curl_easy_setopt(handle, CURLOPT_TIMEOUT, request.getTotalTimeout());
+	
 	// blank to enable CURL's cookie handler
 	curl_easy_setopt(handle, CURLOPT_COOKIEFILE, "");
 	

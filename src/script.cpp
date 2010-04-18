@@ -161,6 +161,14 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 				request.setConnectTimeout(timeout);
 			}
 		}
+		else if (elementName == "total_timeout")
+		{
+			if (!content.empty())
+			{
+				long timeout = atol(content.c_str());
+				request.setTotalTimeout(timeout);
+			}
+		}
 	}
 	
 	m_aSteps.push_back(request);

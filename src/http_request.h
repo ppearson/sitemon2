@@ -72,6 +72,7 @@ public:
 	bool getDownloadContent() { return m_downloadContent; }
 	
 	long getConnectTimeout() { return m_connectTimeout; }
+	long getTotalTimeout() { return m_totalTimeout; }
 	
 	void setRequestType(RequestType requestType) { m_requestType = requestType; }
 	void setDescription(std::string &description) { m_description = description; }
@@ -91,6 +92,7 @@ public:
 	void setDownloadContent(bool downloadContent) { m_downloadContent = downloadContent; }
 	
 	void setConnectTimeout(long timeout) { m_connectTimeout = timeout; }
+	void setTotalTimeout(long timeout) { m_totalTimeout = timeout; }
 
 	void addParameter(std::string &name, std::string &value);
 	void addCookie(std::string &name, std::string &value);
@@ -108,6 +110,7 @@ protected:
 	RequestType		m_requestType;
 	
 	long			m_connectTimeout;
+	long			m_totalTimeout;
 
 	std::string		m_description;
 	
