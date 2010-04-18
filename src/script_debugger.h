@@ -16,13 +16,27 @@
  
  */
 
-#ifndef MISC_H
-#define MISC_H
+#ifndef SCRIPT_DEBUGGER_H
+#define SCRIPT_DEBUGGER_H
 
 #include <string>
 
-char *getCurrentDirectory(bool appendFinal = true);
+#include "script.h"
+#include "debug_settings.h"
 
-bool isFullPath(const std::string &path);
+class ScriptDebugger
+{
+public:
+	ScriptDebugger(Script &script);
+	
+	void setDebugSettings(DebugSettings &settings);
+	DebugSettings &getDebugSettings() { return m_debugSettings; }
+	
+	void run();
+	
+protected:
+	DebugSettings	m_debugSettings;
+	Script &		m_script;	
+};
 
 #endif

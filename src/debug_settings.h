@@ -16,13 +16,27 @@
  
  */
 
-#ifndef MISC_H
-#define MISC_H
+#ifndef DEBUG_SETTINGS_H
+#define DEBUG_SETTINGS_H
 
 #include <string>
 
-char *getCurrentDirectory(bool appendFinal = true);
+#include "utils/tinyxml.h"
 
-bool isFullPath(const std::string &path);
+class DebugSettings
+{
+public:
+	DebugSettings();
+	DebugSettings(const std::string &debugOutput);
+	
+	void loadDebugElement(TiXmlElement *pElement);
+	
+	std::string		m_outputPath;
+	
+	bool			m_outputBodyResponse;
+	bool			m_veryVerboseOutput;
+};
 
 #endif
+
+

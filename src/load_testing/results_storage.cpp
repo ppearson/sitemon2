@@ -91,19 +91,30 @@ bool ConcurrentHitResults::outputResultsToCSV(std::string path)
 	
 	std::map<int, std::vector<HTTPResponse> >::iterator itStep = m_aResults.begin();
 	
+	char szTime[64];
+	
+	time_t runTime;
+	struct tm * pTimeinfo;
+	
 	for (int step = 1; itStep != m_aResults.end(); ++itStep, step++)
 	{
 		std::vector<HTTPResponse> &responses = (*itStep).second;
 		
 		fprintf(fp, "Step %i\n", step);
-		fprintf(fp, "Thread, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
+		fprintf(fp, "Thread, Repeat, Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
 		
 		std::vector<HTTPResponse>::iterator itResp = responses.begin();
 		
 		for (; itResp != responses.end(); ++itResp)
 		{
 			HTTPResponse &resp = (*itResp);
-			fprintf(fp, "Thread %i, %ld, %ld, %f, %f, %f, %f, %ld,\n", resp.m_thread, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
+			
+			memset(szTime, 0, 64);
+			runTime = resp.timestamp;
+			pTimeinfo = localtime(&runTime);
+			strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
+			
+			fprintf(fp, "%i, %i, %s, %ld, %ld, %f, %f, %f, %f, %ld,\n", resp.m_thread, resp.m_repeat, szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
 						resp.totalTime, resp.contentSize);
 			
 		}		

@@ -104,6 +104,7 @@ public:
 	std::string		server;
 	
 	int		m_thread;
+	int		m_repeat;
 	bool	m_storeHeader;
 	bool	m_storeBody;
 	

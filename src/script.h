@@ -24,12 +24,14 @@
 #include "utils/tinyxml.h"
 
 #include "http_request.h"
+#include "debug_settings.h"
 
 class Script
 {
 public:
-	Script() { }
+	Script();
 	Script(HTTPRequest *pRequest);
+	~Script();
 
 	void copyScript(Script *pScript);
 	
@@ -45,10 +47,15 @@ public:
 protected:
 	void loadRequestElement(TiXmlElement *pElement);
 	void loadParamsElement(TiXmlElement *pElement, HTTPRequest &request);
-	void loadCookiesElement(TiXmlElement *pElement, HTTPRequest &request);	
+	void loadCookiesElement(TiXmlElement *pElement, HTTPRequest &request);
 	
 protected:
-	std::vector<HTTPRequest> m_aSteps;	
+	std::vector<HTTPRequest> m_aSteps;
+	
+	DebugSettings	m_debugSettings;
+	bool			m_scriptHasDebugSettings;
+	
+	friend class ScriptDebugger;
 };
 
 

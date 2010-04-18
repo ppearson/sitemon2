@@ -49,3 +49,20 @@ char *getCurrentDirectory(bool appendFinal)
 	
 	return szCurrentDir;
 }
+
+bool isFullPath(const std::string &path)
+{
+	if (path.empty())
+		return false;
+	
+#ifdef _MSC_VER
+	if (path.find(":") == -1)
+#else
+	if (path[0] != '/')
+#endif
+	{
+		return false;
+	}
+	
+	return true;
+}

@@ -19,9 +19,19 @@
 #include "utils/misc.h"
 #include "script.h"
 
-Script::Script(HTTPRequest *pRequest)
+Script::Script() : m_scriptHasDebugSettings(false)
+{
+	
+}
+
+Script::Script(HTTPRequest *pRequest) : m_scriptHasDebugSettings(false)
 {
 	m_aSteps.push_back(*pRequest);
+}
+
+Script::~Script()
+{
+	
 }
 
 void Script::copyScript(Script *pScript)
@@ -34,11 +44,7 @@ bool Script::loadScriptFile(const std::string &file)
 	std::string finalPath;
 
 	// handle relative paths
-#ifdef _MSC_VER
-	if (file.find(":") == -1)
-#else
-	if (file[0] != '/')
-#endif
+	if (!isFullPath(file))
 	{
 		char *szCurrentDir = getCurrentDirectory();
 		if (szCurrentDir == 0)
@@ -78,6 +84,16 @@ bool Script::loadScriptFile(const std::string &file)
 	{
 		loadRequestElement(pElem);
 	}
+	
+	// if there's a debug tag, parse that into the script
+	
+	pElem = hDoc.FirstChildElement("debug").Element();
+	
+	if (pElem)
+	{
+		m_debugSettings.loadDebugElement(pElem);
+		m_scriptHasDebugSettings = true;
+	}
 
 	return true;
 }
@@ -86,13 +102,17 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 {
 	HTTPRequest request;
 	
+	std::string description = pElement->Attribute("desc");
+	if (!description.empty())
+		request.setDescription(description);
+	
 	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
 	{
 		const std::string &elementName = pItem->ValueStr();
 
 		std::string content;
 		if (pItem->GetText())
-			content = pItem->GetText();		
+			content = pItem->GetText();	
 		
 		if (elementName == "url")
 		{

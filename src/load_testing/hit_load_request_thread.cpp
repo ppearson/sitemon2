@@ -50,6 +50,7 @@ void HitLoadRequestThread::run()
 			
 			HTTPResponse response;
 			response.m_thread = m_threadID;
+			response.m_repeat = i;
 
 			if (m_debugging)
 				printf("Starting thread %i...\n", m_threadID);

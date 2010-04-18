@@ -29,6 +29,8 @@
 #include "scheduler/scheduler_db_helpers.h"
 #include "http_server/http_server_db_helpers.h"
 
+#include "script_debugger.h"
+
 #ifdef _MSC_VER
 BOOL CtrlHandler(DWORD fdwCtrlType);
 #endif
@@ -39,6 +41,8 @@ int main(int argc, char *const argv[])
 	char *szURL = 0;
 	char *szScript = 0;
 	char *szOutputFile = 0;
+	
+	bool debug = false;
 
 	bool isScript = false;
 	bool concurrent = false;
@@ -85,6 +89,19 @@ int main(int argc, char *const argv[])
 				{
 					szOutputFile = (char *)argv[i + 1];
 				}
+			}
+			else if (strcmp(argv[i], "-debug") == 0 && i < argc)
+			{
+				debug = true;
+				
+				szScript = (char *)argv[i + 1];
+				
+				i++;
+				
+				if (argc > i) // if we have a script output file
+				{
+					szOutputFile = (char *)argv[i + 1];
+				}				
 			}
 			else if (strcmp(argv[i], "-oh") == 0)
 			{
@@ -169,7 +186,26 @@ int main(int argc, char *const argv[])
 		return 0;
 	}
 	
-	if (!isScript)
+	if (debug)
+	{
+		Script script;
+		if (!script.loadScriptFile(szScript))
+		{
+			std::cout << "Can't open file: " << szScript << "\n";
+			return -1;
+		}
+		
+		ScriptDebugger debugger(script);
+		
+		if (szOutputFile) // if we have a specified output file, override any script settings with that
+		{
+			DebugSettings settings(szOutputFile);
+			debugger.setDebugSettings(settings);			
+		}		
+		
+		debugger.run();		
+	}
+	else if (!isScript)
 	{
 		HTTPRequest request(szURL);
 
@@ -230,6 +266,7 @@ void printUsage()
 	printf("Sitemon version 2.0\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
 		   "Single Script test:\t\t\tsitemon [<options>] -s <script_path>\n"
 		   "Script Load test:\t\t\tsitemon [<options>] -sm <script_path> <num threads> [output_file]\n"
+		   "Debug script:\t\t\t\tsitemon debug <script_path> [body_response_file_path]\n"
 		   "Run local web server for interface:\tsitemon -web\n"
 		   "Options:\n-ac\t\t: Accept compressed content\n"
 		   "-dc\t\t: Download linked JS and Image content\n"
