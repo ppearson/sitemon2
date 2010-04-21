@@ -19,6 +19,7 @@
 #include "http_engine.h"
 #include "sitemon.h"
 #include "load_testing/hit_test_engine.h"
+#include "load_testing/profile_test_engine.h"
 #include "load_testing/results_storage.h"
 #include "html_parser.h"
 
@@ -71,7 +72,25 @@ bool performScriptRequest(Script &script)
 	return true;
 }
 
-bool performConcurrentScriptRequest(Script &script, int threads, const std::string &outputPath)
+bool performHitLoadTestRequest(HTTPRequest &request, int threads, const std::string &outputPath)
+{
+	HitTestEngine engine;
+	engine.initialise(request, threads);
+	
+	if (engine.start())
+	{
+		if (!outputPath.empty())
+		{
+			ConcurrentHitResults &results = engine.getResults();
+			
+			results.outputResultsToCSV(outputPath);
+		}
+	}
+	
+	return true;
+}
+
+bool performHitLoadTestScriptRequest(Script &script, int threads, const std::string &outputPath)
 {
 	HitTestEngine engine;
 	engine.initialise(script, threads);
@@ -85,6 +104,37 @@ bool performConcurrentScriptRequest(Script &script, int threads, const std::stri
 			results.outputResultsToCSV(outputPath);
 		}
 	}
+	
+	return true;
+}
+
+bool performProfileLoadTest(HTTPRequest &request, int duration, int threads, const std::string &outputPath)
+{
+	ProfileTestEngine engine;
+	
+	engine.initialise(request);
+	engine.addProfileSegment(threads, duration);
+	
+	engine.start();
+	
+	return true;
+}
+
+bool performProfileLoadTest(Script &script, int duration, int threads, const std::string &outputPath)
+{
+	ProfileTestEngine engine;
+	
+	engine.initialise(script);
+	engine.addProfileSegment(threads, duration);
+	
+	engine.start();
+	
+	return true;
+}
+
+bool performProfileLoadTest(Script &script, const std::string &outputPath)
+{
+	// need to load profile details from script
 	
 	return true;
 }

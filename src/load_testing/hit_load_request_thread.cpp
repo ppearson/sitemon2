@@ -40,34 +40,35 @@ void HitLoadRequestThread::run()
 	
 	runs += m_repeats;
 	
+	if (m_debugging)
+		printf("Starting thread %i...\n", m_threadID);
+	
 	for (int i = 0; i < runs; i++)
 	{
-		HTTPEngine engine;
+		HTTPEngine engine;		
 		
-		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it)
+		int step = 1;		
+		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
 		{
 			HTTPRequest &request = *it;
 			
 			HTTPResponse response;
 			response.m_thread = m_threadID;
-			response.m_repeat = i;
-
-			if (m_debugging)
-				printf("Starting thread %i...\n", m_threadID);
+			response.m_repeat = i;			
 
 			if (engine.performRequest(request, response))
 			{
 				m_aResponses.push_back(response);
 				
 				if (m_debugging)
-					printf("Thread: %i\tOK\n", m_threadID);
+					printf("Thread:\t%i, Step\t%i:\tOK\n", m_threadID, step);
 			}
 			else
 			{
 				m_aResponses.push_back(response);
 				
 				if (m_debugging)
-					printf("Thread: %i\tError: %i\n", m_threadID, response.errorCode);
+					printf("Thread:\t%i, Step\t%i\tError: %i\n", m_threadID, step, response.errorCode);
 
 				break; // break out and end, as there's been an issue
 			}
@@ -77,6 +78,8 @@ void HitLoadRequestThread::run()
 				sleep(request.getPauseTime());
 			}
 		}
+		
+		sleep(1);
 		
 		if (m_debugging && i > 0)
 			printf("Thread: %i\t is repeating\n", m_threadID);

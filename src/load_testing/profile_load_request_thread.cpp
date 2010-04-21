@@ -1,0 +1,91 @@
+/*
+ Sitemon
+ Copyright 2010 Peter Pearson.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ You may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ 
+ */
+
+#include "profile_load_request_thread.h"
+
+ProfileLoadRequestThread::ProfileLoadRequestThread(ProfileThreadData *data) : m_active(false)
+{
+	m_Script.copyScript(data->m_pScript);
+	m_threadID = data->m_thread;
+	
+	m_debugging = data->m_debugging;
+	
+	delete data;
+}
+
+ProfileLoadRequestThread::~ProfileLoadRequestThread()
+{
+	
+}
+
+void ProfileLoadRequestThread::run()
+{
+	m_active = true;
+	
+	while (m_active)
+	{
+		HTTPEngine engine;
+		
+		if (m_debugging)
+			printf("Starting thread %i...\n", m_threadID);
+		
+		int step = 1;
+		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
+		{
+			HTTPRequest &request = *it;
+			
+			HTTPResponse response;
+			response.m_thread = m_threadID;
+			
+			if (engine.performRequest(request, response))
+			{
+				m_aResponses.push_back(response);
+				
+				if (m_debugging)
+					printf("Thread:\t%i, Step\t%i:\tOK\n", m_threadID, step);
+			}
+			else
+			{
+				m_aResponses.push_back(response);
+				
+				if (m_debugging)
+					printf("Thread:\t%i, Step\t%i\tError: %i\n", m_threadID, step, response.errorCode);
+				
+				break; // break out and end, as there's been an issue
+			}
+			
+			if (request.getPauseTime() > 0)
+			{
+				sleep(request.getPauseTime());
+			}
+		}
+ 
+		sleep(1);
+	}
+}
+
+void ProfileLoadRequestThread::shutdownThreadAndKill()
+{
+	m_autoDestruct = true;
+	m_active = false;
+}
+
+void ProfileLoadRequestThread::tellThreadToStop()
+{
+	m_active = false;
+}

@@ -102,13 +102,18 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 {
 	HTTPRequest request;
 	
-	std::string description = pElement->Attribute("desc");
-	if (!description.empty())
-		request.setDescription(description);
+	std::string description;
 	
+	if (pElement->Attribute("desc"))
+	{
+		description.assign(pElement->Attribute("desc"));
+		if (!description.empty())
+			request.setDescription(description);
+	}
+		
 	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
 	{
-		const std::string &elementName = pItem->ValueStr();
+		const std::string elementName = pItem->ValueStr();
 
 		std::string content;
 		if (pItem->GetText())

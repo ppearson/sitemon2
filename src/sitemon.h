@@ -25,7 +25,13 @@
 
 bool performSingleRequest(HTTPRequest &request, bool outputHeader);
 bool performScriptRequest(Script &script);
-bool performConcurrentScriptRequest(Script &script, int threads, const std::string &outputPath);
+
+bool performHitLoadTestRequest(HTTPRequest &request, int threads, const std::string &outputPath);
+bool performHitLoadTestScriptRequest(Script &script, int threads, const std::string &outputPath);
+
+bool performProfileLoadTest(HTTPRequest &request, int duration, int threads, const std::string &outputPath);
+bool performProfileLoadTest(Script &script, int duration, int threads, const std::string &outputPath);
+bool performProfileLoadTest(Script &script, const std::string &outputPath);
 
 void outputResponse(HTTPRequest &request, HTTPResponse &response);
 

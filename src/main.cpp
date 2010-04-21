@@ -46,6 +46,9 @@ int main(int argc, char *const argv[])
 
 	bool isScript = false;
 	bool concurrent = false;
+	
+	bool loadTestProfile = false;
+	bool loadTestHit = false;
 
 	bool outputHeader = false;
 	bool outputBody = false;
@@ -103,6 +106,14 @@ int main(int argc, char *const argv[])
 					szOutputFile = (char *)argv[i + 1];
 				}				
 			}
+			else if (strcmp(argv[i], "lt-profile") == 0)
+			{
+				loadTestProfile = true;
+			}
+			else if (strcmp(argv[i], "lt-hit") == 0)
+			{
+				loadTestHit = true;
+			}
 			else if (strcmp(argv[i], "-oh") == 0)
 			{
 				outputHeader = true;
@@ -129,7 +140,7 @@ int main(int argc, char *const argv[])
 			}
 		}
 	}
-
+	
 	Config configFile;
 #ifndef _MSC_VER
 	configFile.loadConfigFile("/Users/peter/sm_config.xml");
@@ -205,6 +216,11 @@ int main(int argc, char *const argv[])
 		
 		debugger.run();		
 	}
+	else if (loadTestProfile)
+	{
+	//	performProfileLoadTest();
+		
+	}
 	else if (!isScript)
 	{
 		HTTPRequest request(szURL);
@@ -251,8 +267,10 @@ int main(int argc, char *const argv[])
 		}
 		else
 		{
-			std::string outputFile = szOutputFile;
-			performConcurrentScriptRequest(script, threads, outputFile);
+			std::string outputFile;
+			if (szOutputFile)
+				outputFile.assign(szOutputFile);
+			performHitLoadTestScriptRequest(script, threads, outputFile);
 		}
 	}
 	
@@ -263,7 +281,7 @@ int main(int argc, char *const argv[])
 
 void printUsage()
 {
-	printf("Sitemon version 2.0\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
+	printf("Sitemon version 1.0\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
 		   "Single Script test:\t\t\tsitemon [<options>] -s <script_path>\n"
 		   "Script Load test:\t\t\tsitemon [<options>] -sm <script_path> <num threads> [output_file]\n"
 		   "Debug script:\t\t\t\tsitemon debug <script_path> [body_response_file_path]\n"
