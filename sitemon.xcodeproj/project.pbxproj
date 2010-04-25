@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8DD76F6A0486A84900D96B5E /* sitemon.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* sitemon.1 */; };
+		D007CFC711822BCF0096048B /* load_test_results_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D007CFC511822BCF0096048B /* load_test_results_saver.cpp */; };
+		D009830F1180E0AA00F6CA9A /* script_result.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D009830E1180E0AA00F6CA9A /* script_result.cpp */; };
 		D032CFE0117E585E004A4202 /* profile_load_request_thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D032CFDF117E585E004A4202 /* profile_load_request_thread.cpp */; };
 		D040EC49117CC71A00875CAA /* profile_test_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D040EC48117CC71A00875CAA /* profile_test_engine.cpp */; };
 		D046EAF8117A053900CF9C1C /* component_downloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D046EAA9117A053800CF9C1C /* component_downloader.cpp */; };
@@ -67,6 +69,10 @@
 /* Begin PBXFileReference section */
 		8DD76F6C0486A84900D96B5E /* sitemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sitemon; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859E8B029090EE04C91782 /* sitemon.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = sitemon.1; sourceTree = "<group>"; };
+		D007CFC511822BCF0096048B /* load_test_results_saver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_test_results_saver.cpp; sourceTree = "<group>"; };
+		D007CFC611822BCF0096048B /* load_test_results_saver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_results_saver.h; sourceTree = "<group>"; };
+		D009830D1180E0AA00F6CA9A /* script_result.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = script_result.h; sourceTree = "<group>"; };
+		D009830E1180E0AA00F6CA9A /* script_result.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = script_result.cpp; sourceTree = "<group>"; };
 		D032CFDE117E585E004A4202 /* profile_load_request_thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profile_load_request_thread.h; sourceTree = "<group>"; };
 		D032CFDF117E585E004A4202 /* profile_load_request_thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = profile_load_request_thread.cpp; sourceTree = "<group>"; };
 		D040EC47117CC71A00875CAA /* profile_test_engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = profile_test_engine.h; sourceTree = "<group>"; };
@@ -172,6 +178,8 @@
 		08FB7795FE84155DC02AAC07 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D009830D1180E0AA00F6CA9A /* script_result.h */,
+				D009830E1180E0AA00F6CA9A /* script_result.cpp */,
 				D046EAA9117A053800CF9C1C /* component_downloader.cpp */,
 				D046EAAA117A053800CF9C1C /* component_downloader.h */,
 				D046EAAB117A053800CF9C1C /* config.cpp */,
@@ -243,6 +251,8 @@
 		D046EAC6117A053800CF9C1C /* load_testing */ = {
 			isa = PBXGroup;
 			children = (
+				D007CFC511822BCF0096048B /* load_test_results_saver.cpp */,
+				D007CFC611822BCF0096048B /* load_test_results_saver.h */,
 				D046EAC7117A053800CF9C1C /* hit_load_request_thread.cpp */,
 				D046EAC8117A053800CF9C1C /* hit_load_request_thread.h */,
 				D046EAC9117A053800CF9C1C /* hit_test_engine.cpp */,
@@ -387,6 +397,8 @@
 				D046EB1E117A053900CF9C1C /* tinyxmlparser.cpp in Sources */,
 				D040EC49117CC71A00875CAA /* profile_test_engine.cpp in Sources */,
 				D032CFE0117E585E004A4202 /* profile_load_request_thread.cpp in Sources */,
+				D009830F1180E0AA00F6CA9A /* script_result.cpp in Sources */,
+				D007CFC711822BCF0096048B /* load_test_results_saver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

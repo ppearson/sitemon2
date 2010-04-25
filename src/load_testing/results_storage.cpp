@@ -16,6 +16,8 @@
  
 */
 
+#include <time.h>
+
 #include "../utils/misc.h"
 #include "results_storage.h"
 

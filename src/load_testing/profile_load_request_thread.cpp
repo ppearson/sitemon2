@@ -18,12 +18,17 @@
 
 #include "profile_load_request_thread.h"
 
-ProfileLoadRequestThread::ProfileLoadRequestThread(ProfileThreadData *data) : m_active(false)
+#include "../script_result.h"
+
+ProfileLoadRequestThread::ProfileLoadRequestThread(ProfileThreadData *data) : m_active(false), m_pSaver(NULL)
 {
 	m_Script.copyScript(data->m_pScript);
 	m_threadID = data->m_thread;
 	
 	m_debugging = data->m_debugging;
+	
+	if (data->m_pSaver)
+		m_pSaver = data->m_pSaver;
 	
 	delete data;
 }
@@ -43,6 +48,8 @@ void ProfileLoadRequestThread::run()
 		
 		if (m_debugging)
 			printf("Starting thread %i...\n", m_threadID);
+
+		ScriptResult result;
 		
 		int step = 1;
 		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
@@ -54,14 +61,14 @@ void ProfileLoadRequestThread::run()
 			
 			if (engine.performRequest(request, response))
 			{
-				m_aResponses.push_back(response);
+				result.addResponse(response);
 				
 				if (m_debugging)
 					printf("Thread:\t%i, Step\t%i:\tOK\n", m_threadID, step);
 			}
 			else
 			{
-				m_aResponses.push_back(response);
+				result.addResponse(response);
 				
 				if (m_debugging)
 					printf("Thread:\t%i, Step\t%i\tError: %i\n", m_threadID, step, response.errorCode);
@@ -74,7 +81,12 @@ void ProfileLoadRequestThread::run()
 				sleep(request.getPauseTime());
 			}
 		}
- 
+
+		if (m_pSaver)
+		{
+			m_pSaver->addResult(result);
+		}
+		
 		sleep(1);
 	}
 }

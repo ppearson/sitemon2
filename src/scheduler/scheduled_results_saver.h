@@ -64,9 +64,6 @@ protected:
 	Mutex							m_mutex;
 	
 	SQLiteDB *						m_pMainDB;	
-	
 };
-
-
 
 #endif

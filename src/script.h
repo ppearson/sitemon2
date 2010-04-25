@@ -26,12 +26,56 @@
 #include "http_request.h"
 #include "debug_settings.h"
 
+enum LoadTestType
+{
+	LOAD_HIT_TEST,
+	LOAD_PROFILE_TEST
+};
+
+struct LoadTestProfileSeg
+{
+	LoadTestProfileSeg(int threads, int duration) : m_threads(threads), m_duration(duration) { }
+
+	int	m_threads;
+	int	m_duration;
+};
+
+class LoadTestSettings
+{
+public:
+	LoadTestSettings();
+	
+	bool loadLoadTestElement(TiXmlElement *pElement);
+	void loadSegmentsElement(TiXmlElement *pElement);
+	
+	inline std::vector<LoadTestProfileSeg>::iterator begin() { return m_aProfileSegments.begin(); }
+	inline std::vector<LoadTestProfileSeg>::iterator end() { return m_aProfileSegments.end(); }
+	
+	bool			m_set;
+	
+	LoadTestType	m_type;
+	
+protected:
+	
+
+	void addProfile(LoadTestProfileSeg &seg);
+
+	// hit settings
+	int		m_threads;
+	int		m_repeats;
+
+	// profile settings
+	std::vector<LoadTestProfileSeg>	m_aProfileSegments;
+};
+
 class Script
 {
 public:
 	Script();
 	Script(HTTPRequest *pRequest);
 	~Script();
+	
+	std::string getDescription() { return m_description; }
 
 	void copyScript(Script *pScript);
 	
@@ -39,10 +83,15 @@ public:
 
 	inline std::vector<HTTPRequest>::iterator begin() { return m_aSteps.begin(); }
 	inline std::vector<HTTPRequest>::iterator end() { return m_aSteps.end(); }
+	
+	int getStepCount() { return m_aSteps.size(); }
 
 	// functions to set stuff for all steps
 	void setAcceptCompressed(bool acceptCompressed);
 	void setDownloadContent(bool downloadContent);
+	
+	bool hasLoadTestSettings() { return m_hasLoadTestSettings; }
+	LoadTestSettings &getLoadTestSettings() { return m_loadTestSettings; }
 
 protected:
 	void loadRequestElement(TiXmlElement *pElement);
@@ -50,10 +99,14 @@ protected:
 	void loadCookiesElement(TiXmlElement *pElement, HTTPRequest &request);
 	
 protected:
+	std::string		m_description;
 	std::vector<HTTPRequest> m_aSteps;
 	
 	DebugSettings	m_debugSettings;
 	bool			m_scriptHasDebugSettings;
+	
+	LoadTestSettings	m_loadTestSettings;
+	bool				m_hasLoadTestSettings;
 	
 	friend class ScriptDebugger;
 };

@@ -22,6 +22,7 @@
 #include "load_testing/profile_test_engine.h"
 #include "load_testing/results_storage.h"
 #include "html_parser.h"
+#include "load_testing/load_test_results_saver.h"
 
 bool performSingleRequest(HTTPRequest &request, bool outputHeader)
 {
@@ -108,19 +109,28 @@ bool performHitLoadTestScriptRequest(Script &script, int threads, const std::str
 	return true;
 }
 
-bool performProfileLoadTest(HTTPRequest &request, int duration, int threads, const std::string &outputPath)
+bool performProfileLoadTest(HTTPRequest &request, int threads, int duration, const std::string &outputPath)
 {
-	ProfileTestEngine engine;
+	LoadTestResultsSaver saver(false, outputPath);
 	
-	engine.initialise(request);
+	if (!saver.initStorage())
+		return false;
+	
+	ProfileTestEngine engine;
+	engine.setResultsSaver(&saver);
+	
+	engine.initialise(request, 10);
 	engine.addProfileSegment(threads, duration);
 	
+	saver.start();
 	engine.start();
+	
+	saver.stop();
 	
 	return true;
 }
 
-bool performProfileLoadTest(Script &script, int duration, int threads, const std::string &outputPath)
+bool performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath)
 {
 	ProfileTestEngine engine;
 	
@@ -134,7 +144,32 @@ bool performProfileLoadTest(Script &script, int duration, int threads, const std
 
 bool performProfileLoadTest(Script &script, const std::string &outputPath)
 {
-	// need to load profile details from script
+	LoadTestSettings &settings = script.getLoadTestSettings();
+	
+	if (settings.m_type != LOAD_PROFILE_TEST)
+		return false;
+	
+	LoadTestResultsSaver saver(false, outputPath);
+	
+	if (!saver.initStorage())
+		return false;
+	
+	ProfileTestEngine engine;
+	engine.setResultsSaver(&saver);
+	
+	engine.initialise(script);
+	
+	// add the segments
+	std::vector<LoadTestProfileSeg>::iterator itSeg = settings.begin();
+	for (; itSeg != settings.end(); ++itSeg)
+	{
+		engine.addProfileSegment((*itSeg).m_threads, (*itSeg).m_duration);
+	}
+	
+	saver.start();
+	engine.start();
+	
+	saver.stop();
 	
 	return true;
 }

@@ -17,7 +17,10 @@
  */
 
 // primitive HTML parser - at some point would be nice to re-write this to handle content coming back progressively
-// and use callbacks to add components instead of needing the whole HTML content before it starts
+// and use callbacks to add components instead of needing the whole HTML content before it starts parsing
+
+// if speed (CPU time) is an issue in the future, this will probably need to be re-written to use standard
+// char string parsing instead of std::string, as it's probably more efficient
 
 #include "html_parser.h"
 #include "uri_helper.h"

@@ -19,12 +19,12 @@
 #include "utils/misc.h"
 #include "script.h"
 
-Script::Script() : m_scriptHasDebugSettings(false)
+Script::Script() : m_scriptHasDebugSettings(false), m_hasLoadTestSettings(false)
 {
 	
 }
 
-Script::Script(HTTPRequest *pRequest) : m_scriptHasDebugSettings(false)
+Script::Script(HTTPRequest *pRequest) : m_scriptHasDebugSettings(false), m_hasLoadTestSettings(false)
 {
 	m_aSteps.push_back(*pRequest);
 }
@@ -80,13 +80,18 @@ bool Script::loadScriptFile(const std::string &file)
 	if (!pElem) // no script item...
 		return false;
 	
+	// see if there's a description attribute
+	if (pElem->Attribute("desc"))
+	{
+		m_description = pElem->Attribute("desc");
+	}
+	
 	for (pElem = pElem->FirstChildElement("request"); pElem; pElem = pElem->NextSiblingElement())
 	{
 		loadRequestElement(pElem);
 	}
 	
 	// if there's a debug tag, parse that into the script
-	
 	pElem = hDoc.FirstChildElement("debug").Element();
 	
 	if (pElem)
@@ -94,12 +99,24 @@ bool Script::loadScriptFile(const std::string &file)
 		m_debugSettings.loadDebugElement(pElem);
 		m_scriptHasDebugSettings = true;
 	}
+	
+	// if the script doc has load test settings, import those
+	pElem = hDoc.FirstChildElement("load_test").Element();
+	
+	if (pElem)
+	{
+		m_loadTestSettings.loadLoadTestElement(pElem);
+		m_hasLoadTestSettings = true;
+	}
 
 	return true;
 }
 
 void Script::loadRequestElement(TiXmlElement *pElement)
 {
+	if (pElement->ValueStr() != "request")
+		return;
+	
 	HTTPRequest request;
 	
 	std::string description;
@@ -229,4 +246,65 @@ void Script::setDownloadContent(bool downloadContent)
 	{
 		it->setDownloadContent(downloadContent);
 	}
+}
+
+LoadTestSettings::LoadTestSettings()
+{
+	
+}
+
+void LoadTestSettings::addProfile(LoadTestProfileSeg &seg)
+{
+	m_aProfileSegments.push_back(seg);
+}
+
+bool LoadTestSettings::loadLoadTestElement(TiXmlElement *pElement)
+{
+	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
+	{
+		const std::string elementName = pItem->ValueStr();
+		
+		if (elementName == "type")
+		{
+			std::string content;
+			if (pItem->GetText())
+				content = pItem->GetText();
+			
+			if (content == "profile")
+			{
+				m_type = LOAD_PROFILE_TEST;
+			}
+		}
+		else if (elementName == "segments")
+		{
+			loadSegmentsElement(pItem);
+		}
+	}
+	
+	return true;
+}
+
+void LoadTestSettings::loadSegmentsElement(TiXmlElement *pElement)
+{
+	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
+	{
+		if (pItem->ValueStr() == "seg")
+		{
+			std::string content;
+			if (pItem->GetText())
+				content = pItem->GetText();
+			
+			std::string threadsAttr = pItem->Attribute("threads");
+			
+			if (!content.empty() && !threadsAttr.empty())
+			{
+				int threads = atoi(threadsAttr.c_str());
+				int duration = atoi(content.c_str());
+				
+				LoadTestProfileSeg newSeg(threads, duration);
+				
+				addProfile(newSeg);
+			}
+		}
+	}	
 }

@@ -59,6 +59,7 @@ int main(int argc, char *const argv[])
 	bool runWeb = false;
 
 	int threads = 0;
+	int minutes = 0;
 
 #ifdef _MSC_VER
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
@@ -71,6 +72,8 @@ int main(int argc, char *const argv[])
 	}
 	else
 	{
+		// this is a mess, but due to the fact that certain arguments can be used for almost any command type,
+		// it's the easiest way of doing things
 		for (int i = 1; i < argc; i++)
 		{
 			if (strcmp(argv[i], "-s") == 0 && i < argc)
@@ -91,6 +94,7 @@ int main(int argc, char *const argv[])
 				if (argc > i) // do we have an output file?
 				{
 					szOutputFile = (char *)argv[i + 1];
+					i++;
 				}
 			}
 			else if (strcmp(argv[i], "-debug") == 0 && i < argc)
@@ -106,9 +110,54 @@ int main(int argc, char *const argv[])
 					szOutputFile = (char *)argv[i + 1];
 				}				
 			}
-			else if (strcmp(argv[i], "lt-profile") == 0)
+			else if (strcmp(argv[i], "lt-profile") == 0 && i < argc)
 			{
 				loadTestProfile = true;
+				
+				// next param should be script or http address
+				std::string item = (char *)argv[i + 1];
+				
+				if (item.substr(0, 4) == "http") // it's a URL, so we're doing a request for a constant time profile test
+				{
+					szURL = (char *)argv[i + 1];
+					
+					// next two must be number of threads and the time in minutes
+					
+					threads = atoi((char *)argv[i + 2]);
+					minutes = atoi((char *)argv[i + 3]);
+					
+					i += 3;
+					
+					if (argc > i) // do we have an output file?
+					{
+						szOutputFile = (char *)argv[i + 1];
+						
+						i++;
+					}		
+				}
+				else // must be a script file
+				{
+					szScript = (char *)argv[i + 1];
+					
+					i++;
+					
+					// see if there are more than two more params - probably thread/minute params
+					
+					if (argc > i + 2)
+					{
+						threads = atoi((char *)argv[i + 1]);
+						minutes = atoi((char *)argv[i + 2]);
+						
+						i += 2;						
+					}
+					
+					if (argc > i) // do we have an output file?
+					{
+						szOutputFile = (char *)argv[i + 1];
+						
+						i++;
+					}
+				}
 			}
 			else if (strcmp(argv[i], "lt-hit") == 0)
 			{
@@ -202,7 +251,7 @@ int main(int argc, char *const argv[])
 		Script script;
 		if (!script.loadScriptFile(szScript))
 		{
-			std::cout << "Can't open file: " << szScript << "\n";
+			std::cout << "Can't open script file: " << szScript << "\n";
 			return -1;
 		}
 		
@@ -218,8 +267,114 @@ int main(int argc, char *const argv[])
 	}
 	else if (loadTestProfile)
 	{
-	//	performProfileLoadTest();
+		std::string outputFile;
+		if (szOutputFile)
+			outputFile.assign(szOutputFile);
 		
+		// if it's a single URL test
+		if (szURL && !szScript)
+		{
+			HTTPRequest newRequest(szURL);
+			
+			// command prompt options override settings for certain things
+			if (acceptCompressed)
+			{
+				newRequest.setAcceptCompressed(true);
+			}
+			
+			if (downloadContent)
+			{
+				newRequest.setDownloadContent(true);
+			}
+			
+			std::cout << "Starting constant Profile Load test with " << threads << "threads, for " << minutes << " minutes...\n";
+			
+			if (performProfileLoadTest(newRequest, threads, minutes, outputFile))
+			{
+				std::cout << "Load test completed successfully.\n";
+			}
+			else
+			{
+				std::cout << "Problem starting load test.\n";
+			}
+		}
+		else if (szScript && !szURL) // it's a script file
+		{
+			Script script;
+			if (!script.loadScriptFile(szScript))
+			{
+				std::cout << "Can't open script file: " << szScript << "\n";
+				return -1;
+			}
+			
+			// command prompt options override script settings for certain things
+			if (acceptCompressed)
+			{
+				script.setAcceptCompressed(true);
+			}
+			
+			if (downloadContent)
+			{
+				script.setDownloadContent(true);
+			}
+			
+			// see if the script has any load test settings
+			if (script.hasLoadTestSettings())
+			{
+				std::string description = script.getDescription();
+				
+				std::cout << "Starting Profile Load Test with profile settings from script...\n";
+				
+				if (performProfileLoadTest(script, outputFile))
+				{
+					std::cout << "Load test completed successfully.\n";
+				}
+				else
+				{
+					std::cout << "Problem starting load test.\n";
+				}				
+			}
+			else
+			{
+				// constant profile script test
+				
+				std::cout << "Starting constant Profile Load test with " << threads << "threads, for " << minutes << " minutes...\n";
+				
+				if (performProfileLoadTest(script, threads, minutes, outputFile))
+				{
+					std::cout << "Load test completed successfully.\n";
+				}
+				else
+				{
+					std::cout << "Problem starting load test.\n";
+				}				
+			}
+		}
+	}
+	else if (loadTestHit)
+	{
+		Script script;
+		if (!script.loadScriptFile(szScript))
+		{
+			std::cout << "Can't open script file: " << szScript << "\n";
+			return -1;
+		}
+		
+		// command prompt options override script settings for certain things
+		if (acceptCompressed)
+		{
+			script.setAcceptCompressed(true);
+		}
+		
+		if (downloadContent)
+		{
+			script.setDownloadContent(true);
+		}
+		
+		std::string outputFile;
+		if (szOutputFile)
+			outputFile.assign(szOutputFile);
+		performHitLoadTestScriptRequest(script, threads, outputFile);		
 	}
 	else if (!isScript)
 	{
@@ -242,12 +397,11 @@ int main(int argc, char *const argv[])
 		Script script;
 		if (!script.loadScriptFile(szScript))
 		{
-			std::cout << "Can't open file: " << szScript << "\n";
+			std::cout << "Can't open script file: " << szScript << "\n";
 			return -1;
 		}
 
 		// command prompt options override script settings for certain things
-
 		if (acceptCompressed)
 		{
 			script.setAcceptCompressed(true);
@@ -258,20 +412,7 @@ int main(int argc, char *const argv[])
 			script.setDownloadContent(true);
 		}
 
-		// add stuff here to read the script file and see if there are any concurrent params
-		// then we can just run the script, and it will do the concurrent stuff if it's specified
-
-		if (!concurrent)
-		{
-			performScriptRequest(script);
-		}
-		else
-		{
-			std::string outputFile;
-			if (szOutputFile)
-				outputFile.assign(szOutputFile);
-			performHitLoadTestScriptRequest(script, threads, outputFile);
-		}
+		performScriptRequest(script);
 	}
 	
 	curl_global_cleanup();

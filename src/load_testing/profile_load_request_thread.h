@@ -24,16 +24,21 @@
 #include "../script.h"
 #include "../http_engine.h"
 
+#include "../script_result.h"
 
+#include "load_test_results_saver.h"
 
 struct ProfileThreadData
 {
-	ProfileThreadData(int threadID, Script *pScript, bool debugging) : m_thread(threadID), m_pScript(pScript), m_debugging(debugging) { }
+	ProfileThreadData(int threadID, Script *pScript, LoadTestResultsSaver *pSaver = NULL, bool debugging = false) : m_thread(threadID),
+						m_pScript(pScript), m_pSaver(pSaver), m_debugging(debugging) { }
 	
 	bool m_debugging;
 	
 	Script *m_pScript;
 	int m_thread;
+	
+	LoadTestResultsSaver * m_pSaver;
 };
 
 // needs to have a callback to the ProfileTestEngine to hand results back
@@ -58,7 +63,9 @@ protected:
 	
 	bool m_active;
 	
-	std::vector<HTTPResponse> m_aResponses;
+	ScriptResult	m_pScriptResult;
+	
+	LoadTestResultsSaver * m_pSaver;
 };
 
 

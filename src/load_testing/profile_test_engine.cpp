@@ -23,7 +23,7 @@ ProfileSegment::ProfileSegment(int concurrentRequests, int duration) : m_concurr
 
 }
 
-ProfileTestEngine::ProfileTestEngine(bool smooth) : m_pRequest(NULL), m_pScript(NULL), m_debugging(false)
+ProfileTestEngine::ProfileTestEngine(bool smooth) : m_pRequest(NULL), m_pScript(NULL), m_debugging(false), m_pSaver(NULL)
 {
 	if (smooth)
 	{
@@ -35,7 +35,8 @@ ProfileTestEngine::ProfileTestEngine(bool smooth) : m_pRequest(NULL), m_pScript(
 	}
 }
 
-ProfileTestEngine::ProfileTestEngine(int concurrentRequests, int duration, bool debugging) : m_pRequest(NULL), m_pScript(NULL), m_debugging(debugging)
+ProfileTestEngine::ProfileTestEngine(int concurrentRequests, int duration, bool debugging) : m_pRequest(NULL), m_pScript(NULL), m_debugging(debugging),
+									m_pSaver(NULL)
 {
 	addProfileSegment(concurrentRequests, duration);
 	
@@ -56,15 +57,15 @@ bool ProfileTestEngine::initialise(Script &script)
 	return true;
 }
 
-bool ProfileTestEngine::initialise(HTTPRequest &request)
+bool ProfileTestEngine::initialise(HTTPRequest &request, int sleep)
 {
 	m_pRequest = &request;
+	request.setPauseTime(sleep);
 	
 	m_isScript = false;
 	
 	return true;
 }
-
 
 void ProfileTestEngine::addProfileSegment(int concurrentRequests, int duration)
 {
@@ -107,6 +108,12 @@ bool ProfileTestEngine::start()
 	if (m_runLength == 0 || m_maxNumberOfThreads == 0)
 		return false;
 	
+	// copy script over, so load test results saver knows about each step
+	if (m_pSaver && m_pScript)
+	{
+		m_pSaver->copyScript(*m_pScript);
+	}
+	
 	if (m_debugging)
 		printf("Starting load test with length: %i and max threads: %i\n", m_runLength, m_maxNumberOfThreads);
 	
@@ -139,7 +146,7 @@ bool ProfileTestEngine::start()
 		{
 			for (int i = m_numberOfActiveThreads; i < thisTargetCount; i++)
 			{
-				ProfileThreadData *pNewData = new ProfileThreadData(i, m_pScript, false);
+				ProfileThreadData *pNewData = new ProfileThreadData(i, m_pScript, m_pSaver, false);
 				
 				if (pNewData)
 				{
@@ -180,7 +187,9 @@ bool ProfileTestEngine::start()
 		Thread::sleep(60);
 	}
 	
-	// now we need to kill off the remaining threads that are still running and have active pointers
+	// now we need to wait for remaining threads to end, and then kill them off
+	// we'll do this as two separate loops, so that all threads will be told to stop
+	// as soon as posible
 	
 	int i = 0;
 	for (; i < m_maxNumberOfThreads; i++)
@@ -206,10 +215,58 @@ bool ProfileTestEngine::start()
 		}
 	}
 
+	if (!m_isScript && m_pScript)
+	{
+		delete m_pScript;
+	}
+
 	if (m_debugging)
 		printf("All threads finished.\n");
 	
-	return true;
-	
+	return true;	
 }
 
+#ifdef _MSC_VER
+
+static void win32_locking_callback(int mode, int type, char *file, int line)
+{
+	if (mode & CRYPTO_LOCK)
+	{
+		WaitForSingleObject(lock_cs1[type], INFINITE);
+	}
+	else
+	{
+		ReleaseMutex(lock_cs1[type]);
+	}
+}
+
+static void thread_setup()
+{
+	int i;
+	
+	lock_cs1 = (void**)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(HANDLE));
+	for (i = 0; i < CRYPTO_num_locks(); i++)
+	{
+		lock_cs1[i] = CreateMutex(NULL, FALSE, NULL);
+	}
+	
+	CRYPTO_set_locking_callback((void (*)(int, int, const char *, int))win32_locking_callback);
+}
+
+static void thread_cleanup()
+{
+	int i;
+	
+	CRYPTO_set_locking_callback(NULL);
+	for (i = 0; i < CRYPTO_num_locks(); i++)
+		CloseHandle(lock_cs1[i]);
+	
+	OPENSSL_free(lock_cs1);
+}
+
+static unsigned long id_function(void)
+{
+	return ((unsigned long)GetCurrentThreadId());
+}
+
+#endif

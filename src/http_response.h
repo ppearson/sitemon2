@@ -51,9 +51,6 @@ public:
 	double		dataStartTime;
 	double		totalTime;
 	
-//	double		redirectTime;
-//	long		redirectCount;
-	
 	std::string		requestedURL;
 	std::string		finalURL;
 	

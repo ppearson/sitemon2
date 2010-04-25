@@ -33,15 +33,17 @@
 #include "../script.h"
 #include "results_storage.h"
 
+#include "load_test_results_saver.h"
+
 #include "profile_load_request_thread.h"
 
 #ifdef _MSC_VER
 
-static HANDLE *lock_cs;
+static HANDLE *lock_cs1;
 
-void win32_locking_callback(int mode, int type, char *file, int line);
-void thread_setup();
-void thread_cleanup();
+static void win32_locking_callback(int mode, int type, char *file, int line);
+static void thread_setup();
+static void thread_cleanup();
 static unsigned long id_function(void);
 
 #endif
@@ -74,8 +76,10 @@ public:
 	ProfileTestEngine(int concurrentRequests, int duration, bool debugging);
 	~ProfileTestEngine();
 	
+	void setResultsSaver(LoadTestResultsSaver *pSaver) { m_pSaver = pSaver; }
+	
 	bool initialise(Script &script);
-	bool initialise(HTTPRequest &request);
+	bool initialise(HTTPRequest &request, int sleep = 10);
 	void addProfileSegment(int concurrentRequests, int duration);
 	
 	bool start();	
@@ -100,9 +104,12 @@ protected:
 	
 	Script *		m_pScript;
 	HTTPRequest *	m_pRequest;
+	int				m_sleep;
 	
 	bool			m_isScript;
 	bool			m_debugging;
+	
+	LoadTestResultsSaver *	m_pSaver;
 	
 };
 
