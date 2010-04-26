@@ -119,6 +119,9 @@ bool HTTPEngine::extractResponseFromCURLHandle(CURL *handle, HTTPResponse &respo
 	curl_easy_getinfo(handle, CURLINFO_CONNECT_TIME, &response.connectTime);
 	curl_easy_getinfo(handle, CURLINFO_STARTTRANSFER_TIME, &response.dataStartTime);
 	
+	response.dataStartTime -= response.connectTime;
+	response.connectTime -= response.lookupTime;
+	
 	curl_easy_getinfo(handle, CURLINFO_REDIRECT_COUNT, &response.redirectCount);
 	curl_easy_getinfo(handle, CURLINFO_REDIRECT_TIME, &response.redirectTime);
 	
