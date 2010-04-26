@@ -76,6 +76,7 @@ public:
 	double		lookupTime;
 	double		connectTime;
 	double		dataStartTime;
+	double		dataTransferTime;
 	double		totalTime;
 
 	double		redirectTime;

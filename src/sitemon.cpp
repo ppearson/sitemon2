@@ -229,6 +229,7 @@ void outputResponse(HTTPRequest &request, HTTPResponse &response)
 		std::cout << "Redirect time:\t\t" << response.redirectTime << " seconds.\n";
 	}
 
+	std::cout << "Data transfer:\t\t" << response.dataTransferTime << " seconds.\n";
 	std::cout << "Total time:\t\t" << response.totalTime << " seconds.\n\n";
 	
 	std::cout << "HTML Content size:\t" << response.contentSize << "\n";
