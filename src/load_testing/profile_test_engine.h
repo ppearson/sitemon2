@@ -31,7 +31,6 @@
 #include "../http_request.h"
 #include "../http_response.h"
 #include "../script.h"
-#include "results_storage.h"
 
 #include "load_test_results_saver.h"
 

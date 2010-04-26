@@ -24,15 +24,20 @@
 #include "../script.h"
 #include "../http_engine.h"
 
+#include "load_test_results_saver.h"
+
 struct RequestThreadData
 {
-	RequestThreadData(int thread, Script *pScript, int repeats = 0) : m_thread(thread), m_pScript(pScript), m_repeats(repeats), m_debugging(false) { }
+	RequestThreadData(int thread, Script *pScript, LoadTestResultsSaver *pSaver = NULL, int repeats = 0) : m_thread(thread), m_pScript(pScript), m_repeats(repeats),
+						m_pSaver(pSaver), m_debugging(false) { }
 	
 	bool m_debugging;
 	
 	Script *m_pScript;
 	int m_thread;
 	int m_repeats;
+	
+	LoadTestResultsSaver * m_pSaver;
 };
 
 class HitLoadRequestThread : public Thread
@@ -43,15 +48,14 @@ public:
 
 	virtual void run();
 	
-	std::vector<HTTPResponse> &getResponses() { return m_aResponses; }
-
 protected:
 	int m_threadID;
 	int m_repeats;
 	Script m_Script;
-	std::vector<HTTPResponse> m_aResponses;
 	
 	bool m_debugging;
+	
+	LoadTestResultsSaver * m_pSaver;
 };
 
 #endif

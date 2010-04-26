@@ -22,7 +22,7 @@
 #include "hit_load_request_thread.h"
 #include "../html_parser.h"
 
-HitTestEngine::HitTestEngine()
+HitTestEngine::HitTestEngine() : m_pSaver(NULL)
 {
 	
 }
@@ -69,13 +69,19 @@ bool HitTestEngine::start()
 		m_pScript = new Script(m_pRequest);
 	}
 	
+	// copy script over, so load test results saver knows about each step
+	if (m_pSaver && m_pScript)
+	{
+		m_pSaver->copyScript(*m_pScript);
+	}
+	
 	std::vector<HitLoadRequestThread *> aThreads;
 	
 	int threadCount = 0;
 	
 	for (int i = 0; i < m_numberOfThreads; i++)
 	{
-		RequestThreadData *data = new RequestThreadData(i + 1, m_pScript, m_repeats);
+		RequestThreadData *data = new RequestThreadData(i + 1, m_pScript, m_pSaver, m_repeats);
 	
 		HitLoadRequestThread *newThread = new HitLoadRequestThread(data);
 		
@@ -98,7 +104,6 @@ bool HitTestEngine::start()
 	for (it = aThreads.begin(); it != aThreads.end(); ++it)
 	{
 		(*it)->waitForCompletion();
-		m_results.addResults((*it)->getResponses());
 		delete *it;
 	}
 	

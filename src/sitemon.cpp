@@ -20,7 +20,6 @@
 #include "sitemon.h"
 #include "load_testing/hit_test_engine.h"
 #include "load_testing/profile_test_engine.h"
-#include "load_testing/results_storage.h"
 #include "html_parser.h"
 #include "load_testing/load_test_results_saver.h"
 
@@ -75,16 +74,22 @@ bool performScriptRequest(Script &script)
 
 bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath)
 {
+	LoadTestResultsSaver saver(false, outputPath);
+	
+	if (!saver.initStorage())
+		return false;
+	
 	HitTestEngine engine;
 	engine.initialise(request, threads);
 	
+	engine.setResultsSaver(&saver);
+	
+	saver.start();	
 	if (engine.start())
 	{
 		if (!outputPath.empty())
 		{
-			ConcurrentHitResults &results = engine.getResults();
-			
-			results.outputResultsToCSV(outputPath);
+			saver.stop();
 		}
 	}
 	
@@ -93,16 +98,22 @@ bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &ou
 
 bool performHitLoadTest(Script &script, int threads, const std::string &outputPath)
 {
+	LoadTestResultsSaver saver(false, outputPath);
+	
+	if (!saver.initStorage())
+		return false;
+	
 	HitTestEngine engine;
 	engine.initialise(script, threads);
 	
+	engine.setResultsSaver(&saver);
+	
+	saver.start();	
 	if (engine.start())
 	{
 		if (!outputPath.empty())
 		{
-			ConcurrentHitResults &results = engine.getResults();
-			
-			results.outputResultsToCSV(outputPath);
+			saver.stop();
 		}
 	}
 	
@@ -114,18 +125,24 @@ bool performHitLoadTest(Script &script, const std::string &outputPath)
 	if (!script.hasLoadTestSettings())
 		return false;
 	
+	LoadTestResultsSaver saver(false, outputPath);
+	
+	if (!saver.initStorage())
+		return false;
+	
 	LoadTestSettings &ltSettings = script.getLoadTestSettings();
 	
 	HitTestEngine engine;
 	engine.initialise(script, ltSettings.getHitThreads(), ltSettings.getHitRepeats());
 	
+	engine.setResultsSaver(&saver);
+	
+	saver.start();
 	if (engine.start())
 	{
 		if (!outputPath.empty())
 		{
-			ConcurrentHitResults &results = engine.getResults();
-			
-			results.outputResultsToCSV(outputPath);
+			saver.stop();
 		}
 	}
 	

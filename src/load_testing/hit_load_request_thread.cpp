@@ -18,6 +18,8 @@
 
 #include "hit_load_request_thread.h"
 
+#include "../script_result.h"
+
 HitLoadRequestThread::HitLoadRequestThread(RequestThreadData *data)
 {
 	m_Script.copyScript(data->m_pScript);
@@ -25,6 +27,9 @@ HitLoadRequestThread::HitLoadRequestThread(RequestThreadData *data)
 	m_repeats = data->m_repeats;
 	
 	m_debugging = data->m_debugging;
+	
+	if (data->m_pSaver)
+		m_pSaver = data->m_pSaver;
 	
 	delete data;
 }
@@ -45,7 +50,9 @@ void HitLoadRequestThread::run()
 	
 	for (int i = 0; i < runs; i++)
 	{
-		HTTPEngine engine;		
+		HTTPEngine engine;
+		
+		ScriptResult result;
 		
 		int step = 1;		
 		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
@@ -58,14 +65,14 @@ void HitLoadRequestThread::run()
 
 			if (engine.performRequest(request, response))
 			{
-				m_aResponses.push_back(response);
+				result.addResponse(response);
 				
 				if (m_debugging)
 					printf("Thread:\t%i, Step\t%i:\tOK\n", m_threadID, step);
 			}
 			else
 			{
-				m_aResponses.push_back(response);
+				result.addResponse(response);
 				
 				if (m_debugging)
 					printf("Thread:\t%i, Step\t%i\tError: %i\n", m_threadID, step, response.errorCode);
@@ -77,6 +84,11 @@ void HitLoadRequestThread::run()
 			{
 				sleep(request.getPauseTime());
 			}
+		}
+		
+		if (m_pSaver)
+		{
+			m_pSaver->addResult(result);
 		}
 		
 		sleep(1);

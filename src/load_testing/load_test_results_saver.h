@@ -39,6 +39,8 @@ public:
 	inline std::vector<HTTPResponse>::iterator begin() { return m_aResults.begin(); }
 	inline std::vector<HTTPResponse>::iterator end() { return m_aResults.end(); }
 	
+	bool hasResults() { return !m_aResults.empty(); }
+	
 	std::string			m_description;
 	int					m_step;
 	std::vector<HTTPResponse> m_aResults;

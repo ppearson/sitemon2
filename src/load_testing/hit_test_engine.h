@@ -30,7 +30,7 @@
 #include "../http_request.h"
 #include "../http_response.h"
 #include "../script.h"
-#include "results_storage.h"
+#include "load_test_results_saver.h"
 
 #ifdef _MSC_VER
 
@@ -57,9 +57,9 @@ public:
 	bool initialise(Script &script, int numberOfThreads, int repeats = 0);
 	bool initialise(HTTPRequest &request, int numberOfThreads, int repeats = 0);
 	
-	bool start();
+	void setResultsSaver(LoadTestResultsSaver *pSaver) { m_pSaver = pSaver; }
 	
-	ConcurrentHitResults &getResults() { return m_results; }
+	bool start();
 	
 protected:
 	HitTestType		m_hitTestType;
@@ -69,7 +69,7 @@ protected:
 	int		m_numberOfThreads;
 	int		m_repeats;
 	
-	ConcurrentHitResults	m_results;
+	LoadTestResultsSaver *	m_pSaver;
 };
 
 #endif

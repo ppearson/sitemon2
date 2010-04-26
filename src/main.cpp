@@ -342,7 +342,7 @@ int main(int argc, char *const argv[])
 				newRequest.setDownloadContent(true);
 			}
 			
-			std::cout << "Starting constant Profile Load test with " << threads << "threads, for " << minutes << " minutes...\n";
+			std::cout << "Starting constant Profile Load test with " << threads << " threads, for " << minutes << " minutes...\n";
 			
 			if (performProfileLoadTest(newRequest, threads, minutes, outputFile))
 			{
@@ -393,7 +393,7 @@ int main(int argc, char *const argv[])
 			{
 				// constant profile script test
 				
-				std::cout << "Starting constant Profile Load test with " << threads << "threads, for " << minutes << " minutes...\n";
+				std::cout << "Starting constant Profile Load test with " << threads << " threads, for " << minutes << " minutes...\n";
 				
 				if (performProfileLoadTest(script, threads, minutes, outputFile))
 				{
@@ -428,7 +428,7 @@ int main(int argc, char *const argv[])
 				newRequest.setDownloadContent(true);
 			}
 			
-			std::cout << "Starting Hit Load test with " << threads << "threads...\n";
+			std::cout << "Starting Hit Load test with " << threads << " threads...\n";
 			
 			if (performHitLoadTest(newRequest, threads, outputFile))
 			{
@@ -479,7 +479,7 @@ int main(int argc, char *const argv[])
 			{
 				// Hit load test with threads specified on command line
 				
-				std::cout << "Starting Hit Load test with " << threads << "threads...\n";
+				std::cout << "Starting Hit Load test with " << threads << " threads...\n";
 				
 				if (performHitLoadTest(script, threads, outputFile))
 				{

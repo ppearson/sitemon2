@@ -219,7 +219,7 @@ void LoadTestResultsSaver::fileStore()
 			pTimeinfo = localtime(&runTime);
 			strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 			
-			fprintf(fp, "%s, %ld, %ld,\n", szTime, result.getOverallError(), result.getLastResponseCode());		
+			fprintf(fp, "%s, %i, %ld,\n", szTime, result.getOverallError(), result.getLastResponseCode());		
 		}
 		
 		// now print all the detailed responses for each step
@@ -228,21 +228,24 @@ void LoadTestResultsSaver::fileStore()
 		{
 			StepResults &stepResults = (*itStepResults).second;
 			
-			fprintf(fp, "Step %i, %s\n", stepResults.m_step, stepResults.m_description.c_str());
-			fprintf(fp, "Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
-			
-			std::vector<HTTPResponse>::iterator itResponses = stepResults.begin();
-			for (; itResponses != stepResults.end(); ++itResponses)
+			if (stepResults.hasResults())
 			{
-				HTTPResponse &resp = (*itResponses);
+				fprintf(fp, "Step %i, %s\n", stepResults.m_step, stepResults.m_description.c_str());
+				fprintf(fp, "Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
 				
-				memset(szTime, 0, 64);
-				runTime = resp.timestamp;
-				pTimeinfo = localtime(&runTime);
-				strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
-				
-				fprintf(fp, "%s, %ld, %ld, %f, %f, %f, %f, %ld,\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
-						resp.totalTime, resp.contentSize);				
+				std::vector<HTTPResponse>::iterator itResponses = stepResults.begin();
+				for (; itResponses != stepResults.end(); ++itResponses)
+				{
+					HTTPResponse &resp = (*itResponses);
+					
+					memset(szTime, 0, 64);
+					runTime = resp.timestamp;
+					pTimeinfo = localtime(&runTime);
+					strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
+					
+					fprintf(fp, "%s, %i, %ld, %f, %f, %f, %f, %ld,\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
+							resp.totalTime, resp.contentSize);				
+				}
 			}
 		}
 	}		
