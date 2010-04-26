@@ -73,7 +73,7 @@ bool performScriptRequest(Script &script)
 	return true;
 }
 
-bool performHitLoadTestRequest(HTTPRequest &request, int threads, const std::string &outputPath)
+bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath)
 {
 	HitTestEngine engine;
 	engine.initialise(request, threads);
@@ -91,10 +91,33 @@ bool performHitLoadTestRequest(HTTPRequest &request, int threads, const std::str
 	return true;
 }
 
-bool performHitLoadTestScriptRequest(Script &script, int threads, const std::string &outputPath)
+bool performHitLoadTest(Script &script, int threads, const std::string &outputPath)
 {
 	HitTestEngine engine;
 	engine.initialise(script, threads);
+	
+	if (engine.start())
+	{
+		if (!outputPath.empty())
+		{
+			ConcurrentHitResults &results = engine.getResults();
+			
+			results.outputResultsToCSV(outputPath);
+		}
+	}
+	
+	return true;
+}
+
+bool performHitLoadTest(Script &script, const std::string &outputPath)
+{
+	if (!script.hasLoadTestSettings())
+		return false;
+	
+	LoadTestSettings &ltSettings = script.getLoadTestSettings();
+	
+	HitTestEngine engine;
+	engine.initialise(script, ltSettings.getHitThreads(), ltSettings.getHitRepeats());
 	
 	if (engine.start())
 	{

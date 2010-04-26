@@ -66,3 +66,26 @@ bool isFullPath(const std::string &path)
 	
 	return true;
 }
+
+bool isNumber(char *str)
+{
+	if (!str)
+		return false;
+	
+	int length = strlen(str);
+	
+	for (int i = 0; i < length; i++)
+	{
+		if (!isdigit(str[i]))
+		{
+			return false;
+		}		
+	}
+	
+	return true;
+}
+
+bool isPath(char *str)
+{
+	return false;
+}

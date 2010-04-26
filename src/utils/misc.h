@@ -25,4 +25,7 @@ char *getCurrentDirectory(bool appendFinal = true);
 
 bool isFullPath(const std::string &path);
 
+bool isNumber(char *str);
+bool isPath(char *str);
+
 #endif

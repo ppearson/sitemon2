@@ -19,6 +19,7 @@
 #include <iostream>
 #include <curl/curl.h>
 
+#include "utils/misc.h"
 #include "script.h"
 #include "config.h"
 #include "sitemon.h"
@@ -162,6 +163,60 @@ int main(int argc, char *const argv[])
 			else if (strcmp(argv[i], "lt-hit") == 0)
 			{
 				loadTestHit = true;
+				
+				// next param should be script or http address
+				std::string item = (char *)argv[i + 1];
+				
+				if (item.substr(0, 4) == "http") // it's a URL, so we're doing a simple http request
+				{
+					szURL = (char *)argv[i + 1];
+					
+					// next must be number of threads
+					
+					threads = atoi((char *)argv[i + 2]);
+	
+					i += 2;
+					
+					if (argc > i + 1) // do we have an output file?
+					{
+						szOutputFile = (char *)argv[i + 1];
+						
+						i++;
+					}		
+				}
+				else // must be a script file
+				{
+					szScript = (char *)argv[i + 1];
+					
+					i++;
+					
+					// next one could be number of threads or output file
+					
+					if (argc > i)
+					{
+						char * nextArg = argv[i + 1];
+						
+						if (isNumber(nextArg))
+						{
+							threads = atoi((char *)argv[i + 1]);
+					
+							i++;
+						}
+						else // must be output file
+						{
+							szOutputFile = (char *)argv[i + 1];
+							
+							i++;
+						}
+					}
+					
+					if (argc > i + 1) // do we have an output file?
+					{
+						szOutputFile = (char *)argv[i + 1];
+						
+						i++;
+					}
+				}
 			}
 			else if (strcmp(argv[i], "-oh") == 0)
 			{
@@ -202,25 +257,25 @@ int main(int argc, char *const argv[])
 	if (runWeb)
 	{
 		std::string webContentPath = configFile.getWebContentPath();
-		std::string dbPath = configFile.getDBPath();
+		std::string monitoringDBPath = configFile.getMonitoringDBPath();
 
-		SQLiteDB *pMainDB = NULL;
+		SQLiteDB *pMonitoringDB = NULL;
 	
-		if (!dbPath.empty())
+		if (!monitoringDBPath.empty())
 		{
-			pMainDB = new SQLiteDB(dbPath);
+			pMonitoringDB = new SQLiteDB(monitoringDBPath);
 		}
 		
-		if (!pMainDB->isThreadSafe())
+		if (!pMonitoringDB->isThreadSafe())
 		{
 			std::cout << "SQLite is not thread safe!\n";
 		}
 		
 		// create the needed tables first
-		createNeededHTTPServerTables(pMainDB);
-		createNeededSchedulerTables(pMainDB);
+		createNeededHTTPServerTables(pMonitoringDB);
+		createNeededSchedulerTables(pMonitoringDB);
 		
-		Scheduler schedulerThread(pMainDB);
+		Scheduler schedulerThread(pMonitoringDB);
 		schedulerThread.start();
 
 		std::cout << "Scheduler thread started...\n";
@@ -232,7 +287,7 @@ int main(int argc, char *const argv[])
 
 		Socket::initWinsocks();		
 		
-		HTTPServer server(webContentPath, pMainDB, 8080);
+		HTTPServer server(webContentPath, pMonitoringDB, 8080);
 		// keep in mind this halts execution, by design
 		server.start();
 		
@@ -240,8 +295,8 @@ int main(int argc, char *const argv[])
 
 		Socket::cleanupWinsocks();
 
-		if (pMainDB)
-			delete pMainDB;
+		if (pMonitoringDB)
+			delete pMonitoringDB;
 		
 		return 0;
 	}
@@ -353,28 +408,89 @@ int main(int argc, char *const argv[])
 	}
 	else if (loadTestHit)
 	{
-		Script script;
-		if (!script.loadScriptFile(szScript))
-		{
-			std::cout << "Can't open script file: " << szScript << "\n";
-			return -1;
-		}
-		
-		// command prompt options override script settings for certain things
-		if (acceptCompressed)
-		{
-			script.setAcceptCompressed(true);
-		}
-		
-		if (downloadContent)
-		{
-			script.setDownloadContent(true);
-		}
-		
 		std::string outputFile;
 		if (szOutputFile)
 			outputFile.assign(szOutputFile);
-		performHitLoadTestScriptRequest(script, threads, outputFile);		
+		
+		// if it's a single URL test
+		if (szURL && !szScript)
+		{
+			HTTPRequest newRequest(szURL);
+			
+			// command prompt options override settings for certain things
+			if (acceptCompressed)
+			{
+				newRequest.setAcceptCompressed(true);
+			}
+			
+			if (downloadContent)
+			{
+				newRequest.setDownloadContent(true);
+			}
+			
+			std::cout << "Starting Hit Load test with " << threads << "threads...\n";
+			
+			if (performHitLoadTest(newRequest, threads, outputFile))
+			{
+				std::cout << "Load test completed successfully.\n";
+			}
+			else
+			{
+				std::cout << "Problem starting load test.\n";
+			}
+		}
+		else if (szScript && !szURL) // it's a script file
+		{
+			Script script;
+			if (!script.loadScriptFile(szScript))
+			{
+				std::cout << "Can't open script file: " << szScript << "\n";
+				return -1;
+			}
+			
+			// command prompt options override script settings for certain things
+			if (acceptCompressed)
+			{
+				script.setAcceptCompressed(true);
+			}
+			
+			if (downloadContent)
+			{
+				script.setDownloadContent(true);
+			}
+			
+			// see if the script has any load test settings
+			if (script.hasLoadTestSettings())
+			{
+				std::string description = script.getDescription();
+				
+				std::cout << "Starting Hit Load Test with profile settings from script...\n";
+				
+				if (performHitLoadTest(script, outputFile))
+				{
+					std::cout << "Load test completed successfully.\n";
+				}
+				else
+				{
+					std::cout << "Problem starting load test.\n";
+				}				
+			}
+			else
+			{
+				// Hit load test with threads specified on command line
+				
+				std::cout << "Starting Hit Load test with " << threads << "threads...\n";
+				
+				if (performHitLoadTest(script, threads, outputFile))
+				{
+					std::cout << "Load test completed successfully.\n";
+				}
+				else
+				{
+					std::cout << "Problem starting load test.\n";
+				}				
+			}
+		}		
 	}
 	else if (!isScript)
 	{

@@ -18,6 +18,8 @@
 
 #include "load_test_results_saver.h"
 
+#include "../utils/misc.h"
+
 StepResults::StepResults(int step, const std::string &description) : m_step(step), m_description(description)
 {
 	
@@ -113,11 +115,37 @@ void LoadTestResultsSaver::fileStore()
 	if (m_filePath.empty())
 		return;
 	
-	FILE *fp = fopen(m_filePath.c_str(), "w+");
+	std::string finalPath;
+	
+	// handle relative paths
+#ifdef _MSC_VER
+	if (m_filePath.find(":") == -1)
+#else
+	if (m_filePath[0] != '/')
+#endif
+	{
+		char *szCurrentDir = getCurrentDirectory();
+		if (szCurrentDir == 0)
+		{
+			printf("can't get current dir - try using a full path\n");
+			return;
+		}
+		
+		std::string strFullPath = szCurrentDir;
+		strFullPath += m_filePath;
+		
+		finalPath = strFullPath;
+	}
+	else
+	{
+		finalPath = m_filePath;
+	}
+	
+	FILE *fp = fopen(finalPath.c_str(), "w+");
 	
 	if (!fp)
 	{
-		printf("Can't create output file: %s.\n", m_filePath.c_str());
+		printf("Can't create output file: %s.\n", finalPath.c_str());
 		return;
 	}
 	

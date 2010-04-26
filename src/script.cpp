@@ -264,20 +264,38 @@ bool LoadTestSettings::loadLoadTestElement(TiXmlElement *pElement)
 	{
 		const std::string elementName = pItem->ValueStr();
 		
+		std::string content;
+		if (pItem->GetText())
+			content = pItem->GetText();
+		
 		if (elementName == "type")
 		{
-			std::string content;
-			if (pItem->GetText())
-				content = pItem->GetText();
-			
 			if (content == "profile")
 			{
 				m_type = LOAD_PROFILE_TEST;
+			}
+			else if (content == "hit")
+			{
+				m_type = LOAD_HIT_TEST;
 			}
 		}
 		else if (elementName == "segments")
 		{
 			loadSegmentsElement(pItem);
+		}
+		else if (elementName == "threads")
+		{
+			if (!content.empty())
+			{
+				m_threads = atoi(content.c_str());
+			}
+		}
+		else if (elementName == "repeats")
+		{
+			if (!content.empty())
+			{
+				m_repeats = atoi(content.c_str());
+			}
 		}
 	}
 	
