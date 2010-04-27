@@ -129,7 +129,7 @@ int main(int argc, char *const argv[])
 					
 					i += 3;
 					
-					if (argc > i) // do we have an output file?
+					if (argc > i + 1) // do we have an output file?
 					{
 						szOutputFile = (char *)argv[i + 1];
 						

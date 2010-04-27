@@ -103,6 +103,8 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	
 	if (curl_easy_setopt(pThisHandle, CURLOPT_URL, pThisTask->getURL().c_str()) != 0)
 		return;
+
+	newResponse.requestedURL = pThisTask->getURL();
 	
 	if (!pThisTask->getReferrer().empty())
 	{
@@ -119,9 +121,10 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 		return;
 	
 	if (curl_easy_setopt(pThisHandle, CURLOPT_WRITEDATA, (void *)&newResponse) != 0)
-		return;
-	
-	newResponse.requestedURL = pThisTask->getURL();
+		return;	
+
+	// disable SSL security check
+	curl_easy_setopt(pThisHandle, CURLOPT_SSL_VERIFYPEER, 0L);
 	
 	curl_easy_setopt(pThisHandle, CURLOPT_NOSIGNAL, 1L);
 	

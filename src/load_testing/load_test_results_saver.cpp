@@ -16,6 +16,8 @@
  
  */
 
+#include <ctime>
+
 #include "load_test_results_saver.h"
 
 #include "../utils/misc.h"

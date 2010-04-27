@@ -123,7 +123,7 @@ bool HTTPEngine::extractResponseFromCURLHandle(CURL *handle, HTTPResponse &respo
 	curl_easy_getinfo(handle, CURLINFO_REDIRECT_TIME, &response.redirectTime);
 	
 	// try and get the times on a per-item basis, as opposed to the time since the request was started
-	
+/*	
 	response.dataTransferTime = response.totalTime - response.dataStartTime;
 	response.dataStartTime -= response.connectTime;
 	response.connectTime -= response.lookupTime;
@@ -133,7 +133,9 @@ bool HTTPEngine::extractResponseFromCURLHandle(CURL *handle, HTTPResponse &respo
 		response.redirectTime -= response.dataStartTime;
 		response.dataTransferTime -= response.redirectTime;
 	}	
+*/	
 	
+
 	curl_easy_getinfo(handle, CURLINFO_SIZE_DOWNLOAD, &download);
 	response.downloadSize = (long)download;
 	
@@ -167,6 +169,9 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 		return false;
 	
 	curl_easy_setopt(m_handle, CURLOPT_NOSIGNAL, 1L);
+
+	// disable SSL security check
+	curl_easy_setopt(m_handle, CURLOPT_SSL_VERIFYPEER, 0L);
 
 	response.requestedURL = request.getUrl();
 	

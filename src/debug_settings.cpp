@@ -42,7 +42,7 @@ void DebugSettings::loadDebugElement(TiXmlElement *pElement)
 			if (pItem->GetText())
 				content = pItem->GetText();
 			
-			else if (elementName == "output_location")
+			if (elementName == "output_location")
 			{
 				m_outputPath = content;
 			}

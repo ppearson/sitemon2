@@ -25,7 +25,7 @@ HTTPRequest::HTTPRequest() : m_requestType(HTTP_GET), m_pauseTime(0), m_acceptCo
 }
 
 HTTPRequest::HTTPRequest(const std::string &url) : m_url(url), m_requestType(HTTP_GET), m_pauseTime(0), m_acceptCompressed(false), m_storeHeader(true), m_storeBody(true),
-								m_downloadContent(false), m_connectTimeout(30)
+								m_downloadContent(false), m_connectTimeout(30), m_totalTimeout(240)
 {
 
 }

@@ -78,7 +78,7 @@ public:
 	void setResultsSaver(LoadTestResultsSaver *pSaver) { m_pSaver = pSaver; }
 	
 	bool initialise(Script &script);
-	bool initialise(HTTPRequest &request, int sleep = 10);
+	bool initialise(HTTPRequest &request, int sleep = 2);
 	void addProfileSegment(int concurrentRequests, int duration);
 	
 	bool start();	

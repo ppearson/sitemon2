@@ -153,13 +153,13 @@ bool performProfileLoadTest(HTTPRequest &request, int threads, int duration, con
 {
 	LoadTestResultsSaver saver(false, outputPath);
 	
-	if (!saver.initStorage())
+	if (!outputPath.empty() && !saver.initStorage())
 		return false;
 	
 	ProfileTestEngine engine;
 	engine.setResultsSaver(&saver);
 	
-	engine.initialise(request, 10);
+	engine.initialise(request, 2);
 	engine.addProfileSegment(threads, duration);
 	
 	saver.start();
@@ -172,12 +172,21 @@ bool performProfileLoadTest(HTTPRequest &request, int threads, int duration, con
 
 bool performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath)
 {
-	ProfileTestEngine engine;
+	LoadTestResultsSaver saver(false, outputPath);
 	
+	if (!outputPath.empty() && !saver.initStorage())
+		return false;
+
+	ProfileTestEngine engine;
+	engine.setResultsSaver(&saver);
+
 	engine.initialise(script);
 	engine.addProfileSegment(threads, duration);
 	
+	saver.start();
 	engine.start();
+
+	saver.stop();
 	
 	return true;
 }
@@ -229,7 +238,7 @@ void outputResponse(HTTPRequest &request, HTTPResponse &response)
 		std::cout << "Redirect time:\t\t" << response.redirectTime << " seconds.\n";
 	}
 
-	std::cout << "Data transfer:\t\t" << response.dataTransferTime << " seconds.\n";
+//	std::cout << "Data transfer:\t\t" << response.dataTransferTime << " seconds.\n";
 	std::cout << "Total time:\t\t" << response.totalTime << " seconds.\n\n";
 	
 	std::cout << "HTML Content size:\t" << response.contentSize << "\n";

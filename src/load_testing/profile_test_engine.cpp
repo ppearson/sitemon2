@@ -125,6 +125,11 @@ bool ProfileTestEngine::start()
 		}
 		
 		m_pScript = new Script(m_pRequest);
+
+		if (m_pSaver)
+		{
+			m_pSaver->copyScript(*m_pScript);
+		}
 	}
 	
 	m_numberOfActiveThreads = 0;
@@ -202,7 +207,7 @@ bool ProfileTestEngine::start()
 		}
 	}
 	
-	for (; i < m_maxNumberOfThreads; i++)
+	for (i = 0; i < m_maxNumberOfThreads; i++)
 	{
 		ProfileLoadRequestThread *pThisThread = m_aThreads[i];
 		

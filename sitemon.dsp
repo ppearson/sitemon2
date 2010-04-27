@@ -96,6 +96,10 @@ SOURCE=.\src\config.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\debug_settings.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\utils\event.cpp
 # End Source File
 # Begin Source File
@@ -152,6 +156,10 @@ SOURCE=.\src\http_server\http_server_responses.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\load_testing\load_test_results_saver.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\main.cpp
 # End Source File
 # Begin Source File
@@ -164,7 +172,11 @@ SOURCE=.\src\utils\mutex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\load_testing\results_storage.cpp
+SOURCE=.\src\load_testing\profile_load_request_thread.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\load_testing\profile_test_engine.cpp
 # End Source File
 # Begin Source File
 
@@ -185,6 +197,14 @@ SOURCE=.\src\scheduler\scheduler_test_thread.cpp
 # Begin Source File
 
 SOURCE=.\src\script.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\script_debugger.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\script_result.cpp
 # End Source File
 # Begin Source File
 
@@ -248,6 +268,10 @@ SOURCE=.\src\config.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\debug_settings.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\utils\event.h
 # End Source File
 # Begin Source File
@@ -304,6 +328,10 @@ SOURCE=.\src\http_server\http_server_responses.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\load_testing\load_test_results_saver.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\utils\misc.h
 # End Source File
 # Begin Source File
@@ -312,7 +340,11 @@ SOURCE=.\src\utils\mutex.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\load_testing\results_storage.h
+SOURCE=.\src\load_testing\profile_load_request_thread.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\load_testing\profile_test_engine.h
 # End Source File
 # Begin Source File
 
@@ -333,6 +365,14 @@ SOURCE=.\src\scheduler\scheduler_test_thread.h
 # Begin Source File
 
 SOURCE=.\src\script.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\script_debugger.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\script_result.h
 # End Source File
 # Begin Source File
 
