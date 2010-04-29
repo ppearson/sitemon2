@@ -76,7 +76,7 @@ bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &ou
 {
 	LoadTestResultsSaver saver(false, outputPath);
 	
-	if (!saver.initStorage())
+	if (!outputPath.empty() && !saver.initStorage())
 		return false;
 	
 	HitTestEngine engine;
@@ -100,7 +100,7 @@ bool performHitLoadTest(Script &script, int threads, const std::string &outputPa
 {
 	LoadTestResultsSaver saver(false, outputPath);
 	
-	if (!saver.initStorage())
+	if (!outputPath.empty() && !saver.initStorage())
 		return false;
 	
 	HitTestEngine engine;
@@ -127,7 +127,7 @@ bool performHitLoadTest(Script &script, const std::string &outputPath)
 	
 	LoadTestResultsSaver saver(false, outputPath);
 	
-	if (!saver.initStorage())
+	if (!outputPath.empty() && !saver.initStorage())
 		return false;
 	
 	LoadTestSettings &ltSettings = script.getLoadTestSettings();
