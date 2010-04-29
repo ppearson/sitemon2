@@ -21,7 +21,7 @@
 
 bool generateAddSingleScheduledTestForm(std::string &output)
 {
-	HTTPFormGenerator formGen("add_monitor_test", "Add", true);
+	HTTPFormGenerator formGen("add_single_test", "Add", true);
 	
 	HTTPFormTextItem description("Description", "description", 40);
 	HTTPFormTextItem url("URL", "url", 50);
@@ -46,6 +46,59 @@ bool generateAddSingleScheduledTestForm(std::string &output)
 	formGen.addItem(downloadComponents);
 	
 	output = formGen.getGeneratedCode();	
+	
+	return true;
+}
+
+bool generateAddScriptScheduledTestForm(std::string &output)
+{
+	HTTPFormGenerator formGen("add_script_test", "Add", true);
+	
+	HTTPFormTextItem description("Description", "description", 60);
+	HTTPFormSelectItem interval("Interval", "interval", 2);
+	interval.addOption("1");
+	interval.addOption("5");
+	interval.addOption("10");
+	interval.addOption("15");
+	interval.addOption("20");
+	interval.addOption("30");
+	interval.addOption("60");
+	
+	HTTPFormCheckItem acceptCompressed("Accept compressed content", "accept_compressed", true);
+	HTTPFormCheckItem downloadComponents("Download components", "download_components", true);
+	
+	formGen.addItem(description);
+	formGen.addItem(interval);
+	formGen.addItem(acceptCompressed);
+	formGen.addItem(downloadComponents);
+	
+	///
+	
+	HTTPFormTextItem page1Description("Page 1 desc", "p1_desc", 50);
+	HTTPFormTextItem page1URL("Page 1 URL", "p1_url", 50);
+	HTTPFormTextItem page2Description("Page 2 desc", "p2_desc", 50);
+	HTTPFormTextItem page2URL("Page 2 URL", "p2_url", 50);
+	HTTPFormTextItem page3Description("Page 3 desc", "p3_desc", 50);
+	HTTPFormTextItem page3URL("Page 3 URL", "p3_url", 50);
+	HTTPFormTextItem page4Description("Page 4 desc", "p4_desc", 50);
+	HTTPFormTextItem page4URL("Page 4 URL", "p4_url", 50);
+	HTTPFormTextItem page5Description("Page 5 desc", "p5_desc", 50);
+	HTTPFormTextItem page5URL("Page 5 URL", "p5_url", 50);
+
+	formGen.addSeparator();
+	
+	formGen.addItem(page1Description);
+	formGen.addItem(page1URL);
+	formGen.addItem(page2Description);
+	formGen.addItem(page2URL);
+	formGen.addItem(page3Description);
+	formGen.addItem(page3URL);
+	formGen.addItem(page4Description);
+	formGen.addItem(page4URL);
+	formGen.addItem(page5Description);
+	formGen.addItem(page5URL);
+	
+	output = formGen.getGeneratedCode();
 	
 	return true;
 }

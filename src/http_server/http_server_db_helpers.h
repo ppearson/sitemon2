@@ -38,4 +38,15 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 bool getSingleScheduledTestComponentsList(SQLiteDB *pDB, long testID, long runID, std::string &output);
 bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string &output);
 
+bool getScriptScheduledTestsList(SQLiteDB *pDB, std::string &output);
+bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
+
+bool generateEditScriptScheduledTestForm(SQLiteDB *pDB, int testID, std::string &scriptSettings, std::string &pages, std::string &addNewPageLink);
+bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::string &output);
+bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::string &output);
+
+bool editScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
+bool editScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
+bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
+
 #endif

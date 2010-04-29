@@ -63,6 +63,18 @@ protected:
 	bool	m_checked;
 };
 
+class HTTPFormCheckInlineItem : public HTTPFormItem
+{
+public:
+	HTTPFormCheckInlineItem(const std::string &label, const std::string &name, bool checked = false);
+	virtual ~HTTPFormCheckInlineItem() { }
+	
+	virtual std::string getCode();
+	
+protected:
+	bool	m_checked;
+};
+
 class HTTPFormSelectItem : public HTTPFormItem
 {
 public:
@@ -100,6 +112,8 @@ public:
 	std::string getGeneratedCode();
 	
 	void addItem(HTTPFormItem &item) { m_aItems.push_back(item.getCode()); }
+	
+	void addSeparator();
 
 protected:
 	bool			m_post;

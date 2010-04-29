@@ -20,6 +20,7 @@
 #define HTTP_SERVER_RESPONSES_H
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <sstream>
 
@@ -62,25 +63,15 @@ class HTTPServerTemplateFileResponse
 {
 public:
 	HTTPServerTemplateFileResponse(const std::string &path, std::string &content);
+	HTTPServerTemplateFileResponse(const std::string &path, std::string &content1, std::string &content2);
+	HTTPServerTemplateFileResponse(const std::string &path, std::string &content1, std::string &content2, std::string &content3);
 	
 	std::string responseString();
 	
 protected:
+	int			m_templateArgs;
 	std::string m_path;
-	std::string &m_content;
-};
-
-class HTTPServerTemplateFileResponse2
-{
-public:
-	HTTPServerTemplateFileResponse2(const std::string &path, std::string &content1, std::string &content2);
-	
-	std::string responseString();
-	
-protected:
-	std::string m_path;
-	std::string &m_content1;
-	std::string &m_content2;
+	std::vector<std::string *> m_aContent;
 };
 
 #endif

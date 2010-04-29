@@ -35,6 +35,7 @@ public:
 	
 	bool isPost() const { return  m_post; }
 	bool hasParams() const { return !m_aParams.empty(); }
+	bool hasParam(const std::string &name);
 	std::string getParam(const std::string &name) { return m_aParams[name]; }
 	
 protected:

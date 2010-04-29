@@ -1,0 +1,34 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+</head>
+<body>
+<ul id="sitenav">
+<li><a href="/">Home</a></li>
+<li><a href="/history">History</a></li>
+<li><a href="/monitoring">Monitoring</a></li>
+<li><a href="/load_testing">Load Testing</a></li>
+<li><a href="/help.html">Help</a></li>
+</ul>
+
+<br><br>
+
+<%1%>
+
+<br>
+<table>
+<tr>
+	<th scope="col" width="30">Page</td>
+	<th scope="col" width="60">Edit</th>
+	<th scope="col" width="120">Description</th>
+	<th scope="col" width="290">URL</th>
+	<th scope="col" width="50">Request Type</th>
+	<th scope="col" width="110">Expected Phrase</th>
+</tr>
+<%2%>
+</table>
+<br><br>
+<a href="add_script_page?script_id=<%3%>">Add a new page</a><br><br>
+
+</body>
+</html>

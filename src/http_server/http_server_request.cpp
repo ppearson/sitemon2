@@ -127,10 +127,17 @@ void HTTPServerRequest::addParams(const std::string &params)
 				value.replace(nSpace, 1, " ");
 			}
 			
-			if (!name.empty())
+			if (!name.empty() && !value.empty())
 			{
 				m_aParams[name] = value;
 			}
 		}
 	}
+}
+
+bool HTTPServerRequest::hasParam(const std::string &name)
+{
+	std::map<std::string, std::string>::iterator itFind = m_aParams.find(name);
+
+	return itFind != m_aParams.end();
 }

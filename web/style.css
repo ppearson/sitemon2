@@ -38,11 +38,12 @@ color: #000;
 }
 
 table {
-	width:90%;
-	float: left;
+	width:95%;
+	margin-left: 0px;
+	margin-right: auto;
 	border-top:1px solid 000080;
 	border-right:1px solid 000080;
-	margin:1em auto;
+
 	border-collapse:collapse;
 	font-size:0.8em;
 }

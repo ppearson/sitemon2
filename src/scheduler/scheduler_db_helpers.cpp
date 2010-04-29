@@ -25,6 +25,8 @@ bool createNeededSchedulerTables(SQLiteDB *pDB)
 {
 	createScheduledSingleTestsTable(pDB);
 	createScheduledSingleTestResultsTable(pDB);
+
+	createScheduledScriptTestsTables(pDB);
 	
 	return true;
 }
@@ -68,6 +70,37 @@ bool createScheduledSingleTestResultsTable(SQLiteDB *pDB)
 	}	
 	
 	return false;
+}
+
+bool createScheduledScriptTestsTables(SQLiteDB *pDB)
+{
+	std::string sql1 = "create table if not exists scheduled_script_tests (enabled integer, description string, interval integer, accept_compressed integer, download_components integer)";
+	
+	std::string sql2 = "create table if not exists scheduled_script_test_pages (script_id integer, page_num integer, description string, url string, request_type integer, expected_phrase string)";
+	std::string sql3 = "create index if not exists script_test_pages on scheduled_script_test_pages(script_id)";
+	
+	std::string sql4 = "create table if not exists scheduled_script_test_page_params (page_id integer, name string, value string)";
+	std::string sql5 = "create index if not exists script_test_page_params on scheduled_script_test_page_params(page_id)";
+	
+	if (pDB)
+	{
+		SQLiteQuery q(*pDB, true);
+		
+		bool ret1 = q.execute(sql1);
+		bool ret2 = q.execute(sql2);
+		bool ret3 = q.execute(sql3);
+		bool ret4 = q.execute(sql4);
+		bool ret5 = q.execute(sql5);
+		
+		return ret1 && ret2 && ret3 && ret4 && ret5;
+	}	
+	
+	return false;
+}
+
+bool createScheduledSingleTestResultsTables(SQLiteDB *pDB)
+{
+	return true;
 }
 
 // expects an empty vector

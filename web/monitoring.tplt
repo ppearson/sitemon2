@@ -10,7 +10,8 @@
 <li><a href="/load_testing">Load Testing</a></li>
 <li><a href="/help.html">Help</a></li>
 </ul>
-<br><a href="add_monitor_test">Add a test</a><br>
+<br><a href="add_single_test">Add a Single test</a><br><br>
+
 <table>
 <tr>
 	<th scope="col" width="60">Test ID</th>
@@ -22,9 +23,22 @@
 	<th scope="col" width="110">Download Components</th>
 	<th scope="col" width="90">View Results</th>
 </tr>
-<%%>
+<%1%>
 </table>
+<br><a href="add_script_test">Add a Script test</a><br><br>
 
+<table>
+<tr>
+	<th scope="col" width="60">Test ID</th>
+	<th scope="col" width="50">Enabled</th>
+	<th scope="col" width="120">Description</th>
+	<th scope="col" width="50">Interval</th>
+	<th scope="col" width="110">Accept Compressed</th>
+	<th scope="col" width="110">Download Components</th>
+	<th scope="col" width="90">View Results</th>
+</tr>
+<%2%>
+</table>
 
 </body>
 </html>

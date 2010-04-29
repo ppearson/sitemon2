@@ -543,7 +543,669 @@ bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 	formGen.addItem(formDownloadComponents);
 	formGen.addItem(formTestID);
 	
-	output = formGen.getGeneratedCode();	
+	output = formGen.getGeneratedCode();
+	
+	return true;
+}
+
+bool getScriptScheduledTestsList(SQLiteDB *pDB, std::string &output)
+{
+	if (!pDB)
+		return false;
+	
+	std::string sql = "select rowid, enabled, description, interval, accept_compressed, download_components from scheduled_script_tests limit 40";
+	
+	SQLiteQuery q(*pDB);
+	
+	output = "";
+	
+	char szTemp[2048];
+	
+	q.getResult(sql);
+	while (q.fetchNext())
+	{
+		memset(szTemp, 0, 2048);
+		
+		long testID = q.getLong();
+		long enabled = q.getLong();
+		std::string description = q.getString();
+		long interval = q.getLong();
+		long acceptCompressed = q.getLong();
+		long downloadComponents = q.getLong();
+		
+		if (description.empty())
+			description = " ";		
+		
+		std::string strEnabled = (enabled == 1) ? "YES" : "NO";
+		std::string strAcceptCompressed = (acceptCompressed == 1) ? "YES" : "NO";
+		std::string strDownloadComponents = (downloadComponents == 1) ? "YES" : "NO";
+		
+		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_script_test?test_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
+				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_script_test?testid=%ld\">Results</a></td>\n</tr>\n",
+				testID, strEnabled.c_str(), description.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
+		
+		output.append(szTemp);
+	}
+	
+	return true;
+}
+
+bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+
+	std::string desc = request.getParam("description");
+	std::string interval = request.getParam("interval");
+	long compressed = 0;
+	if (request.getParam("accept_compressed") == "on")
+		compressed = 1;
+	long downloadComponents = 0;
+	if (request.getParam("download_components") == "on")
+		downloadComponents = 1;
+
+	std::string sql = "insert into scheduled_script_tests values (1, ";
+	
+	char szTemp[1024];
+	memset(szTemp, 0, 1024);
+	sprintf(szTemp, "'%s', '%s', %ld, %ld)", desc.c_str(), interval.c_str(), compressed, downloadComponents);
+	
+	sql.append(szTemp);
+	
+	SQLiteQuery q(*pDB, true);
+	
+	bool ret = q.execute(sql);
+
+	char szDesc[64];
+	char szURL[64];
+
+	// now create basic steps for each of the pages specified
+	if (ret)
+	{
+		for (int i = 1; i < 10; i++)
+		{
+			long scriptID = q.getInsertRowID();
+			
+			memset(szDesc, 0, 64);
+			memset(szURL, 0, 64);
+
+			sprintf(szDesc, "p%i_desc", i);
+			sprintf(szURL, "p%i_url", i);
+			
+			long pageNum = i;
+
+			if (request.hasParam(szDesc) && request.hasParam(szURL))
+			{
+				memset(szTemp, 0, 1024);
+
+				std::string pageDesc = request.getParam(szDesc);
+				std::string pageURL = request.getParam(szURL);
+
+				sprintf(szTemp, "insert into scheduled_script_test_pages values (%ld, %ld, '%s', '%s', %i, '')", scriptID, pageNum,
+									pageDesc.c_str(), pageURL.c_str(), 0);
+
+				std::string sql2 = szTemp;
+
+				if (!q.execute(sql2))
+				{
+					printf("Couldn't add script page item...\n");
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool generateEditScriptScheduledTestForm(SQLiteDB *pDB, int testID, std::string &scriptSettings, std::string &pages, std::string &addNewPageLink)
+{
+	if (!pDB)
+		return false;
+	
+	std::string sql = "select enabled, description, interval, accept_compressed, download_components from scheduled_script_tests where rowid = ";
+	
+	char szRowID[16];
+	memset(szRowID, 0, 16);
+	sprintf(szRowID, "%d", testID);
+	
+	sql.append(szRowID);
+	
+	SQLiteQuery q(*pDB);
+	
+	q.getResult(sql);
+	if (!q.fetchNext())
+	{
+		scriptSettings = "Couldn't find requested script test in db.\n";
+		return false;
+	}
+	
+	long enabled = q.getLong();
+	std::string description = q.getString();
+	long interval = q.getLong();
+	long acceptCompressed = q.getLong();
+	long downloadComponents = q.getLong();
+
+	HTTPFormGenerator formGen("edit_script_test", "Update", true);
+	
+	HTTPFormCheckItem formEnabled("Enabled", "enabled", enabled == 1);
+	
+	HTTPFormTextItem formDescription("Description", "description", 40, description);
+	
+	int selInt = 0;
+	switch (interval)
+	{
+		case 5:
+			selInt = 1;
+			break;
+		case 10:
+			selInt = 2;
+			break;
+		case 15:
+			selInt = 3;
+			break;
+		case 20:
+			selInt = 4;
+			break;
+		case 30:
+			selInt = 5;
+			break;
+		case 60:
+			selInt = 6;
+			break;
+		default:
+			selInt = 0;
+	}
+	
+	HTTPFormSelectItem formInterval("Interval", "interval", selInt);
+	formInterval.addOption("1");
+	formInterval.addOption("5");
+	formInterval.addOption("10");
+	formInterval.addOption("15");
+	formInterval.addOption("20");
+	formInterval.addOption("30");
+	formInterval.addOption("60");
+	
+	HTTPFormCheckInlineItem formAcceptCompressed("Accept compressed content", "accept_compressed", acceptCompressed == 1);
+	HTTPFormCheckInlineItem formDownloadComponents("Download components", "download_components", downloadComponents == 1);
+	
+	HTTPFormHiddenItem formTestID("test_id", testID);
+	
+	formGen.addItem(formEnabled);
+	formGen.addItem(formDescription);
+	formGen.addItem(formInterval);
+	formGen.addItem(formAcceptCompressed);
+	formGen.addItem(formDownloadComponents);
+	formGen.addItem(formTestID);
+	
+	scriptSettings = formGen.getGeneratedCode();
+
+	// now generate the list of pages
+	
+	q.freeResults();
+
+	std::string sql2 = "select rowid, description, url, request_type, expected_phrase from scheduled_script_test_pages where script_id = ";
+	sql2.append(szRowID);
+	
+	sql2 += " order by page_num";
+
+	char szTemp[2048];
+	
+	q.getResult(sql2);
+	int pageNum = 1;
+	while (q.fetchNext())
+	{
+		memset(szTemp, 0, 2048);
+		
+		long pageID = q.getLong();
+		std::string description = q.getString();
+		std::string url = q.getString();
+		long requestType = q.getLong();
+		std::string expectedPhrase = q.getString();
+
+		if (description.empty())
+			description = " ";		
+		
+		std::string strRequestType = (requestType == 1) ? "POST" : "GET";
+		
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%i</td>\n<td id=\"l\"><a href=\"/edit_script_page?page_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
+				" <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n", pageNum, pageID, description.c_str(), url.c_str(), strRequestType.c_str(),
+				expectedPhrase.c_str(), testID);
+		
+		pages.append(szTemp);
+		
+		pageNum ++;
+	}
+	
+	addNewPageLink.assign(szRowID);
+
+	return true;
+}
+
+bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::string &output)
+{
+	if (!pDB)
+		return false;
+
+	SQLiteQuery q(*pDB);
+	
+	std::string sql = "select description, url, request_type, expected_phrase from scheduled_script_test_pages where rowid = ";
+	
+	char szPageID[16];
+	memset(szPageID, 0, 16);
+	sprintf(szPageID, "%d", pageID);
+	
+	sql.append(szPageID);
+	sql += " order by page_num";
+	
+	q.getResult(sql);
+	if (!q.fetchNext())
+	{
+		output = "Couldn't find requested script page in db.\n";
+		return false;
+	}
+	
+	std::string pageNumber = q.getString();
+	std::string description = q.getString();
+	std::string url = q.getString();
+	long requestType = q.getLong();
+	std::string expectedPhrase = q.getString();
+	
+	HTTPFormGenerator formGen("edit_script_page", "Update", true);
+	
+	HTTPFormTextItem formNumber("Number", "number", 10, pageNumber);
+	
+	HTTPFormTextItem formDescription("Description", "description", 40, description);
+	HTTPFormTextItem formURL("URL", "url", 60, url);
+	
+	HTTPFormSelectItem formRequestType("Request type", "request_type", requestType);
+	formRequestType.addOption("GET");
+	formRequestType.addOption("POST");
+	
+	HTTPFormTextItem formExpectedPhrase("Expected Phrase", "expected_phrase", 50, expectedPhrase);
+	
+	HTTPFormHiddenItem formPageID("page_id", pageID);
+	
+	formGen.addItem(formNumber);
+	formGen.addItem(formDescription);
+	formGen.addItem(formURL);
+	formGen.addItem(formRequestType);
+	formGen.addItem(formExpectedPhrase);
+	formGen.addItem(formPageID);
+	
+	// now list the page parameters, plus some blank ones
+	
+	q.freeResults();
+	
+	std::string sql2 = "select name, value from scheduled_script_test_page_params where page_id = ";
+	sql2.append(szPageID);
+	
+	char szEditName[16];
+	char szEditValue[16];
+	
+	q.getResult(sql2);
+	int paramNum = 1;
+	while (q.fetchNext())
+	{
+		formGen.addSeparator();
+		
+		std::string paramName = q.getString();
+		std::string paramValue = q.getString();
+		
+		memset(szEditName, 0, 16);
+		memset(szEditValue, 0, 16);
+		
+		sprintf(szEditName, "n%i", paramNum);
+		sprintf(szEditValue, "v%i", paramNum);
+		
+		HTTPFormTextItem newName("Param Name", szEditName, 40, paramName);
+		HTTPFormTextItem newValue("Param Value", szEditValue, 80, paramValue);
+		
+		formGen.addItem(newName);
+		formGen.addItem(newValue);		
+		
+		paramNum ++;
+	}
+	
+	// and some blank ones
+	
+	for (int i = 0; i < 5; i++)
+	{
+		formGen.addSeparator();
+		
+		memset(szEditName, 0, 16);
+		memset(szEditValue, 0, 16);
+		
+		sprintf(szEditName, "n%i", paramNum);
+		sprintf(szEditValue, "v%i", paramNum);
+		
+		HTTPFormTextItem newName("Param Name", szEditName, 40);
+		HTTPFormTextItem newValue("Param Value", szEditValue, 80);
+		
+		formGen.addItem(newName);
+		formGen.addItem(newValue);		
+		
+		paramNum ++;		
+	}
+	
+	output = formGen.getGeneratedCode();
+	
+	return true;
+}
+
+bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::string &output)
+{
+	if (!pDB)
+		return false;
+	
+	SQLiteQuery q(*pDB);
+	
+	std::string sql = "select max(page_num) from scheduled_script_test_pages where script_id = ";
+	
+	char szScriptID[16];
+	memset(szScriptID, 0, 16);
+	sprintf(szScriptID, "%d", scriptID);
+	
+	sql.append(szScriptID);
+	
+	q.getResult(sql);
+	if (!q.fetchNext())
+	{
+		output = "Couldn't find requested script in db.\n";
+		return false;
+	}
+	
+	long numberOfPages = q.getLong();
+	
+	char szPageNumber[4];
+	sprintf(szPageNumber, "%ld", numberOfPages + 1);
+	std::string pageNumber(szPageNumber);
+	
+	HTTPFormGenerator formGen("add_script_page", "Add", true);
+	
+	HTTPFormTextItem formNumber("Number", "number", 10, pageNumber);
+	
+	HTTPFormTextItem formDescription("Description", "description", 40, "");
+	HTTPFormTextItem formURL("URL", "url", 60, "");
+	
+	HTTPFormSelectItem formRequestType("Request type", "request_type", 0);
+	formRequestType.addOption("GET");
+	formRequestType.addOption("POST");
+	
+	HTTPFormTextItem formExpectedPhrase("Expected Phrase", "expected_phrase", 50, "");
+	
+	HTTPFormHiddenItem formPageID("script_id", scriptID);
+	
+	formGen.addItem(formNumber);
+	formGen.addItem(formDescription);
+	formGen.addItem(formURL);
+	formGen.addItem(formRequestType);
+	formGen.addItem(formExpectedPhrase);
+	formGen.addItem(formPageID);
+	
+	char szEditName[16];
+	char szEditValue[16];
+
+	int paramNum = 1;
+
+	// and some blank ones
+	
+	for (int i = 0; i < 8; i++)
+	{
+		formGen.addSeparator();
+		
+		memset(szEditName, 0, 16);
+		memset(szEditValue, 0, 16);
+		
+		sprintf(szEditName, "n%i", paramNum);
+		sprintf(szEditValue, "v%i", paramNum);
+		
+		HTTPFormTextItem newName("Param Name", szEditName, 40);
+		HTTPFormTextItem newValue("Param Value", szEditValue, 80);
+		
+		formGen.addItem(newName);
+		formGen.addItem(newValue);		
+		
+		paramNum ++;		
+	}
+	
+	output = formGen.getGeneratedCode();
+	
+	return true;
+}
+
+bool editScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+
+	long enabled = 0;
+	if (request.getParam("enabled") == "on")
+		enabled = 1;
+
+	std::string strTestID = request.getParam("test_id");
+	long testID = 0;
+	if (!strTestID.empty())
+	{
+		testID = atol(strTestID.c_str());
+	}
+
+	std::string desc = request.getParam("description");
+	std::string interval = request.getParam("interval");
+	long compressed = 0;
+	if (request.getParam("accept_compressed") == "on")
+		compressed = 1;
+	long downloadComponents = 0;
+	if (request.getParam("download_components") == "on")
+		downloadComponents = 1;
+
+	std::string sql = "update scheduled_script_tests set ";
+	
+	char szTemp[1024];
+	memset(szTemp, 0, 1024);
+	sprintf(szTemp, "enabled = %ld, description = '%s', interval = '%s', accept_compressed = %ld, download_components = %ld where rowid = %ld",
+					enabled, desc.c_str(), interval.c_str(), compressed, downloadComponents, testID);
+	
+	sql.append(szTemp);
+	
+	SQLiteQuery q(*pDB, true);
+	
+	bool ret = q.execute(sql);
+
+	return ret;
+}
+
+bool editScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+
+	std::string strPageID = request.getParam("page_id");
+	long pageID = 0;
+	if (!strPageID.empty())
+	{
+		pageID = atol(strPageID.c_str());
+	}
+	
+	std::string number = request.getParam("number");
+
+	std::string desc = request.getParam("description");
+	std::string url = request.getParam("url");
+
+	long requestType = 0;
+	std::string strRequestType = request.getParam("request_type");
+	if (strRequestType == "POST")
+		requestType = 1;
+
+	std::string expectedPhrase = request.getParam("expected_phrase");
+
+	std::string sql = "update scheduled_script_test_pages set ";
+	
+	char szTemp[1024];
+	memset(szTemp, 0, 1024);
+	sprintf(szTemp, "number = '%s', description = '%s', url = '%s', request_type = %ld, expected_phrase = '%s' where rowid = %ld", 
+					number.c_str(), desc.c_str(), url.c_str(), requestType, expectedPhrase.c_str(), pageID);
+	
+	sql.append(szTemp);
+	
+	SQLiteQuery q(*pDB, true);
+	
+	bool ret = q.execute(sql);
+
+	if (ret)
+	{
+		// now delete all the params for this page then re-add them
+
+		std::string sql2 = "delete from scheduled_script_test_page_params where page_id = ";
+		sql2 += strPageID;
+
+		if (q.execute(sql2))
+		{
+			char szParamName[16];
+			char szParamValue[16];
+
+			for (int i = 1; i < 50; i++)
+			{
+				memset(szParamName, 0, 16);
+				memset(szParamValue, 0, 16);
+
+				sprintf(szParamName, "n%i", i);
+				sprintf(szParamValue, "v%i", i);
+
+				if (request.hasParam(szParamName) && request.hasParam(szParamValue))
+				{
+					memset(szTemp, 0, 1024);
+
+					std::string paramName = request.getParam(szParamName);
+					std::string paramValue = request.getParam(szParamValue);
+
+					sprintf(szTemp, "insert into scheduled_script_test_page_params values (%ld, '%s', '%s')", pageID,
+										paramName.c_str(), paramValue.c_str());
+
+					std::string sql3 = szTemp;
+
+					if (!q.execute(sql3))
+					{
+						printf("Couldn't add script page param item...\n");
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+	
+	std::string strScriptID = request.getParam("script_id");
+	long scriptID = 0;
+	if (!strScriptID.empty())
+	{
+		scriptID = atol(strScriptID.c_str());
+	}
+	
+	long pageNumber = 0;
+	if (request.hasParam("number"))
+	{
+		pageNumber = atol(request.getParam("number").c_str());
+	}
+	
+	std::string desc = request.getParam("description");
+	std::string url = request.getParam("url");
+	
+	long requestType = 0;
+	std::string strRequestType = request.getParam("request_type");
+	if (strRequestType == "POST")
+		requestType = 1;
+	
+	std::string expectedPhrase = request.getParam("expected_phrase");
+	
+	std::string sql = "insert into scheduled_script_test_pages values(";
+	
+	char szTemp[1024];
+	memset(szTemp, 0, 1024);
+	sprintf(szTemp, "%ld, %ld, '%s', '%s', %ld, '%s')", 
+			scriptID, pageNumber, desc.c_str(), url.c_str(), requestType, expectedPhrase.c_str());
+	
+	sql.append(szTemp);
+	
+	SQLiteQuery q(*pDB, true);
+	
+	bool ret = q.execute(sql);
+	
+	if (ret)
+	{
+		long pageID = q.getInsertRowID();
+		
+		char szParamName[16];
+		char szParamValue[16];
+		
+		for (int i = 1; i < 50; i++)
+		{
+			memset(szParamName, 0, 16);
+			memset(szParamValue, 0, 16);
+			
+			sprintf(szParamName, "n%i", i);
+			sprintf(szParamValue, "v%i", i);
+			
+			if (request.hasParam(szParamName) && request.hasParam(szParamValue))
+			{
+				memset(szTemp, 0, 1024);
+				
+				std::string paramName = request.getParam(szParamName);
+				std::string paramValue = request.getParam(szParamValue);
+				
+				sprintf(szTemp, "insert into scheduled_script_test_page_params values (%ld, '%s', '%s')", pageID,
+						paramName.c_str(), paramValue.c_str());
+				
+				std::string sql3 = szTemp;
+				
+				if (!q.execute(sql3))
+				{
+					printf("Couldn't add script page param item...\n");
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
 	
 	return true;
 }

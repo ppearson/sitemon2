@@ -23,10 +23,9 @@
 #include <vector>
 
 #include "../http_engine.h"
-
 #include "../utils/thread.h"
-
 #include "../utils/sqlite_query.h"
+#include "../script_result.h"
 
 enum TestType
 {
@@ -37,12 +36,14 @@ enum TestType
 class ScheduledResult
 {
 public:
-	ScheduledResult(HTTPResponse &response, TestType type, unsigned long testID);
+	ScheduledResult(HTTPResponse &response, unsigned long testID);
+	ScheduledResult(ScriptResult &scriptResult, unsigned long testID);
 	
 	TestType	m_testType;
 	unsigned long	m_testID;
 	
-	HTTPResponse	m_response;	
+	HTTPResponse	m_response;
+	ScriptResult	m_scriptResult;
 };
 
 
@@ -54,13 +55,15 @@ public:
 	
 	virtual void run();
 	
-	void addResult(HTTPResponse &response, TestType type, unsigned long testID);
+	void addResult(HTTPResponse &response, unsigned long testID);
+	void addResult(ScriptResult &scriptResult, unsigned long testID);
 	
 	void storeResults();
 	
 protected:
 	
-	std::vector<ScheduledResult>	m_aResults;
+	std::vector<ScheduledResult>	m_aSingleResults;
+	std::vector<ScheduledResult>	m_aScriptResults;
 	Mutex							m_mutex;
 	
 	SQLiteDB *						m_pMainDB;	

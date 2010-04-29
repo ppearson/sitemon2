@@ -91,6 +91,33 @@ std::string HTTPFormCheckItem::getCode()
 	return content;
 }
 
+HTTPFormCheckInlineItem::HTTPFormCheckInlineItem(const std::string &label, const std::string &name, bool checked) : HTTPFormItem(label, name),
+					m_checked(checked)
+{
+	
+}
+
+std::string HTTPFormCheckInlineItem::getCode()
+{
+	std::string content;
+	
+	content += "\t<dt>&nbsp;</dt>\n";
+	
+	content += "\t<dd><input type=\"checkbox\" name=\"";
+	content += m_name;
+	content += "\"";
+	
+	if (m_checked)
+	{
+		content += " checked";
+	}
+	
+	content += "/>  ";
+	content += m_label + "</dd>\n";	
+	
+	return content;
+}
+
 HTTPFormSelectItem::HTTPFormSelectItem(const std::string &label, const std::string &name, int selected) : HTTPFormItem(label, name), 
 						m_selected(selected)
 {
@@ -193,4 +220,9 @@ std::string HTTPFormGenerator::getGeneratedCode()
 	content += "'/>\n</form>\n";	
 	
 	return content;
+}
+
+void HTTPFormGenerator::addSeparator()
+{
+	m_aItems.push_back("<div class=\"sep\"></div>\n");
 }

@@ -18,7 +18,12 @@
 
 #include "scheduled_results_saver.h"
 
-ScheduledResult::ScheduledResult(HTTPResponse &response, TestType type, unsigned long testID) : m_response(response), m_testType(type), m_testID(testID)
+ScheduledResult::ScheduledResult(HTTPResponse &response, unsigned long testID) : m_response(response), m_testType(SINGLE_TEST), m_testID(testID)
+{
+	
+}
+
+ScheduledResult::ScheduledResult(ScriptResult &scriptResult, unsigned long testID) : m_scriptResult(scriptResult), m_testType(SCRIPT_TEST), m_testID(testID)
 {
 	
 }
@@ -38,13 +43,24 @@ void ScheduledResultSaver::run()
 	}
 }
 
-void ScheduledResultSaver::addResult(HTTPResponse &response, TestType type, unsigned long testID)
+void ScheduledResultSaver::addResult(HTTPResponse &response, unsigned long testID)
 {
 	m_mutex.lock();
 	
-	ScheduledResult newResult(response, type, testID);
+	ScheduledResult newResult(response, testID);
 	
-	m_aResults.push_back(newResult);
+	m_aSingleResults.push_back(newResult);
+	
+	m_mutex.unlock();	
+}
+
+void ScheduledResultSaver::addResult(ScriptResult &scriptResult, unsigned long testID)
+{
+	m_mutex.lock();
+	
+	ScheduledResult newResult(scriptResult, testID);
+	
+	m_aScriptResults.push_back(newResult);
 	
 	m_mutex.unlock();	
 }
@@ -53,7 +69,7 @@ void ScheduledResultSaver::storeResults()
 {
 	m_mutex.lock();
 	
-	if (m_aResults.empty())
+	if (m_aSingleResults.empty() && m_aScriptResults.empty())
 	{
 		m_mutex.unlock();
 		return;
@@ -61,7 +77,7 @@ void ScheduledResultSaver::storeResults()
 	
 	SQLiteQuery q(*m_pMainDB, true);
 
-	std::vector<ScheduledResult>::iterator it = m_aResults.begin();
+	std::vector<ScheduledResult>::iterator it = m_aSingleResults.begin();
 	
 	// use transactions
 	if (!q.execute("BEGIN IMMEDIATE"))
@@ -72,7 +88,7 @@ void ScheduledResultSaver::storeResults()
 	}
 	
 	char szTemp[1024];
-	for (; it != m_aResults.end();)
+	for (; it != m_aSingleResults.end();)
 	{
 		ScheduledResult &result = *it;
 		
@@ -108,7 +124,7 @@ void ScheduledResultSaver::storeResults()
 		
 			// we can delete it now, although we don't know for certain that the commit was successful...
 						
-			it = m_aResults.erase(it);			
+			it = m_aSingleResults.erase(it);			
 		}
 		else
 		{

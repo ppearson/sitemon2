@@ -95,6 +95,6 @@ void SchedulerTestThread::run()
 	
 	if (m_pSaver)
 	{
-		m_pSaver->addResult(response, m_testType, m_testID);
+		m_pSaver->addResult(response, m_testID);
 	}
 }

@@ -117,10 +117,31 @@ std::string HTTPServerFileResponse::responseString()
 	return response;
 }
 
-HTTPServerTemplateFileResponse::HTTPServerTemplateFileResponse(const std::string &path, std::string &content) : m_path(path), m_content(content)
+HTTPServerTemplateFileResponse::HTTPServerTemplateFileResponse(const std::string &path, std::string &content) : m_path(path)
 {
+	m_templateArgs = 1;
 	
+	m_aContent.push_back(&content);
 }
+
+HTTPServerTemplateFileResponse::HTTPServerTemplateFileResponse(const std::string &path, std::string &content1, std::string &content2) : m_path(path)
+{
+	m_templateArgs = 2;
+	
+	m_aContent.push_back(&content1);
+	m_aContent.push_back(&content2);
+}
+
+HTTPServerTemplateFileResponse::HTTPServerTemplateFileResponse(const std::string &path, std::string &content1, std::string &content2, std::string &content3) : m_path(path)
+{
+	m_templateArgs = 3;
+	
+	m_aContent.push_back(&content1);
+	m_aContent.push_back(&content2);
+	m_aContent.push_back(&content3);
+}
+
+std::string templatePlaceholders[] = {"<%1%>", "<%2%>", "<%3%>"};
 
 std::string HTTPServerTemplateFileResponse::responseString()
 {
@@ -138,92 +159,56 @@ std::string HTTPServerTemplateFileResponse::responseString()
 	}
 	else
 	{
-		bool doneReplace = false;
-		std::string line;
-		char buf[1024];
-		
-		while (fileStream.getline(buf, 1024))
+		if (m_templateArgs == 1)
 		{
-			line.assign(buf);
+			bool doneReplace = false;
+			std::string line;
+			char buf[1024];
 			
-			// replace template with content if found
-			
-			if (!doneReplace) // only once per file - should make things slightly faster...
+			while (fileStream.getline(buf, 1024))
 			{
-				int nPlacement = line.find("<%%>");
+				line.assign(buf);
 				
-				if (nPlacement != -1)
+				// replace template with content if found
+				
+				if (!doneReplace) // only once per file - should make things slightly faster...
 				{
-					line.replace(nPlacement, 4, m_content);
-					doneReplace = true;
+					int nPlacement = line.find("<%%>");
+					
+					if (nPlacement != -1)
+					{
+						line.replace(nPlacement, 4, *m_aContent[0]);
+						doneReplace = true;
+					}
 				}
+				
+				content += line + "\n";		
 			}
-			
-			content += line + "\n";		
 		}
-	}
-	fileStream.close();
-	
-	char szTemp[64];
-	memset(szTemp, 0, 64);
-	
-	sprintf(szTemp, "HTTP/1.1 %i \n", returnCode);
-	response += szTemp;
-	
-	response += "Content-Type: text/html; charset=UTF-8\n";
-	
-	memset(szTemp, 0, 64);
-	sprintf(szTemp, "Content-Length: %ld\n\n", content.size());
-	response += szTemp;
-	
-	response += content + "\n";
-	
-	return response;
-}
-
-HTTPServerTemplateFileResponse2::HTTPServerTemplateFileResponse2(const std::string &path, std::string &content1, std::string &content2) : m_path(path), m_content1(content1), m_content2(content2)
-{
-	
-}
-
-std::string HTTPServerTemplateFileResponse2::responseString()
-{
-	std::string response;
-	
-	std::fstream fileStream(m_path.c_str(), std::ios::in);
-	
-	std::string content;
-	int returnCode = 200;
-	
-	if (fileStream.fail())
-	{
-		content = "Template file not found.\n";
-		returnCode = 404;
-	}
-	else
-	{
-		std::string line;
-		char buf[1024];
-		
-		while (fileStream.getline(buf, 1024))
+		else
 		{
-			line.assign(buf);
+			std::string line;
+			char buf[1024];
 			
-			// replace template with content if found
+			int thisArg = 0;
 			
-			int nPlacement1 = line.find("<%1%>");
-			if (nPlacement1 != -1)
+			while (fileStream.getline(buf, 1024))
 			{
-				line.replace(nPlacement1, 5, m_content1);
-			}
-			
-			int nPlacement2 = line.find("<%2%>");
-			if (nPlacement2 != -1)
-			{
-				line.replace(nPlacement2, 5, m_content2);
-			}
-			
-			content += line + "\n";		
+				line.assign(buf);
+				
+				// replace template with content if found
+				
+				if (thisArg < m_templateArgs)
+				{				
+					int nPlacement = line.find(templatePlaceholders[thisArg]);
+					if (nPlacement != -1)
+					{
+						line.replace(nPlacement, 5, *m_aContent[thisArg++]);
+					}
+				}
+								
+				content += line + "\n";		
+			}			
 		}
 	}
 	fileStream.close();
@@ -244,3 +229,4 @@ std::string HTTPServerTemplateFileResponse2::responseString()
 	
 	return response;
 }
+
