@@ -854,51 +854,53 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 	std::string sql2 = "select name, value from scheduled_script_test_page_params where page_id = ";
 	sql2.append(szPageID);
 	
+	char szLabel[16];
+	
 	char szEditName[16];
 	char szEditValue[16];
 	
-	q.getResult(sql2);
+	
 	int paramNum = 1;
-	while (q.fetchNext())
+	
+	if (q.getResult(sql2))
 	{
 		formGen.addSeparator();
+	
+		while (q.fetchNext())
+		{
+			std::string paramName = q.getString();
+			std::string paramValue = q.getString();
+			
+			memset(szLabel, 0, 16);
+			memset(szEditName, 0, 16);
+			memset(szEditValue, 0, 16);
+			
+			sprintf(szLabel, "Param %i", paramNum);
+			sprintf(szEditName, "n%i", paramNum);
+			sprintf(szEditValue, "v%i", paramNum);
+			
+			formGen.addParameterPair(szLabel, szEditName, paramName, szEditValue, paramValue);
 		
-		std::string paramName = q.getString();
-		std::string paramValue = q.getString();
-		
-		memset(szEditName, 0, 16);
-		memset(szEditValue, 0, 16);
-		
-		sprintf(szEditName, "n%i", paramNum);
-		sprintf(szEditValue, "v%i", paramNum);
-		
-		HTTPFormTextItem newName("Param Name", szEditName, 40, paramName);
-		HTTPFormTextItem newValue("Param Value", szEditValue, 80, paramValue);
-		
-		formGen.addItem(newName);
-		formGen.addItem(newValue);		
-		
-		paramNum ++;
+			paramNum ++;
+		}
 	}
+	
+	formGen.addSeparator();
 	
 	// and some blank ones
 	
 	for (int i = 0; i < 5; i++)
 	{
-		formGen.addSeparator();
-		
+		memset(szLabel, 0, 16);
 		memset(szEditName, 0, 16);
 		memset(szEditValue, 0, 16);
 		
+		sprintf(szLabel, "Param %i", paramNum);
 		sprintf(szEditName, "n%i", paramNum);
 		sprintf(szEditValue, "v%i", paramNum);
 		
-		HTTPFormTextItem newName("Param Name", szEditName, 40);
-		HTTPFormTextItem newValue("Param Value", szEditValue, 80);
-		
-		formGen.addItem(newName);
-		formGen.addItem(newValue);		
-		
+		formGen.addParameterPair(szLabel, szEditName, "", szEditValue, "");
+	
 		paramNum ++;		
 	}
 	
@@ -960,6 +962,9 @@ bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::st
 	formGen.addItem(formPauseTime);
 	formGen.addItem(formPageID);
 	
+	formGen.addSeparator();
+	
+	char szLabel[16];
 	char szEditName[16];
 	char szEditValue[16];
 
@@ -969,19 +974,15 @@ bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::st
 	
 	for (int i = 0; i < 8; i++)
 	{
-		formGen.addSeparator();
-		
+		memset(szLabel, 0, 16);
 		memset(szEditName, 0, 16);
 		memset(szEditValue, 0, 16);
 		
+		sprintf(szLabel, "Param %i", paramNum);
 		sprintf(szEditName, "n%i", paramNum);
 		sprintf(szEditValue, "v%i", paramNum);
 		
-		HTTPFormTextItem newName("Param Name", szEditName, 40);
-		HTTPFormTextItem newValue("Param Value", szEditValue, 80);
-		
-		formGen.addItem(newName);
-		formGen.addItem(newValue);		
+		formGen.addParameterPair(szLabel, szEditName, "", szEditValue, "");
 		
 		paramNum ++;		
 	}

@@ -235,3 +235,22 @@ void HTTPFormGenerator::addSeparator()
 {
 	m_aItems.push_back("<div class=\"sep\"></div>\n");
 }
+
+void HTTPFormGenerator::addParameterPair(const std::string &label, const std::string &name1, const std::string &value1, const std::string &name2, const std::string &value2)
+{
+	std::string newCode;
+	
+	newCode += "\t<dt>";
+	newCode += label;
+	newCode += "</dt><dd><input type=\"text\" name=\"";
+	
+	newCode += name1 + "\" value=\"";
+	newCode += value1;
+	newCode += "\" size=\"50\"> <input type=\"text\" name=\"";
+	
+	newCode += name2 + "\" value=\"";
+	newCode += value2;
+	newCode += "\" size=\"80\"> </dd>\n";
+	
+	m_aItems.push_back(newCode);	
+}

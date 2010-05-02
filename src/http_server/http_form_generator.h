@@ -114,6 +114,8 @@ public:
 	
 	void addItem(HTTPFormItem &item) { m_aItems.push_back(item.getCode()); }
 	
+	void addParameterPair(const std::string &label, const std::string &name1, const std::string &value1, const std::string &name2, const std::string &value2);
+	
 	void addSeparator();
 
 protected:
