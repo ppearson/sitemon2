@@ -24,6 +24,9 @@
 
 #include <ctime>
 
+#include "../http_request.h"
+#include "../script.h"
+
 #include "../utils/thread.h"
 
 #include "../utils/sqlite_db.h"
@@ -34,14 +37,18 @@ class ScheduledItem
 {
 public:
 	ScheduledItem() { }
-	ScheduledItem(unsigned long id, const std::string &description, unsigned long interval, unsigned long currentTime);
+	ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, unsigned long currentTime);
 	~ScheduledItem() { }
 	
 	void setEnabled(bool enabled) { m_enabled = enabled; }
-	void setTestType(TestType type) { m_testType = type; }
 	void setTestID(unsigned long testID) { m_testID = testID; }
 	void setInterval(unsigned long interval) { m_interval = interval; }
 	void setDescription(std::string &description) { m_description = description; }
+
+	void setRequest(const HTTPRequest &request) { m_request = request; }
+	void setScript(const Script &script) { m_script = script; }
+	
+	void setModifiedTimestamp(unsigned long timestamp) { m_modifiedTimestamp = timestamp; }
 	
 	void incrementNextTime();
 	
@@ -50,8 +57,14 @@ public:
 	unsigned long	getInterval() const { return m_interval; }
 	std::string		getDescription() const { return m_description; }
 	unsigned long	getNextTime() const { return m_nextTime; }
-	TestType		getTestType() const { return m_testType; }
 	unsigned long	getTestID() const { return m_testID; }
+
+	bool			isSingle() const { return m_single; }
+
+	HTTPRequest & getRequest() { return m_request; }
+	Script & getScript() { return m_script; }
+	
+	unsigned long	getModifiedTimestamp() { return m_modifiedTimestamp; }
 	
 protected:
 	unsigned long	m_id;
@@ -60,10 +73,14 @@ protected:
 	std::string		m_description;
 	
 	unsigned long	m_nextTime;
-	
-	TestType		m_testType;
-	
-	unsigned long	m_testID;	
+		
+	unsigned long	m_testID;
+
+	bool			m_single;
+	unsigned long	m_modifiedTimestamp;
+
+	HTTPRequest		m_request;
+	Script			m_script;
 };
 
 class Scheduler : public Thread
@@ -78,8 +95,10 @@ public:
 
 protected:
 	SQLiteDB	*m_pMainDB;
+	
 	Mutex		m_scheduledItemsLock;
-	std::vector<ScheduledItem> m_aScheduledItems;
+	std::vector<ScheduledItem> m_aScheduledSingleItems;
+	std::vector<ScheduledItem> m_aScheduledScriptItems;
 	
 	ScheduledResultSaver	*	m_pSaver;
 };

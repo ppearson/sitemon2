@@ -136,7 +136,7 @@ bool ProfileTestEngine::start()
 	
 	int minute = 0;
 	
-	m_aThreads.reserve(m_maxNumberOfThreads);
+	m_aThreads.resize(m_maxNumberOfThreads, NULL);
 	
 	while (true && minute < m_runLength)
 	{

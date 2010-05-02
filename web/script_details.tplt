@@ -1,0 +1,34 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+</head>
+<body>
+<ul id="sitenav">
+<li><a href="/">Home</a></li>
+<li><a href="/history">History</a></li>
+<li><a href="/monitoring">Monitoring</a></li>
+<li><a href="/load_testing">Load Testing</a></li>
+<li><a href="/help.html">Help</a></li>
+</ul>
+<br>
+<table>
+<tr>
+	<th scope="col" width="40">Page</th>
+	<th scope="col" width="50">Time</th>
+	<th scope="col" width="200">URL</th>
+	<th scope="col" width="50">Error</th>
+	<th scope="col" width="80">Response Code</th>
+	<th scope="col" width="80">Lookup time</th>
+	<th scope="col" width="80">Connect time</th>
+	<th scope="col" width="80">Data start time</th>
+	<th scope="col" width="80">Total time</th>
+	<th scope="col" width="80">Redirect count</th>
+	<th scope="col" width="80">Content Size</th>
+	<th scope="col" width="80">Download Size</th>
+</tr>
+<%%>
+</table>
+
+
+</body>
+</html>

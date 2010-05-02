@@ -36,9 +36,18 @@ HTTPFormTextItem::HTTPFormTextItem(const std::string &label, const std::string &
 }
 
 HTTPFormTextItem::HTTPFormTextItem(const std::string &label, const std::string &name, int size, const std::string &value) :
-HTTPFormItem(label, name), m_size(size), m_value(value)
+						HTTPFormItem(label, name), m_size(size), m_value(value)
 {
 	
+}
+
+HTTPFormTextItem::HTTPFormTextItem(const std::string &label, const std::string &name, int size, int value) :
+						HTTPFormItem(label, name), m_size(size)
+{
+	char szTemp[12];
+	memset(szTemp, 0, 12);
+	sprintf(szTemp, "%i", value);
+	m_value.assign(szTemp);
 }
 
 std::string HTTPFormTextItem::getCode()

@@ -59,6 +59,8 @@ public:
 	void addResult(ScriptResult &scriptResult, unsigned long testID);
 	
 	void storeResults();
+	void storeSingleResults();
+	void storeScriptResults();
 	
 protected:
 	

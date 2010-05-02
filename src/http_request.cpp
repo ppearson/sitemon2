@@ -30,6 +30,19 @@ HTTPRequest::HTTPRequest(const std::string &url) : m_url(url), m_requestType(HTT
 
 }
 
+HTTPRequest::HTTPRequest(const std::string &url, const std::string &description, bool post) : m_url(url), m_description(description), m_pauseTime(0), m_acceptCompressed(false),
+								m_storeHeader(true), m_storeBody(true), m_downloadContent(false), m_connectTimeout(30), m_totalTimeout(240)
+{
+	if (post)
+	{
+		m_requestType = HTTP_POST;
+	}
+	else
+	{
+		m_requestType = HTTP_GET;
+	}
+}
+
 void HTTPRequest::addParameter(std::string &name, std::string &value)
 {
 	HTTPParameter param;

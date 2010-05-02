@@ -238,7 +238,7 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 		std::string strDownloadComponents = (downloadComponents == 1) ? "YES" : "NO";
 
 		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_monitor_test?test_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
-				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_monitortest?testid=%ld\">Results</a></td>\n</tr>\n",
+				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_single_test?testid=%ld\">Results</a></td>\n</tr>\n",
 						testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
 		
 		output.append(szTemp);		
@@ -270,7 +270,7 @@ bool addSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "'%s', '%s', '%s', %s, %ld, %ld)", desc.c_str(), url.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, downloadComponents);
+	sprintf(szTemp, "'%s', '%s', '%s', %s, %ld, %ld, datetime('now'))", desc.c_str(), url.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, downloadComponents);
 	
 	sql.append(szTemp);
 	
@@ -306,7 +306,8 @@ bool editSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::str
 	
 	char szTemp[2048];
 	memset(szTemp, 0, 2048);
-	sprintf(szTemp, "enabled = %ld, description = '%s', url = '%s', expected_phrase = '%s', interval = %s, accept_compressed = %ld, download_components = %ld where rowid = %ld", enabled, desc.c_str(),
+	sprintf(szTemp, "enabled = %ld, description = '%s', url = '%s', expected_phrase = '%s', interval = %s, accept_compressed = %ld,"
+			"download_components = %ld, modified_timestamp = datetime('now') where rowid = %ld", enabled, desc.c_str(),
 			url.c_str(), expectedPhrase.c_str(), interval.c_str(), compressed, downloadComponents, rowid);
 	
 	sql.append(szTemp);
@@ -611,7 +612,7 @@ bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "'%s', '%s', %ld, %ld)", desc.c_str(), interval.c_str(), compressed, downloadComponents);
+	sprintf(szTemp, "'%s', '%s', %ld, %ld, datetime('now'))", desc.c_str(), interval.c_str(), compressed, downloadComponents);
 	
 	sql.append(szTemp);
 	
@@ -644,7 +645,7 @@ bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 				std::string pageDesc = request.getParam(szDesc);
 				std::string pageURL = request.getParam(szURL);
 
-				sprintf(szTemp, "insert into scheduled_script_test_pages values (%ld, %ld, '%s', '%s', %i, '')", scriptID, pageNum,
+				sprintf(szTemp, "insert into scheduled_script_test_pages values (%ld, %ld, '%s', '%s', %i, '', 5)", scriptID, pageNum,
 									pageDesc.c_str(), pageURL.c_str(), 0);
 
 				std::string sql2 = szTemp;
@@ -795,7 +796,7 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 
 	SQLiteQuery q(*pDB);
 	
-	std::string sql = "select description, url, request_type, expected_phrase from scheduled_script_test_pages where rowid = ";
+	std::string sql = "select script_id, page_num, description, url, request_type, expected_phrase, pause_time from scheduled_script_test_pages where rowid = ";
 	
 	char szPageID[16];
 	memset(szPageID, 0, 16);
@@ -811,11 +812,13 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 		return false;
 	}
 	
+	long scriptID = q.getLong();
 	std::string pageNumber = q.getString();
 	std::string description = q.getString();
 	std::string url = q.getString();
 	long requestType = q.getLong();
 	std::string expectedPhrase = q.getString();
+	long pauseTime = q.getLong();
 	
 	HTTPFormGenerator formGen("edit_script_page", "Update", true);
 	
@@ -830,14 +833,19 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 	
 	HTTPFormTextItem formExpectedPhrase("Expected Phrase", "expected_phrase", 50, expectedPhrase);
 	
+	HTTPFormTextItem formPauseTime("Pause time", "pause_time", 20, pauseTime);
+	
 	HTTPFormHiddenItem formPageID("page_id", pageID);
+	HTTPFormHiddenItem formScriptID("script_id", scriptID);
 	
 	formGen.addItem(formNumber);
 	formGen.addItem(formDescription);
 	formGen.addItem(formURL);
 	formGen.addItem(formRequestType);
 	formGen.addItem(formExpectedPhrase);
+	formGen.addItem(formPauseTime);
 	formGen.addItem(formPageID);
+	formGen.addItem(formScriptID);
 	
 	// now list the page parameters, plus some blank ones
 	
@@ -940,6 +948,8 @@ bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::st
 	
 	HTTPFormTextItem formExpectedPhrase("Expected Phrase", "expected_phrase", 50, "");
 	
+	HTTPFormTextItem formPauseTime("Pause time", "pause_time", 20, "5");
+	
 	HTTPFormHiddenItem formPageID("script_id", scriptID);
 	
 	formGen.addItem(formNumber);
@@ -947,6 +957,7 @@ bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::st
 	formGen.addItem(formURL);
 	formGen.addItem(formRequestType);
 	formGen.addItem(formExpectedPhrase);
+	formGen.addItem(formPauseTime);
 	formGen.addItem(formPageID);
 	
 	char szEditName[16];
@@ -1012,7 +1023,7 @@ bool editScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::str
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "enabled = %ld, description = '%s', interval = '%s', accept_compressed = %ld, download_components = %ld where rowid = %ld",
+	sprintf(szTemp, "enabled = %ld, description = '%s', interval = '%s', accept_compressed = %ld, download_components = %ld, modified_timestamp = datetime('now') where rowid = %ld",
 					enabled, desc.c_str(), interval.c_str(), compressed, downloadComponents, testID);
 	
 	sql.append(szTemp);
@@ -1039,6 +1050,8 @@ bool editScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std:
 		pageID = atol(strPageID.c_str());
 	}
 	
+	std::string strScriptID = request.getParam("script_id");
+		
 	std::string number = request.getParam("number");
 
 	std::string desc = request.getParam("description");
@@ -1050,19 +1063,29 @@ bool editScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std:
 		requestType = 1;
 
 	std::string expectedPhrase = request.getParam("expected_phrase");
+	
+	long pauseTime = 0;
+	std::string strPauseTime = request.getParam("pause_time");
+	if (!strPauseTime.empty())
+		pauseTime = atol(strPauseTime.c_str());
 
 	std::string sql = "update scheduled_script_test_pages set ";
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "number = '%s', description = '%s', url = '%s', request_type = %ld, expected_phrase = '%s' where rowid = %ld", 
-					number.c_str(), desc.c_str(), url.c_str(), requestType, expectedPhrase.c_str(), pageID);
+	sprintf(szTemp, "page_num = '%s', description = '%s', url = '%s', request_type = %ld, expected_phrase = '%s', pause_time = %ld where rowid = %ld", 
+					number.c_str(), desc.c_str(), url.c_str(), requestType, expectedPhrase.c_str(), pauseTime, pageID);
 	
 	sql.append(szTemp);
 	
 	SQLiteQuery q(*pDB, true);
 	
-	bool ret = q.execute(sql);
+	// update script modified timestamp first
+	std::string scriptSQL = "update scheduled_script_tests set modified_timestamp = datetime('now') where rowid = " + strScriptID;
+
+	bool ret = q.execute(scriptSQL);
+	
+	ret = q.execute(sql);
 
 	if (ret)
 	{
@@ -1151,12 +1174,17 @@ bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::
 	
 	std::string expectedPhrase = request.getParam("expected_phrase");
 	
+	long pauseTime = 0;
+	std::string strPauseTime = request.getParam("pause_time");
+	if (!strPauseTime.empty())
+		pauseTime = atol(strPauseTime.c_str());
+	
 	std::string sql = "insert into scheduled_script_test_pages values(";
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "%ld, %ld, '%s', '%s', %ld, '%s')", 
-			scriptID, pageNumber, desc.c_str(), url.c_str(), requestType, expectedPhrase.c_str());
+	sprintf(szTemp, "%ld, %ld, '%s', '%s', %ld, '%s', %ld)", 
+			scriptID, pageNumber, desc.c_str(), url.c_str(), requestType, expectedPhrase.c_str(), pauseTime);
 	
 	sql.append(szTemp);
 	
@@ -1166,6 +1194,11 @@ bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::
 	
 	if (ret)
 	{
+		// update script modified timestamp first
+		std::string scriptSQL = "update scheduled_script_tests set modified_timestamp = datetime('now') where rowid = " + strScriptID;
+		
+		ret = q.execute(scriptSQL);
+		
 		long pageID = q.getInsertRowID();
 		
 		char szParamName[16];
@@ -1204,7 +1237,148 @@ bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::
 	}
 	else
 	{
+		output = "Couldn't add new script page to db.";
 		return false;
+	}
+	
+	return true;
+}
+
+bool getScriptScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}	
+	
+	char szTestID[12];
+	memset(szTestID, 0, 12);
+	sprintf(szTestID, "%d", testID);
+	
+	{
+		std::string sql = "select description from scheduled_script_tests where rowid = ";
+		sql.append(szTestID);
+		
+		SQLiteQuery q(*pDB);
+		
+		q.getResult(sql);
+		if (q.fetchNext())
+		{
+			std::string desc = q.getString();
+					
+			description = desc;			
+		}		
+	}
+	
+	std::string sql = "select rowid, datetime(run_time,'localtime') as rtime, overall_error_code, last_response_code, steps from scheduled_script_test_results where test_id = ";
+	sql.append(szTestID);
+	sql += " order by rowid desc limit 40";
+	
+	SQLiteQuery q(*pDB);
+	
+	output = "";
+	
+	char szTemp[2048];
+	
+	q.getResult(sql);
+	while (q.fetchNext())
+	{
+		memset(szTemp, 0, 2048);
+		
+		long runID = q.getLong();
+		std::string time = q.getString();
+		long overallErrorCode = q.getLong();
+		long lastResponseCode = q.getLong();
+		long steps = q.getLong();
+		
+		char szResult[6];
+		memset(szResult, 0, 6);
+		if (overallErrorCode == 0)
+		{
+			strcat(szResult, "OK");
+		}
+		else
+		{
+			sprintf(szResult, "%ld", overallErrorCode);
+		}
+		
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%i</td>\n <td><a href=\"/script_details?test_id=%i&run_id=%ld\">View Details</a></td>\n</tr>\n",
+				time.c_str(), szResult,	lastResponseCode, steps, testID, runID);
+		
+		output.append(szTemp);		
+	}
+
+	return true;
+}
+
+bool getScriptScheduledTestResultsDetails(SQLiteDB *pDB, int testID, long runID, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+	
+	char szTestID[12];
+	memset(szTestID, 0, 12);
+	sprintf(szTestID, "%ld", testID);
+	
+	char szRunID[12];
+	memset(szRunID, 0, 12);
+	sprintf(szRunID, "%ld", runID);
+	
+	std::string sql = "select datetime(run_time,'localtime') as rtime, requested_url, error_code, response_code, lookup_time, connect_time, data_start_time, total_time,"
+						"redirect_count, download_size, content_size, component_download_size, component_content_size from scheduled_script_test_page_results where test_id = ";
+	sql.append(szTestID);
+	sql += " and run_id = ";
+	sql.append(szRunID);
+	sql += " order by page_num";
+	
+	SQLiteQuery q(*pDB);
+	
+	output = "";
+	
+	char szTemp[2048];
+	
+	int page = 1;
+	
+	q.getResult(sql);
+	while (q.fetchNext())
+	{
+		memset(szTemp, 0, 2048);
+		
+		std::string time = q.getString();
+		std::string url = q.getString();
+		long errorCode = q.getLong();
+		long responseCode = q.getLong();
+		float lookupTime = q.getDouble();
+		float connectTime = q.getDouble();
+		float dataStartTime = q.getDouble();
+		float totalTime = q.getDouble();
+		long redirectCount = q.getLong();
+		long downloadSize = q.getLong();
+		long contentSize = q.getLong();
+		long componentDownloadSize = q.getLong();
+		long componentContentSize = q.getLong();
+		
+		char szResult[6];
+		memset(szResult, 0, 6);
+		if (errorCode == 0)
+		{
+			strcat(szResult, "OK");
+		}
+		else
+		{
+			sprintf(szResult, "%ld", errorCode);
+		}
+		
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%i</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n</tr>\n",
+				page, time.c_str(), url.c_str(), szResult, responseCode, lookupTime, connectTime, dataStartTime, totalTime, redirectCount, downloadSize, contentSize);
+		
+		output.append(szTemp);
+		
+		page ++;
 	}
 	
 	return true;

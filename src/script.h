@@ -94,6 +94,10 @@ public:
 	
 	bool hasLoadTestSettings() { return m_hasLoadTestSettings; }
 	LoadTestSettings &getLoadTestSettings() { return m_loadTestSettings; }
+	
+	void addStep(HTTPRequest &request) { m_aSteps.push_back(request); }
+	
+	void clearSteps() { m_aSteps.clear(); }
 
 protected:
 	void loadRequestElement(TiXmlElement *pElement);

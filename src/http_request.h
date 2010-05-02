@@ -53,6 +53,7 @@ class HTTPRequest
 public:
 	HTTPRequest();
 	HTTPRequest(const std::string &url);
+	HTTPRequest(const std::string &url, const std::string &description, bool post = false);
 	
 	const RequestType getRequestType() { return m_requestType; }
 	const std::string getDescription() { return m_description; }
@@ -99,6 +100,8 @@ public:
 
 	bool hasParameters() const { return !m_aParameters.empty(); }
 	bool hasCookies() const { return !m_aCookies.empty(); }
+	
+	void clearParameters() { m_aParameters.clear(); }
 
 	inline std::vector<HTTPParameter>::iterator params_begin() { return m_aParameters.begin(); }
 	inline std::vector<HTTPParameter>::iterator params_end() { return m_aParameters.end(); }

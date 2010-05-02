@@ -41,6 +41,7 @@ public:
 	HTTPFormTextItem(const std::string &label, const std::string &name, int size);
 	HTTPFormTextItem(const std::string &label, const std::string &name, int size, std::string &value);
 	HTTPFormTextItem(const std::string &label, const std::string &name, int size, const std::string &value);
+	HTTPFormTextItem(const std::string &label, const std::string &name, int size, int value);
 
 	virtual ~HTTPFormTextItem() { }
 

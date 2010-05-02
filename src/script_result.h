@@ -36,6 +36,8 @@ public:
 	
 	HTTPResponse &		getFirstResponse() { return m_stepResponses.front(); }
 	
+	int					getResponseCount() { return m_stepResponses.size(); }
+	
 	inline std::vector<HTTPResponse>::iterator begin() { return m_stepResponses.begin(); }
 	inline std::vector<HTTPResponse>::iterator end() { return m_stepResponses.end(); }
 	

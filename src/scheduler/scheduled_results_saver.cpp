@@ -75,15 +75,22 @@ void ScheduledResultSaver::storeResults()
 		return;
 	}
 	
-	SQLiteQuery q(*m_pMainDB, true);
+	storeSingleResults();
+	storeScriptResults();
+		
+	m_mutex.unlock();
+}
 
+void ScheduledResultSaver::storeSingleResults()
+{
+	SQLiteQuery q(*m_pMainDB, true);
+	
 	std::vector<ScheduledResult>::iterator it = m_aSingleResults.begin();
 	
 	// use transactions
 	if (!q.execute("BEGIN IMMEDIATE"))
 	{
 		printf("problem starting results saving transaction\n");
-		m_mutex.unlock();
 		return;
 	}
 	
@@ -95,7 +102,7 @@ void ScheduledResultSaver::storeResults()
 		std::string sql = "insert into scheduled_single_test_results values (";
 		
 		memset(szTemp, 0, 1024);
-		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %ld, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp, result.m_response.errorCode,
+		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp, result.m_response.errorCode,
 				result.m_response.responseCode, result.m_response.lookupTime, result.m_response.connectTime, result.m_response.dataStartTime, result.m_response.totalTime,
 				result.m_response.redirectCount, result.m_response.contentSize, result.m_response.downloadSize, result.m_response.componentContentSize, result.m_response.componentDownloadSize);
 		
@@ -115,21 +122,21 @@ void ScheduledResultSaver::storeResults()
 				const HTTPComponentResponse &compResult = *itComponent;
 				std::string sqlComponentResults = "insert into scheduled_single_test_component_results values(";
 				memset(szTemp, 0, 1024);
-				sprintf(szTemp, "%ld, %ld, %ld, %ld, '%s', %f, %f, %f, %f, %ld, %ld)", result.m_testID, runID, compResult.errorCode, compResult.responseCode, compResult.requestedURL.c_str(),
+				sprintf(szTemp, "%ld, %ld, %i, %ld, '%s', %f, %f, %f, %f, %ld, %ld)", result.m_testID, runID, compResult.errorCode, compResult.responseCode, compResult.requestedURL.c_str(),
 						compResult.lookupTime, compResult.connectTime, compResult.dataStartTime, compResult.totalTime, compResult.contentSize, compResult.downloadSize);
 				sqlComponentResults.append(szTemp);
 				
 				q.execute(sqlComponentResults);	
 			}
-		
+			
 			// we can delete it now, although we don't know for certain that the commit was successful...
-						
+			
 			it = m_aSingleResults.erase(it);			
 		}
 		else
 		{
 			// todo: need to see if the error wasn't busy and if so probably delete it, but for now just get the next one
-
+			
 			++it;
 		}
 	}
@@ -137,9 +144,74 @@ void ScheduledResultSaver::storeResults()
 	if (!q.execute("COMMIT"))
 	{
 		printf("problem committing results transaction\n");
-		m_mutex.unlock();
+		return;
+	}
+}
+
+void ScheduledResultSaver::storeScriptResults()
+{
+	SQLiteQuery q(*m_pMainDB, true);
+	
+	std::vector<ScheduledResult>::iterator it = m_aScriptResults.begin();
+	
+	// use transactions
+	if (!q.execute("BEGIN IMMEDIATE"))
+	{
+		printf("problem starting results saving transaction\n");
 		return;
 	}
 	
-	m_mutex.unlock();
+	char szTemp[1024];
+	for (; it != m_aScriptResults.end();)
+	{
+		ScheduledResult &result = *it;
+		
+		std::string sql = "insert into scheduled_script_test_results values (";
+		
+		memset(szTemp, 0, 1024);
+		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %i)", result.m_testID, result.m_scriptResult.getRequestStartTime(), result.m_scriptResult.getOverallError(),
+				result.m_scriptResult.getLastResponseCode(), result.m_scriptResult.getResponseCount());
+		
+		sql.append(szTemp);
+		
+		if (q.execute(sql))
+		{
+			long runID = q.getInsertRowID();
+			
+			// now save individual results
+			
+			std::vector<HTTPResponse>::const_iterator itResponse = result.m_scriptResult.begin();
+			for (int page = 1; itResponse != result.m_scriptResult.end(); ++itResponse, page++)
+			{
+				const HTTPResponse &resp = *itResponse;
+				std::string sqlPageResults = "insert into scheduled_script_test_page_results values(";
+				memset(szTemp, 0, 1024);
+				sprintf(szTemp, "%ld, %ld, %i, datetime(%ld, 'unixepoch'), '%s', %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, runID, page, resp.timestamp, resp.requestedURL.c_str(),
+						resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime, resp.totalTime, resp.redirectCount, resp.contentSize, resp.downloadSize,
+						resp.componentContentSize, resp.componentDownloadSize);
+				sqlPageResults.append(szTemp);
+				
+				if (!q.execute(sqlPageResults))
+				{
+					printf("Problem saving individual page test result for script...\n");
+				}
+			}
+			
+			// we can delete it now, although we don't know for certain that the commit was successful...
+			
+			it = m_aScriptResults.erase(it);			
+		}
+		else
+		{
+			// todo: need to see if the error wasn't busy and if so probably delete it, but for now just get the next one
+			
+			++it;
+		}
+	}
+	
+	if (!q.execute("COMMIT"))
+	{
+		printf("problem committing results transaction\n");
+		return;
+	}
 }

@@ -27,9 +27,12 @@ bool createNeededSchedulerTables(SQLiteDB *pDB);
 bool createScheduledSingleTestsTable(SQLiteDB *pDB);
 bool createScheduledSingleTestResultsTable(SQLiteDB *pDB);
 bool createScheduledScriptTestsTables(SQLiteDB *pDB);
-bool createScheduledSingleTestResultsTables(SQLiteDB *pDB);
+bool createScheduledScriptTestResultsTables(SQLiteDB *pDB);
 
 bool getScheduledSingleTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &items);
 bool updateScheduledSingleTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items);
+
+bool getScheduledScriptTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &items);
+bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items);
 
 #endif

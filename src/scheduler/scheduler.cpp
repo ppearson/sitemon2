@@ -45,27 +45,49 @@ void Scheduler::run()
 	
 	buildScheduledItemsFromDB(m_pMainDB);	
 	
-	int count = 0;
 	while (m_isRunning)
 	{
+		// strictly speaking, these mutexes aren't needed, as this function is the only thing which controls
+		// the vectors of ScheduledItems. However, they guarentee that the processor doesn't start doing some
+		// out-of-order execution (however unlikely) which could mess things up
 		m_scheduledItemsLock.lock();
-		
-		count ++;
 		
 		time_t timeNow;
 		time(&timeNow);
 
-		std::vector<ScheduledItem>::iterator it = m_aScheduledItems.begin();
-		for (; it != m_aScheduledItems.end(); ++it)
+		std::vector<ScheduledItem>::iterator it = m_aScheduledSingleItems.begin();
+		for (; it != m_aScheduledSingleItems.end(); ++it)
 		{
 			ScheduledItem &item = *it;
 			
 			if (item.isEnabled() && item.getNextTime() < timeNow)
 			{
-				printf("Firing off: %ld\t%s\n", item.getID(), item.getDescription().c_str());
+				printf("Firing off single test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
 
-				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, m_pMainDB, item.getTestType(), item.getTestID());
+				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, item);
 
+				if (pNewTest)
+				{
+					pNewTest->start();
+				}
+				
+				item.incrementNextTime();				
+			}
+		}
+		
+		////
+		
+		it = m_aScheduledScriptItems.begin();
+		for (; it != m_aScheduledScriptItems.end(); ++it)
+		{
+			ScheduledItem &item = *it;
+			
+			if (item.isEnabled() && item.getNextTime() < timeNow)
+			{
+				printf("Firing off script test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
+				
+				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, item);
+				
 				if (pNewTest)
 				{
 					pNewTest->start();
@@ -80,7 +102,8 @@ void Scheduler::run()
 		sleep(19);
 		
 		m_scheduledItemsLock.lock();
-		updateScheduledSingleTests(m_pMainDB, m_aScheduledItems);
+		updateScheduledSingleTests(m_pMainDB, m_aScheduledSingleItems);
+		updateScheduledScriptTests(m_pMainDB, m_aScheduledScriptItems);
 		m_scheduledItemsLock.unlock();
 
 		sleep(1);
@@ -90,23 +113,23 @@ void Scheduler::run()
 	{
 		delete m_pSaver;
 	}
-	
-	if (m_pMainDB)
-		delete m_pMainDB;
 }
 
 void Scheduler::buildScheduledItemsFromDB(SQLiteDB *pDB)
 {
 	m_scheduledItemsLock.lock();
 
-	m_aScheduledItems.clear();
-	getScheduledSingleTestsFromDB(pDB, m_aScheduledItems);
+	m_aScheduledSingleItems.clear();
+	getScheduledSingleTestsFromDB(pDB, m_aScheduledSingleItems);
+	
+	m_aScheduledScriptItems.clear();
+	getScheduledScriptTestsFromDB(pDB, m_aScheduledScriptItems);
 	
 	m_scheduledItemsLock.unlock();
 }
 
-ScheduledItem::ScheduledItem(unsigned long id, const std::string &description, unsigned long interval, unsigned long currentTime) : 
-								m_id(id), m_description(description), m_interval(interval), m_enabled(true)
+ScheduledItem::ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, unsigned long currentTime) : 
+								m_single(single), m_id(id), m_description(description), m_interval(interval), m_enabled(true)
 {
 	m_nextTime = currentTime + (interval * TIME_MULTIPLIER);
 }
@@ -115,3 +138,4 @@ void ScheduledItem::incrementNextTime()
 {
 	m_nextTime += (m_interval * TIME_MULTIPLIER);
 }
+

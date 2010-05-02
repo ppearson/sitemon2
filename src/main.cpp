@@ -77,28 +77,12 @@ int main(int argc, char *const argv[])
 		// it's the easiest way of doing things
 		for (int i = 1; i < argc; i++)
 		{
-			if (strcmp(argv[i], "-s") == 0 && i < argc)
+			if (strcmp(argv[i], "script") == 0 && i < argc)
 			{
 				isScript = true;
 				szScript = (char *)argv[i++ + 1];
 			}
-			else if (strcmp(argv[i], "-sm") == 0 && i < argc)
-			{
-				isScript = true;
-				concurrent = true;
-				szScript = (char *)argv[i + 1];
-				
-				threads = atoi((char *)argv[i + 2]);
-				
-				i += 2;
-				
-				if (argc > i) // do we have an output file?
-				{
-					szOutputFile = (char *)argv[i + 1];
-					i++;
-				}
-			}
-			else if (strcmp(argv[i], "-debug") == 0 && i < argc)
+			else if (strcmp(argv[i], "debug") == 0 && i < argc)
 			{
 				debug = true;
 				
@@ -539,14 +523,12 @@ int main(int argc, char *const argv[])
 void printUsage()
 {
 	printf("Sitemon version 1.0\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
-		   "Single Script test:\t\t\tsitemon [<options>] -s <script_path>\n"
-		   "Script Load test:\t\t\tsitemon [<options>] -sm <script_path> <num threads> [output_file]\n"
+		   "Single Script test:\t\t\tsitemon [<options>] script <script_path>\n"
 		   "Debug script:\t\t\t\tsitemon debug <script_path> [body_response_file_path]\n"
 		   "Run local web server for interface:\tsitemon -web\n"
 		   "Options:\n-ac\t\t: Accept compressed content\n"
 		   "-dc\t\t: Download linked JS and Image content\n"
-		   "-ol <val>\t: Output logging level (to screen). 0 = minimal (default), 2 = max.\n"
-		   "-oh\t\t: Output headers\n"
+		   "-oh\t\t: Output header\n"
 		   "-ob\t\t: Output body\n");
 }
 
@@ -558,7 +540,11 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 	case CTRL_C_EVENT:
 	case CTRL_CLOSE_EVENT:
 	default:
-	return TRUE; 
+		{
+			// brutal, but easiest for the moment
+			exit(1);
+			return TRUE; 
+		}
 	}
 }
 #endif

@@ -297,9 +297,9 @@ void HTTPServerRequestThread::run()
 				response = resp.responseString();
 			}
 		}
-		else if (request.getPath() == "/view_monitortest")
+		else if (request.getPath() == "/view_single_test")
 		{
-			std::string filePath = m_webContentPath + "view_monitortest.tplt";
+			std::string filePath = m_webContentPath + "view_single_test.tplt";
 
 			long testID = 0;
 			std::string strTestID = request.getParam("testid");
@@ -337,6 +337,35 @@ void HTTPServerRequestThread::run()
 			
 			HTTPServerTemplateFileResponse resp(filePath, dataContent);
 			response = resp.responseString();			
+		}
+		else if (request.getPath() == "/view_script_test")
+		{
+			std::string filePath = m_webContentPath + "view_script_test.tplt";
+			
+			long testID = 0;
+			std::string strTestID = request.getParam("testid");
+			if (!strTestID.empty())
+				testID = atoi(strTestID.c_str());
+			
+			std::string description;			
+			std::string dataContent;
+			getScriptScheduledTestResultsList(m_pMainDB, testID, description, dataContent);
+			
+			HTTPServerTemplateFileResponse resp(filePath, description, dataContent);
+			response = resp.responseString();
+		}
+		else if (request.getPath() == "/script_details" && request.hasParams())
+		{
+			long testID = atoi(request.getParam("test_id").c_str());
+			long runID = atoi(request.getParam("run_id").c_str());
+			
+			std::string filePath = m_webContentPath + "script_details.tplt";
+			
+			std::string dataContent;
+			getScriptScheduledTestResultsDetails(m_pMainDB, testID, runID, dataContent);
+			
+			HTTPServerTemplateFileResponse resp(filePath, dataContent);
+			response = resp.responseString();
 		}
 		else
 		{

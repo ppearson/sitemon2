@@ -49,4 +49,7 @@ bool editScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::str
 bool editScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
 bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
 
+bool getScriptScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output);
+bool getScriptScheduledTestResultsDetails(SQLiteDB *pDB, int testID, long runID, std::string &output);
+
 #endif
