@@ -46,7 +46,6 @@ int main(int argc, char *const argv[])
 	bool debug = false;
 
 	bool isScript = false;
-	bool concurrent = false;
 	
 	bool loadTestProfile = false;
 	bool loadTestHit = false;

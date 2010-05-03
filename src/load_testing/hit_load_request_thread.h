@@ -43,7 +43,7 @@ struct RequestThreadData
 class HitLoadRequestThread : public Thread
 {
 public:
-	HitLoadRequestThread(RequestThreadData *data);
+	HitLoadRequestThread(const RequestThreadData *data);
 	virtual ~HitLoadRequestThread();
 
 	virtual void run();

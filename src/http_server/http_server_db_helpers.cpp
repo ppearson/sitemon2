@@ -51,7 +51,7 @@ bool addResponseToSingleTestHistoryTable(SQLiteDB *pDB, HTTPResponse &response)
 	
 	char szTemp[1024];
 	memset(szTemp, 0, 1024);
-	sprintf(szTemp, "'%s', '%s', %ld, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", response.requestedURL.c_str(), response.finalURL.c_str(), response.errorCode, response.responseCode, response.lookupTime, response.connectTime,
+	sprintf(szTemp, "'%s', '%s', %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", response.requestedURL.c_str(), response.finalURL.c_str(), response.errorCode, response.responseCode, response.lookupTime, response.connectTime,
 			response.dataStartTime, response.totalTime, response.redirectCount, response.contentSize, response.downloadSize, response.componentContentSize, response.componentDownloadSize);
 	
 	sql.append(szTemp);
@@ -386,7 +386,7 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 		}
 
 		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n"
-				"<td>%ld</td>\n <td><a href=\"/single_components?test_id=%ld&run_id=%ld\">View</a></td>\n</tr>\n", time.c_str(), szResult,
+				"<td>%ld</td>\n <td><a href=\"/single_components?test_id=%i&run_id=%ld\">View</a></td>\n</tr>\n", time.c_str(), szResult,
 				responseCode, lookupTime, connectTime, dataStartTime, totalTime, downloadSize, contentSize, componentDownloadSize, componentContentSize, testID, rowID);
 		
 		output.append(szTemp);		
@@ -1304,7 +1304,7 @@ bool getScriptScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 			sprintf(szResult, "%ld", overallErrorCode);
 		}
 		
-		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%i</td>\n <td><a href=\"/script_details?test_id=%i&run_id=%ld\">View Details</a></td>\n</tr>\n",
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%ld</td>\n <td><a href=\"/script_details?test_id=%i&run_id=%ld\">View Details</a></td>\n</tr>\n",
 				time.c_str(), szResult,	lastResponseCode, steps, testID, runID);
 		
 		output.append(szTemp);		
@@ -1323,7 +1323,7 @@ bool getScriptScheduledTestResultsDetails(SQLiteDB *pDB, int testID, long runID,
 	
 	char szTestID[12];
 	memset(szTestID, 0, 12);
-	sprintf(szTestID, "%ld", testID);
+	sprintf(szTestID, "%i", testID);
 	
 	char szRunID[12];
 	memset(szRunID, 0, 12);

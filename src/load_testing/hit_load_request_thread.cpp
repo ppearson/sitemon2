@@ -20,7 +20,7 @@
 
 #include "../script_result.h"
 
-HitLoadRequestThread::HitLoadRequestThread(RequestThreadData *data)
+HitLoadRequestThread::HitLoadRequestThread(const RequestThreadData *data)
 {
 	m_Script.copyScript(data->m_pScript);
 	m_threadID = data->m_thread;

@@ -18,12 +18,12 @@
 
 #include "scheduled_results_saver.h"
 
-ScheduledResult::ScheduledResult(HTTPResponse &response, unsigned long testID) : m_response(response), m_testType(SINGLE_TEST), m_testID(testID)
+ScheduledResult::ScheduledResult(const HTTPResponse &response, unsigned long testID) : m_response(response), m_testType(SINGLE_TEST), m_testID(testID)
 {
 	
 }
 
-ScheduledResult::ScheduledResult(ScriptResult &scriptResult, unsigned long testID) : m_scriptResult(scriptResult), m_testType(SCRIPT_TEST), m_testID(testID)
+ScheduledResult::ScheduledResult(const ScriptResult &scriptResult, unsigned long testID) : m_scriptResult(scriptResult), m_testType(SCRIPT_TEST), m_testID(testID)
 {
 	
 }
@@ -43,7 +43,7 @@ void ScheduledResultSaver::run()
 	}
 }
 
-void ScheduledResultSaver::addResult(HTTPResponse &response, unsigned long testID)
+void ScheduledResultSaver::addResult(const HTTPResponse &response, unsigned long testID)
 {
 	m_mutex.lock();
 	
@@ -54,7 +54,7 @@ void ScheduledResultSaver::addResult(HTTPResponse &response, unsigned long testI
 	m_mutex.unlock();	
 }
 
-void ScheduledResultSaver::addResult(ScriptResult &scriptResult, unsigned long testID)
+void ScheduledResultSaver::addResult(const ScriptResult &scriptResult, unsigned long testID)
 {
 	m_mutex.lock();
 	

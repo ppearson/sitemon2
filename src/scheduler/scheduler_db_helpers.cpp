@@ -352,8 +352,6 @@ bool getScheduledScriptTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 		{
 			Script & newScript = newItem.getScript();
 			
-			int step = 0;
-			
 			while (qPages.fetchNext())
 			{
 				long pageID = qPages.getLong();
@@ -362,7 +360,6 @@ bool getScheduledScriptTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 				long requestType = qPages.getLong();
 				std::string expectedPhrase = qPages.getString();
 				long pauseTime = qPages.getLong();
-				unsigned long pageModifiedTimestamp = qPages.getULong();
 				
 				HTTPRequest newPage(url, desc, requestType == 1);
 				
@@ -487,8 +484,6 @@ bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 					{
 						Script & currentScript = currentItem.getScript();
 						
-						int step = 0;
-						
 						// we might as well remove them all and re-create them, as we need to cope
 						// with removing steps (and therefore shifting succeeding steps down),
 						// adding new steps at the end AND in between other steps, and modifications
@@ -564,8 +559,6 @@ bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 				if (qPages.getResult(pageSQL))
 				{
 					Script & newScript = newItem.getScript();
-					
-					int step = 0;
 					
 					while (qPages.fetchNext())
 					{

@@ -77,7 +77,7 @@ void LoadTestResultsSaver::stop()
 	storeResults();
 }
 
-void LoadTestResultsSaver::addResult(ScriptResult &result)
+void LoadTestResultsSaver::addResult(const ScriptResult &result)
 {
 	m_lock.lock();
 

@@ -34,7 +34,7 @@ class StepResults
 public:
 	StepResults(int step, const std::string &description);
 	
-	void addResult(HTTPResponse &response) { m_aResults.push_back(response); }
+	void addResult(const HTTPResponse &response) { m_aResults.push_back(response); }
 	
 	inline std::vector<HTTPResponse>::iterator begin() { return m_aResults.begin(); }
 	inline std::vector<HTTPResponse>::iterator end() { return m_aResults.end(); }
@@ -55,12 +55,12 @@ public:
 	
 	bool initStorage();
 	
-	void copyScript(Script &script) { m_script = script; m_haveScript = true; }
+	void copyScript(const Script &script) { m_script = script; m_haveScript = true; }
 	
 	virtual void run();
 	void stop();
 	
-	void addResult(ScriptResult &result);
+	void addResult(const ScriptResult &result);
 	
 	void storeResults();
 	
@@ -83,7 +83,7 @@ protected:
 	SQLiteDB *						m_pMainDB;
 
 	// used to store the result ID row of the DB table, when storing continually
-	long							m_loadTestRunID;
+	unsigned long					m_loadTestRunID;
 };
 
 #endif

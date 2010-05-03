@@ -36,8 +36,8 @@ enum TestType
 class ScheduledResult
 {
 public:
-	ScheduledResult(HTTPResponse &response, unsigned long testID);
-	ScheduledResult(ScriptResult &scriptResult, unsigned long testID);
+	ScheduledResult(const HTTPResponse &response, unsigned long testID);
+	ScheduledResult(const ScriptResult &scriptResult, unsigned long testID);
 	
 	TestType	m_testType;
 	unsigned long	m_testID;
@@ -55,8 +55,8 @@ public:
 	
 	virtual void run();
 	
-	void addResult(HTTPResponse &response, unsigned long testID);
-	void addResult(ScriptResult &scriptResult, unsigned long testID);
+	void addResult(const HTTPResponse &response, unsigned long testID);
+	void addResult(const ScriptResult &scriptResult, unsigned long testID);
 	
 	void storeResults();
 	void storeSingleResults();
