@@ -117,7 +117,8 @@ void ScheduledResultSaver::storeSingleResults()
 			const std::vector<HTTPComponentResponse> &components = result.m_response.getComponents();
 			
 			std::vector<HTTPComponentResponse>::const_iterator itComponent = components.begin();
-			for (; itComponent != components.end(); ++itComponent)
+			std::vector<HTTPComponentResponse>::const_iterator itComponentEnd = components.end();
+			for (; itComponent != itComponentEnd; ++itComponent)
 			{
 				const HTTPComponentResponse &compResult = *itComponent;
 				std::string sqlComponentResults = "insert into scheduled_single_test_component_results values(";
@@ -181,7 +182,8 @@ void ScheduledResultSaver::storeScriptResults()
 			// now save individual results
 			
 			std::vector<HTTPResponse>::const_iterator itResponse = result.m_scriptResult.begin();
-			for (int page = 1; itResponse != result.m_scriptResult.end(); ++itResponse, page++)
+			std::vector<HTTPResponse>::const_iterator itResponseEnd = result.m_scriptResult.end();
+			for (int page = 1; itResponse != itResponseEnd; ++itResponse, page++)
 			{
 				const HTTPResponse &resp = *itResponse;
 				std::string sqlPageResults = "insert into scheduled_script_test_page_results values(";

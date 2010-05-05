@@ -83,9 +83,10 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 	if (request.hasCookies())
 	{
 		std::vector<HTTPCookie>::iterator it = request.cookies_begin();
+		std::vector<HTTPCookie>::iterator itEnd = request.cookies_end();
 		
 		m_cookies = "";
-		for (; it != request.cookies_end(); ++it)
+		for (; it != itEnd; ++it)
 		{
 			m_cookies += (*it).name;
 			m_cookies += "=";
@@ -255,7 +256,8 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	ComponentDownloader compDownloader(mainHandle, response, acceptCompressed);
 	
 	std::set<std::string>::iterator it = aScripts.begin();
-	for (; it != aScripts.end(); ++it)
+	std::set<std::string>::iterator itEnd = aScripts.end();
+	for (; it != itEnd; ++it)
 	{
 		const std::string &url = *it;
 		
@@ -263,7 +265,8 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	}
 	
 	it = aImages.begin();
-	for (; it != aImages.end(); ++it)
+	itEnd = aImages.end();
+	for (; it != itEnd; ++it)
 	{
 		const std::string &url = *it;
 		
@@ -332,8 +335,9 @@ static std::string buildParametersString(HTTPRequest &request)
 	std::string params;
 
 	std::vector<HTTPParameter>::iterator it = request.params_begin();
+	std::vector<HTTPParameter>::iterator itEnd = request.params_end();
 
-	for (; it != request.params_end(); ++it)
+	for (; it != itEnd; ++it)
 	{
 		params += (*it).name;
 		params += "=";

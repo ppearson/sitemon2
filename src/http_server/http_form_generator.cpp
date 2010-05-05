@@ -146,7 +146,8 @@ std::string HTTPFormSelectItem::getCode()
 	content += "\">\n";
 	
 	std::vector<std::string>::iterator it = m_aOptions.begin();
-	for (int count = 0; it != m_aOptions.end(); ++it, count++)
+	std::vector<std::string>::iterator itEnd = m_aOptions.end();
+	for (int count = 0; it != itEnd; ++it, count++)
 	{
 		if (count != m_selected)
 		{
@@ -217,7 +218,8 @@ std::string HTTPFormGenerator::getGeneratedCode()
 	content += "<div class=\"def_wide\">\n<dl>\n";
 	
 	std::vector<std::string>::const_iterator it = m_aItems.begin();
-	for (; it != m_aItems.end(); ++it)
+	std::vector<std::string>::const_iterator itEnd = m_aItems.end();
+	for (; it != itEnd; ++it)
 	{
 		content += *it;		
 	}	

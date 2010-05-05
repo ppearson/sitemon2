@@ -94,7 +94,9 @@ void HTTPServerRequest::addParams(const std::string &params)
 	std::vector<std::string> items;
 	split(params, items, "&");
 	
-	for (std::vector<std::string>::iterator it = items.begin(); it != items.end(); ++it)
+	std::vector<std::string>::iterator it = items.begin();
+	std::vector<std::string>::iterator itEnd = items.end();
+	for (; it != itEnd; ++it)
 	{
 		const std::string &item = *it;
 		

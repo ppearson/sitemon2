@@ -86,7 +86,8 @@ std::string URIBuilder::getFullLocation()
 	split(relative, aRelativeParts, "/");
 	
 	std::vector<std::string>::iterator it = aRelativeParts.begin() + partStart;
-	for (; it != aRelativeParts.end(); ++it)
+	std::vector<std::string>::iterator itEnd = aRelativeParts.end();
+	for (; it != itEnd; ++it)
 	{
 		std::string &part = *it;
 		
@@ -103,7 +104,8 @@ std::string URIBuilder::getFullLocation()
 	}	
 	
 	std::deque<std::string>::iterator itFinal = m_aParts.begin();
-	for (; itFinal != m_aParts.end(); ++itFinal)
+	std::deque<std::string>::iterator itFinalEnd = m_aParts.end();
+	for (; itFinal != itFinalEnd; ++itFinal)
 	{
 		std::string &part = *itFinal;
 		
