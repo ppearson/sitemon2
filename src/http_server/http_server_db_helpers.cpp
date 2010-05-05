@@ -617,6 +617,12 @@ bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 	sql.append(szTemp);
 	
 	SQLiteQuery q(*pDB, true);
+
+	if (!q.execute("BEGIN IMMEDIATE"))
+	{
+		printf("problem starting adding script transaction\n");
+		return false;
+	}
 	
 	bool ret = q.execute(sql);
 
@@ -660,6 +666,12 @@ bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 				break;
 			}
 		}
+	}
+
+	if (!q.execute("COMMIT"))
+	{
+		printf("problem committing add script transaction\n");
+		return false;
 	}
 
 	return true;
