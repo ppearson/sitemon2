@@ -19,6 +19,7 @@
 #include <map>
 #include <deque>
 
+#include "../utils/time.h"
 #include "scheduler_db_helpers.h"
 
 bool createNeededSchedulerTables(SQLiteDB *pDB)
@@ -138,8 +139,8 @@ bool getScheduledSingleTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 
 	SQLiteQuery q(*pDB);
 
-	time_t timeNow;
-	time(&timeNow);
+	Time timeNow;
+	timeNow.now();
 
 	long schedID = 0;
 	
@@ -153,7 +154,7 @@ bool getScheduledSingleTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 		std::string expectedPhrase = q.getString();
 		long acceptCompressed = q.getLong();
 		long downloadComponents = q.getLong();
-		unsigned long modifiedTimestamp = q.getLong();
+		Time modifiedTime = q.getULong();
 
 		if (description.empty())
 			description = " ";
@@ -163,7 +164,7 @@ bool getScheduledSingleTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 
 		ScheduledItem newItem(true, schedID++, description, interval, timeNow);
 		newItem.setTestID(testID);
-		newItem.setModifiedTimestamp(modifiedTimestamp);
+		newItem.setModifiedTime(modifiedTime);
 
 		HTTPRequest newRequest(url);
 		newRequest.setExpectedPhrase(expectedPhrase);
@@ -201,8 +202,8 @@ bool updateScheduledSingleTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 
 	std::string sql = "select rowid, enabled, description, url, expected_phrase, accept_compressed, download_components, interval, strftime('%s', modified_timestamp) as m_timestamp from scheduled_single_tests";
 
-	time_t timeNow;
-	time(&timeNow);
+	Time timeNow;
+	timeNow.now();
 	
 	{
 		SQLiteQuery q(*pDB);
@@ -221,7 +222,7 @@ bool updateScheduledSingleTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 			long acceptCompressed = q.getLong();
 			long downloadComponents = q.getLong();
 			long interval = q.getLong();
-			unsigned long modifiedTimestamp = q.getLong();
+			Time modifiedTime = q.getULong();
 
 			if (description.empty())
 				description = " ";
@@ -243,12 +244,12 @@ bool updateScheduledSingleTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 				}
 				
 				// see if it's been modified
-				if (modifiedTimestamp > currentItem.getModifiedTimestamp())
+				if (modifiedTime > currentItem.getModifiedTime())
 				{
 					currentItem.setInterval(interval); // TODO: if interval's less than original, nextTime is still going to be previous
 														// interval's time away, so won't get updated immediately
 					currentItem.setDescription(description);
-					currentItem.setModifiedTimestamp(modifiedTimestamp);
+					currentItem.setModifiedTime(modifiedTime);
 					
 					HTTPRequest &request = currentItem.getRequest();
 					request.setUrl(url);
@@ -315,8 +316,8 @@ bool getScheduledScriptTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 	
 	SQLiteQuery q(*pDB);
 	
-	time_t timeNow;
-	time(&timeNow);
+	Time timeNow;
+	timeNow.now();
 	
 	long schedID = 0;
 	
@@ -328,14 +329,14 @@ bool getScheduledScriptTestsFromDB(SQLiteDB *pDB, std::vector<ScheduledItem> &it
 		long interval = q.getLong();
 		long acceptCompressed = q.getLong();
 		long downloadComponents = q.getLong();
-		unsigned long modifiedTimestamp = q.getULong();
+		Time modifiedTime = q.getULong();
 		
 		if (description.empty())
 			description = " ";
 		
 		ScheduledItem newItem(false, schedID++, description, interval, timeNow);
 		newItem.setTestID(testID);
-		newItem.setModifiedTimestamp(modifiedTimestamp);
+		newItem.setModifiedTime(modifiedTime);
 		
 		SQLiteQuery qPages(*pDB);
 		
@@ -424,8 +425,8 @@ bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 	
 	std::string sql = "select rowid, enabled, description, accept_compressed, download_components, interval, strftime('%s', modified_timestamp) as m_timestamp from scheduled_script_tests";
 	
-	time_t timeNow;
-	time(&timeNow);
+	Time timeNow;
+	timeNow.now();
 	
 	{
 		SQLiteQuery q(*pDB);
@@ -442,7 +443,7 @@ bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 			long acceptCompressed = q.getLong();
 			long downloadComponents = q.getLong();
 			long interval = q.getLong();
-			unsigned long modifiedTimestamp = q.getLong();
+			Time modifiedTime = q.getULong();
 			
 			if (description.empty())
 				description = " ";
@@ -461,13 +462,13 @@ bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 				}
 				
 				// see if it's been modified
-				if (modifiedTimestamp > currentItem.getModifiedTimestamp())
+				if (modifiedTime > currentItem.getModifiedTime())
 				{
 					currentItem.setInterval(interval); // TODO: if interval's less than original, nextTime is still going to be previous
 					// interval's time away, so won't get updated immediately
 					currentItem.setDescription(description);
 					
-					currentItem.setModifiedTimestamp(modifiedTimestamp);
+					currentItem.setModifiedTime(modifiedTime);
 					
 					SQLiteQuery qPages(*pDB);
 					
@@ -543,7 +544,7 @@ bool updateScheduledScriptTests(SQLiteDB *pDB, std::vector<ScheduledItem> &items
 			{
 				ScheduledItem newItem(false, pos++, description, interval, timeNow);
 				newItem.setTestID(testID);
-				newItem.setModifiedTimestamp(modifiedTimestamp);
+				newItem.setModifiedTime(modifiedTime);
 				
 				SQLiteQuery qPages(*pDB);
 				

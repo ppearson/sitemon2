@@ -26,7 +26,7 @@
 
 #include "../http_request.h"
 #include "../script.h"
-
+#include "../utils/time.h"
 #include "../utils/thread.h"
 
 #include "../utils/sqlite_db.h"
@@ -37,7 +37,7 @@ class ScheduledItem
 {
 public:
 	ScheduledItem() { }
-	ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, unsigned long currentTime);
+	ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, Time & currentTime);
 	~ScheduledItem() { }
 	
 	void setEnabled(bool enabled) { m_enabled = enabled; }
@@ -48,7 +48,8 @@ public:
 	void setRequest(const HTTPRequest &request) { m_request = request; }
 	void setScript(const Script &script) { m_script = script; }
 	
-	void setModifiedTimestamp(unsigned long timestamp) { m_modifiedTimestamp = timestamp; }
+	void setModifiedTime(Time &time) { m_modifiedTime = time; }
+	void setModifiedTime(unsigned long timestamp) { m_modifiedTime = timestamp; }
 	
 	void incrementNextTime();
 	
@@ -56,7 +57,7 @@ public:
 	bool			isEnabled() const { return m_enabled; }
 	unsigned long	getInterval() const { return m_interval; }
 	std::string		getDescription() const { return m_description; }
-	unsigned long	getNextTime() const { return m_nextTime; }
+	Time			getNextTime() const { return m_nextTime; }
 	unsigned long	getTestID() const { return m_testID; }
 
 	bool			isSingle() const { return m_single; }
@@ -64,7 +65,7 @@ public:
 	HTTPRequest & getRequest() { return m_request; }
 	Script & getScript() { return m_script; }
 	
-	unsigned long	getModifiedTimestamp() { return m_modifiedTimestamp; }
+	Time			getModifiedTime() { return m_modifiedTime; }
 	
 protected:
 	unsigned long	m_id;
@@ -72,12 +73,12 @@ protected:
 	unsigned long	m_interval;
 	std::string		m_description;
 	
-	unsigned long	m_nextTime;
+	Time			m_nextTime;
 		
 	unsigned long	m_testID;
 
 	bool			m_single;
-	unsigned long	m_modifiedTimestamp;
+	Time			m_modifiedTime;
 
 	HTTPRequest		m_request;
 	Script			m_script;

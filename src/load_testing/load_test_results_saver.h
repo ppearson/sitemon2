@@ -54,6 +54,7 @@ public:
 	virtual ~LoadTestResultsSaver() { }
 	
 	bool initStorage();
+	bool initDatabase();
 	
 	void copyScript(const Script &script) { m_script = script; m_haveScript = true; }
 	

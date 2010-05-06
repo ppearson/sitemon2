@@ -102,7 +102,7 @@ void ScheduledResultSaver::storeSingleResults()
 		std::string sql = "insert into scheduled_single_test_results values (";
 		
 		memset(szTemp, 0, 1024);
-		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp, result.m_response.errorCode,
+		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp.get32bitLong(), result.m_response.errorCode,
 				result.m_response.responseCode, result.m_response.lookupTime, result.m_response.connectTime, result.m_response.dataStartTime, result.m_response.totalTime,
 				result.m_response.redirectCount, result.m_response.contentSize, result.m_response.downloadSize, result.m_response.componentContentSize, result.m_response.componentDownloadSize);
 		
@@ -170,7 +170,7 @@ void ScheduledResultSaver::storeScriptResults()
 		std::string sql = "insert into scheduled_script_test_results values (";
 		
 		memset(szTemp, 0, 1024);
-		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %i)", result.m_testID, result.m_scriptResult.getRequestStartTime(), result.m_scriptResult.getOverallError(),
+		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %i)", result.m_testID, result.m_scriptResult.getRequestStartTime().get32bitLong(), result.m_scriptResult.getOverallError(),
 				result.m_scriptResult.getLastResponseCode(), result.m_scriptResult.getResponseCount());
 		
 		sql.append(szTemp);
@@ -188,7 +188,7 @@ void ScheduledResultSaver::storeScriptResults()
 				const HTTPResponse &resp = *itResponse;
 				std::string sqlPageResults = "insert into scheduled_script_test_page_results values(";
 				memset(szTemp, 0, 1024);
-				sprintf(szTemp, "%ld, %ld, %i, datetime(%ld, 'unixepoch'), '%s', %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, runID, page, resp.timestamp, resp.requestedURL.c_str(),
+				sprintf(szTemp, "%ld, %ld, %i, datetime(%ld, 'unixepoch'), '%s', %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, runID, page, resp.timestamp.get32bitLong(), resp.requestedURL.c_str(),
 						resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime, resp.totalTime, resp.redirectCount, resp.contentSize, resp.downloadSize,
 						resp.componentContentSize, resp.componentDownloadSize);
 				sqlPageResults.append(szTemp);

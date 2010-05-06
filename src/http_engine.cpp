@@ -18,9 +18,8 @@
 
 #include "http_engine.h"
 
-#include <ctime>
 #include <iostream>
-
+#include "utils/time.h"
 #include "html_parser.h"
 #include "component_downloader.h"
 
@@ -176,8 +175,8 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 
 	response.requestedURL = request.getUrl();
 	
-	time_t timeNow;
-	time(&timeNow);
+	Time timeNow;
+	timeNow.now();
 	
 	response.timestamp = timeNow;
 	

@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "utils/time.h"
+
 enum HTTPResponseError
 {
 	HTTP_OK = 0,
@@ -39,7 +41,7 @@ class HTTPComponentResponse
 public:
 	HTTPComponentResponse();
 
-	time_t		timestamp;
+	Time		timestamp;
 	
 	HTTPResponseError errorCode;
 	long		responseCode;
@@ -66,7 +68,7 @@ class HTTPResponse
 public:
 	HTTPResponse(bool storeHeader = true, bool storeBody = true);
 	
-	time_t		timestamp;
+	Time		timestamp;
 
 	HTTPResponseError errorCode;
 	long		responseCode;

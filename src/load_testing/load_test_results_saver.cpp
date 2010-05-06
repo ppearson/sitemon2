@@ -43,9 +43,10 @@ bool LoadTestResultsSaver::initStorage()
 	if (m_database)
 	{
 		// init the database
-		
 		if (!m_pMainDB)
-			return false;		
+			return false;
+		
+		return initDatabase();
 	}
 	else
 	{
@@ -56,11 +57,26 @@ bool LoadTestResultsSaver::initStorage()
 	return true;
 }
 
+bool LoadTestResultsSaver::initDatabase()
+{
+	if (!m_pMainDB)
+		return false;
+	
+	// make sure the results tables exists
+	
+	
+	
+	
+	// create the run record
+	
+	return true;
+}
+
 void LoadTestResultsSaver::run()
 {
 	while (m_isRunning)
 	{
-		sleep(5); // sleep for 5 secs
+		sleep(10); // sleep for 10 secs
 		
 		if (m_continualSaving)
 		{
@@ -164,16 +180,17 @@ void LoadTestResultsSaver::fileStore()
 		fprintf(fp, "Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
 		
 		std::vector<ScriptResult>::iterator itRes = m_aResults.begin();
-		for (; itRes != m_aResults.end(); ++itRes)
+		std::vector<ScriptResult>::iterator itResEnd = m_aResults.end();
+		for (; itRes != itResEnd; ++itRes)
 		{
 			HTTPResponse &resp = (*itRes).getFirstResponse();
 			
 			memset(szTime, 0, 64);
-			runTime = resp.timestamp;
+			runTime = resp.timestamp.getNativeTime();
 			pTimeinfo = localtime(&runTime);
 			strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 			
-			fprintf(fp, "%s, %ld, %ld, %f, %f, %f, %f, %ld,\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
+			fprintf(fp, "%s, %i, %ld, %f, %f, %f, %f, %ld,\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
 					resp.totalTime, resp.contentSize);				
 		}		
 	}
@@ -185,7 +202,8 @@ void LoadTestResultsSaver::fileStore()
 		std::map<int, StepResults> aFullResults;
 		
 		std::vector<HTTPRequest>::iterator itScriptSteps = m_script.begin();
-		for (int step = 1; itScriptSteps != m_script.end(); ++itScriptSteps, step++)
+		std::vector<HTTPRequest>::iterator itScriptStepsEnd = m_script.end();
+		for (int step = 1; itScriptSteps != itScriptStepsEnd; ++itScriptSteps, step++)
 		{
 			StepResults newStep(step, (*itScriptSteps).getDescription());
 			
@@ -195,14 +213,16 @@ void LoadTestResultsSaver::fileStore()
 		fprintf(fp, "Overall:\nRequest Time, Overall Error, Last Response code, \n");
 		
 		std::vector<ScriptResult>::iterator itRes = m_aResults.begin();
-		for (; itRes != m_aResults.end(); ++itRes)
+		std::vector<ScriptResult>::iterator itResEnd = m_aResults.end();
+		for (; itRes != itResEnd; ++itRes)
 		{
 			ScriptResult &result = *itRes;
 			
 			// add individual results to step-based map of results
 			
 			std::vector<HTTPResponse>::iterator itResponse = result.begin();
-			for (int step = 1; itResponse != result.end(); ++itResponse, step++)
+			std::vector<HTTPResponse>::iterator itResponseEnd = result.end();
+			for (int step = 1; itResponse != itResponseEnd; ++itResponse, step++)
 			{
 				HTTPResponse &httpResponse = *itResponse;
 				
@@ -217,7 +237,7 @@ void LoadTestResultsSaver::fileStore()
 			}
 			
 			memset(szTime, 0, 64);
-			runTime = result.getRequestStartTime();
+			runTime = result.getRequestStartTime().getNativeTime();
 			pTimeinfo = localtime(&runTime);
 			strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 			
@@ -226,7 +246,8 @@ void LoadTestResultsSaver::fileStore()
 		
 		// now print all the detailed responses for each step
 		std::map<int, StepResults>::iterator itStepResults = aFullResults.begin();
-		for (; itStepResults != aFullResults.end(); ++itStepResults)
+		std::map<int, StepResults>::iterator itStepResultsEnd = aFullResults.end();
+		for (; itStepResults != itStepResultsEnd; ++itStepResults)
 		{
 			StepResults &stepResults = (*itStepResults).second;
 			
@@ -236,12 +257,13 @@ void LoadTestResultsSaver::fileStore()
 				fprintf(fp, "Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
 				
 				std::vector<HTTPResponse>::iterator itResponses = stepResults.begin();
-				for (; itResponses != stepResults.end(); ++itResponses)
+				std::vector<HTTPResponse>::iterator itResponsesEnd = stepResults.end();
+				for (; itResponses != itResponsesEnd; ++itResponses)
 				{
 					HTTPResponse &resp = (*itResponses);
 					
 					memset(szTime, 0, 64);
-					runTime = resp.timestamp;
+					runTime = resp.timestamp.getNativeTime();
 					pTimeinfo = localtime(&runTime);
 					strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 					

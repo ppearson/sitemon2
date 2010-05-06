@@ -51,7 +51,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ssleay32.lib libeay32.lib libs\libcurld.lib ws2_32.lib libs\zlib.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ssleay32.lib libeay32.lib libs\libcurl.lib ws2_32.lib libs\zlib.lib /nologo /subsystem:console /machine:I386
 
 !ELSEIF  "$(CFG)" == "sitemon - Win32 Debug"
 
@@ -240,6 +240,10 @@ SOURCE=.\src\utils\thread_pool.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\utils\time.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\utils\tinyxml.cpp
 # End Source File
 # Begin Source File
@@ -405,6 +409,10 @@ SOURCE=.\src\utils\thread.h
 # Begin Source File
 
 SOURCE=.\src\utils\thread_pool.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\utils\time.h
 # End Source File
 # Begin Source File
 

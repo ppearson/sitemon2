@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "utils/time.h"
 #include "http_response.h"
 
 class ScriptResult
@@ -30,7 +31,7 @@ public:
 	
 	void addResponse(HTTPResponse &response);
 	
-	time_t				getRequestStartTime() { return m_requestStartTime; }
+	Time				getRequestStartTime() { return m_requestStartTime; }
 	HTTPResponseError	getOverallError() { return m_overallError; }
 	long				getLastResponseCode() { return m_lastResponseCode; }
 	
@@ -42,7 +43,7 @@ public:
 	inline std::vector<HTTPResponse>::iterator end() { return m_stepResponses.end(); }
 	
 protected:
-	time_t				m_requestStartTime;
+	Time				m_requestStartTime;
 	HTTPResponseError	m_overallError;
 	long				m_lastResponseCode;
 	int					m_problemStep;

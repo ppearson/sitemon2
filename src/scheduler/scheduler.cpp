@@ -52,8 +52,8 @@ void Scheduler::run()
 		// out-of-order execution (however unlikely) which could mess things up
 		m_scheduledItemsLock.lock();
 		
-		time_t timeNow;
-		time(&timeNow);
+		Time timeNow;
+		timeNow.now();
 
 		std::vector<ScheduledItem>::iterator it = m_aScheduledSingleItems.begin();
 		for (; it != m_aScheduledSingleItems.end(); ++it)
@@ -71,7 +71,7 @@ void Scheduler::run()
 					pNewTest->start();
 				}
 				
-				item.incrementNextTime();				
+				item.incrementNextTime();	
 			}
 		}
 		
@@ -128,14 +128,15 @@ void Scheduler::buildScheduledItemsFromDB(SQLiteDB *pDB)
 	m_scheduledItemsLock.unlock();
 }
 
-ScheduledItem::ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, unsigned long currentTime) : 
+ScheduledItem::ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, Time & currentTime) : 
 								m_single(single), m_id(id), m_description(description), m_interval(interval), m_enabled(true)
 {
-	m_nextTime = currentTime + (interval * TIME_MULTIPLIER);
+	m_nextTime = currentTime;
+	m_nextTime.incrementMinutes(interval);
 }
 
 void ScheduledItem::incrementNextTime()
 {
-	m_nextTime += (m_interval * TIME_MULTIPLIER);
+	m_nextTime.incrementMinutes(m_interval);
 }
 
