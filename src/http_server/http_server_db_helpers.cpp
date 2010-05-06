@@ -108,7 +108,7 @@ bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, int offset)
 		}
 
 		sprintf(szTemp, "<tr>\n <td><a href=\"/single_details?runid=%ld\">%ld</a></td>\n <td>%s</td>\n <td>%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>"
-				"\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td></tr>\n",
+				"\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n</tr>\n",
 						runID, runID, time.c_str(), url.c_str(), szResult, returnCode, totalTime, downloadSize, contentSize, componentDownloadSize, componentContentSize);
 		
 		output.append(szTemp);		
