@@ -16,10 +16,12 @@
 	<th scope="col">Time</th>
 	<th scope="col">URL</th>
 	<th scope="col">Result</th>
-	<th scope="col">Return Code</th>
-	<th scope="col">Total</th>
-	<th scope="col">Download Size</th>
-	<th scope="col">Content Size</th>
+	<th scope="col" title="Return Code">RC</th>
+	<th scope="col" title="Total Time">Total</th>
+	<th scope="col" title="Download Size">D Size</th>
+	<th scope="col" title="Content Size">C Size</th>
+	<th scope="col" title="Components Download Size">Comp D Size</th>
+	<th scope="col" title="Components Content Size">Comp C Size</th>
 </tr>
 <%%>
 </table></body>

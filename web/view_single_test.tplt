@@ -16,15 +16,15 @@
 <tr>
 	<th scope="col">Time</th>
 	<th scope="col">Error</th>
-	<th scope="col">Response Code</th>
+	<th scope="col" title="Response Code">RC</th>
 	<th scope="col">Lookup time</th>
 	<th scope="col">Connect time</th>
-	<th scope="col">Data start time</th>
+	<th scope="col" title="Data Start Time">D S time</th>
 	<th scope="col">Total time</th>
-	<th scope="col">Download Size</th>
-	<th scope="col">Content Size</th>
-	<th scope="col">Component Download Size</th>
-	<th scope="col">Component Content Size</th>
+	<th scope="col" title="Download Size">D Size</th>
+	<th scope="col" title="Content Size">C Size</th>
+	<th scope="col" title="Components Download Size">Comp D Size</th>
+	<th scope="col" title="Components Content Size">Comp C Size</th>
 	<th scope="col">Components</th>
 </tr>
 <%2%>

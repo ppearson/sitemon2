@@ -17,14 +17,14 @@
 	<th scope="col" width="50">Time</th>
 	<th scope="col" width="200">URL</th>
 	<th scope="col" width="50">Error</th>
-	<th scope="col" width="80">Response Code</th>
+	<th scope="col" width="80" title="Response Code">RC</th>
 	<th scope="col" width="80">Lookup time</th>
 	<th scope="col" width="80">Connect time</th>
-	<th scope="col" width="80">Data start time</th>
+	<th scope="col" width="80" title="Data Start Time">D S time</th>
 	<th scope="col" width="80">Total time</th>
 	<th scope="col" width="80">Redirect count</th>
-	<th scope="col" width="80">Content Size</th>
-	<th scope="col" width="80">Download Size</th>
+	<th scope="col" width="80" title="Content Size">C Size</th>
+	<th scope="col" width="80" title="Download Size">D Size</th>
 </tr>
 <%%>
 </table>

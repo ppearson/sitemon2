@@ -16,11 +16,11 @@
 <tr>
 	<th scope="col" width="60">Test ID</th>
 	<th scope="col" width="50">Enabled</th>
-	<th scope="col" width="120">Description</th>
+	<th scope="col" width="120">Desc</th>
 	<th scope="col" width="290">URL</th>
 	<th scope="col" width="50">Interval</th>
-	<th scope="col" width="110">Accept Compressed</th>
-	<th scope="col" width="110">Download Components</th>
+	<th scope="col" width="110" title="Accept Compressed">A C</th>
+	<th scope="col" width="110" title="Download Components">D C</th>
 	<th scope="col" width="90">View Results</th>
 </tr>
 <%1%>
@@ -31,10 +31,10 @@
 <tr>
 	<th scope="col" width="60">Test ID</th>
 	<th scope="col" width="50">Enabled</th>
-	<th scope="col" width="120">Description</th>
+	<th scope="col" width="120">Desc</th>
 	<th scope="col" width="50">Interval</th>
-	<th scope="col" width="110">Accept Compressed</th>
-	<th scope="col" width="110">Download Components</th>
+	<th scope="col" width="110" title="Accept Compressed">A C</th>
+	<th scope="col" width="110" title="Download Components">D C</th>
 	<th scope="col" width="90">View Results</th>
 </tr>
 <%2%>

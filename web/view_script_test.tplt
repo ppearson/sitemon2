@@ -16,7 +16,7 @@
 <tr>
 	<th scope="col">Time</th>
 	<th scope="col">Error</th>
-	<th scope="col">Last Response Code</th>
+	<th scope="col" title="Last Response Code">Last RC</th>
 	<th scope="col">Steps</th>
 	<th scope="col">Details</th>
 </tr>

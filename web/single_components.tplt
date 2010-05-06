@@ -15,7 +15,7 @@
 <tr>
 	<th scope="col" width="500">URL</th>
 	<th scope="col" width="50">Error</th>
-	<th scope="col" width="80">Response Code</th>
+	<th scope="col" width="80" title="Response Code">RC</th>
 	<th scope="col" width="80">Total time</th>
 	<th scope="col" width="80">Content Size</th>
 	<th scope="col" width="80">Download Size</th>
