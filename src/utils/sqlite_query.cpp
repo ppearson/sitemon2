@@ -372,4 +372,3 @@ double SQLiteQuery::getDouble()
 {
 	return getDouble(m_thisColumn++);
 }
-

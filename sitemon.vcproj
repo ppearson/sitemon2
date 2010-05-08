@@ -244,6 +244,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\debug_settings.cpp"
+				>
+			</File>
+			<File
 				RelativePath="src\utils\event.cpp"
 				>
 				<FileConfiguration
@@ -264,24 +268,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="src\hit_load_request_thread.cpp"
+				RelativePath=".\src\load_testing\hit_load_request_thread.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\load_testing\hit_test_engine.cpp"
+				>
 			</File>
 			<File
 				RelativePath="src\html_parser.cpp"
@@ -504,6 +496,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\load_testing\load_test_db_helpers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\load_testing\load_test_results_saver.cpp"
+				>
+			</File>
+			<File
 				RelativePath="src\main.cpp"
 				>
 				<FileConfiguration
@@ -522,6 +522,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\utils\misc.cpp"
+				>
 			</File>
 			<File
 				RelativePath="src\utils\mutex.cpp"
@@ -544,24 +548,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="src\results_storage.cpp"
+				RelativePath=".\src\load_testing\profile_load_request_thread.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\load_testing\profile_test_engine.cpp"
+				>
 			</File>
 			<File
 				RelativePath="src\scheduler\scheduled_results_saver.cpp"
@@ -662,6 +654,14 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\script_debugger.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\script_result.cpp"
+				>
 			</File>
 			<File
 				RelativePath="src\sitemon.cpp"
@@ -824,6 +824,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\utils\time.cpp"
+				>
+			</File>
+			<File
 				RelativePath="src\utils\tinyxml.cpp"
 				>
 				<FileConfiguration
@@ -917,11 +921,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\debug_settings.h"
+				>
+			</File>
+			<File
 				RelativePath="src\utils\event.h"
 				>
 			</File>
 			<File
-				RelativePath="src\hit_load_request_thread.h"
+				RelativePath=".\src\load_testing\hit_load_request_thread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\load_testing\hit_test_engine.h"
 				>
 			</File>
 			<File
@@ -969,11 +981,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\load_testing\load_test_db_helpers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\load_testing\load_test_results_saver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\utils\misc.h"
+				>
+			</File>
+			<File
 				RelativePath="src\utils\mutex.h"
 				>
 			</File>
 			<File
-				RelativePath="src\results_storage.h"
+				RelativePath=".\src\load_testing\profile_load_request_thread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\load_testing\profile_test_engine.h"
 				>
 			</File>
 			<File
@@ -994,6 +1022,14 @@
 			</File>
 			<File
 				RelativePath="src\script.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\script_debugger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\script_result.h"
 				>
 			</File>
 			<File
@@ -1026,6 +1062,10 @@
 			</File>
 			<File
 				RelativePath="src\utils\thread_pool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\utils\time.h"
 				>
 			</File>
 			<File

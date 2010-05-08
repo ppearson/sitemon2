@@ -112,7 +112,7 @@ void HTTPServerRequest::addParams(const std::string &params)
 			while ((nHex = value.find("%", nHex)) != -1)
 			{
 				std::string strHex = "0x" + value.substr(nHex + 1, 2);
-				char cChar = strtol(strHex.c_str(), 0, 16);
+				char cChar = static_cast<char>(strtol(strHex.c_str(), 0, 16));
 				char szTemp[2];
 				memset(szTemp, 0, 2);
 				sprintf(szTemp, "%c", cChar);

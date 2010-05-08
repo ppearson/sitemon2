@@ -33,6 +33,7 @@ void split(const std::string &str, std::vector<std::string> &tokens, const std::
 
 void toLower(std::string &str)
 {
-	for (int i = 0; i < str.size(); i++)
+	unsigned int size = str.size();
+	for (unsigned int i = 0; i < size; i++)
 		str[i] = tolower(str[i]);
 }
