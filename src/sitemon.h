@@ -22,18 +22,33 @@
 #include "http_request.h"
 #include "http_response.h"
 #include "script.h"
+#include "config.h"
 
-bool performSingleRequest(HTTPRequest &request, bool outputHeader);
-bool performScriptRequest(Script &script);
+class SitemonApp
+{
+public:
+	SitemonApp() { }
+	
+	void loadConfigSettings();
+	
+	bool runWebServerAndScheduler();
+	
+	bool performSingleRequest(HTTPRequest &request, bool outputHeader);
+	bool performScriptRequest(Script &script);
 
-bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath);
-bool performHitLoadTest(Script &script, int threads, const std::string &outputPath);
-bool performHitLoadTest(Script &script, const std::string &outputPath);
+	bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath);
+	bool performHitLoadTest(Script &script, int threads, const std::string &outputPath);
+	bool performHitLoadTest(Script &script, const std::string &outputPath);
 
-bool performProfileLoadTest(HTTPRequest &request, int threads, int duration, const std::string &outputPath);
-bool performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath);
-bool performProfileLoadTest(Script &script, const std::string &outputPath);
-
-void outputResponse(HTTPRequest &request, HTTPResponse &response);
+	bool performProfileLoadTest(HTTPRequest &request, int threads, int duration, const std::string &outputPath);
+	bool performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath);
+	bool performProfileLoadTest(Script &script, const std::string &outputPath);
+	
+	void outputResponse(HTTPRequest &request, HTTPResponse &response);
+	
+protected:
+	ConfigSettings	m_configSettings;
+	
+};
 
 #endif

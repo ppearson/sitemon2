@@ -49,11 +49,11 @@ public:
 class LoadTestResultsSaver : public Thread
 {
 public:
-	LoadTestResultsSaver(bool continualSaving, const std::string &filePath);
-	LoadTestResultsSaver(bool continualSaving, SQLiteDB *pDB);
+	LoadTestResultsSaver();
 	virtual ~LoadTestResultsSaver() { }
 	
-	bool initStorage();
+	bool initStorage(const std::string &filePath);
+	bool initStorage(const std::string &description, SQLiteDB *pDB);
 	bool initDatabase();
 	
 	void copyScript(const Script &script) { m_script = script; m_haveScript = true; }
@@ -82,6 +82,7 @@ protected:
 	std::string						m_filePath;	
 
 	SQLiteDB *						m_pMainDB;
+	std::string						m_testRunDescription;
 
 	// used to store the result ID row of the DB table, when storing continually
 	unsigned long					m_loadTestRunID;

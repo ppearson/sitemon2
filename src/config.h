@@ -21,22 +21,45 @@
 
 #include "utils/tinyxml.h"
 
+struct ProxySettings
+{
+	std::string		m_proxyHost;
+	std::string		m_proxyPort;
+	std::string		m_proxyUser;
+	std::string		m_proxyPass;	
+};
+
+struct ConfigSettings
+{
+	std::string		m_webContentPath;
+	std::string		m_monitoringDBPath;
+	std::string		m_loadTestingDBPath;
+	
+	bool			m_useProxy;
+	ProxySettings	m_proxySettings;
+	
+	//
+	
+	std::string	getWebContentPath() { return m_webContentPath; }
+	std::string	getMonitoringDBPath() { return m_monitoringDBPath; }
+	std::string getLoadTestingDBPath() { return m_loadTestingDBPath; }
+	
+	bool shouldUseProxy() { return m_useProxy; }
+	ProxySettings & getProxySettings() { return m_proxySettings; }
+};
+
 class Config
 {
 public:
-	Config() { }
+	Config(ConfigSettings &configSettings);
 	
 	bool loadConfigFile(const std::string &configFilePath = "");
 	
-	std::string	getWebContentPath() { return m_webContentPath; }
-	std::string	getDBPath() { return m_dbPath; }
+	void loadProxySettings(TiXmlElement *pElement);
 	
 protected:
 	std::string		m_configFilePath;
-	
-	std::string		m_webContentPath;
-	std::string		m_dbPath;
-	
+	ConfigSettings &m_configSettings;
 };
 
 

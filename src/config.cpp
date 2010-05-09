@@ -20,6 +20,11 @@
 
 #include "config.h"
 
+Config::Config(ConfigSettings &configSettings) : m_configSettings(configSettings)
+{
+	
+}
+
 bool Config::loadConfigFile(const std::string &configFilePath)
 {
 	std::string finalPath;
@@ -67,13 +72,23 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 		
 		if (elementName == "web_content_path")
 		{
-			m_webContentPath = content;
+			m_configSettings.m_webContentPath = content;
 		}
-		else if (elementName == "db_path")
+		else if (elementName == "mon_db_path")
 		{
-			m_dbPath = content;
+			m_configSettings.m_monitoringDBPath = content;
+		}
+		else if (elementName == "loadtest_db_path")
+		{
+			m_configSettings.m_loadTestingDBPath = content;
 		}
 	}	
 	
 	return true;
+}
+
+void Config::loadProxySettings(TiXmlElement *pElement)
+{
+
+
 }

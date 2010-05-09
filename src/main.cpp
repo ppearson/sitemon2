@@ -23,12 +23,6 @@
 #include "script.h"
 #include "config.h"
 #include "sitemon.h"
-#include "http_server/http_server.h"
-#include "utils/socket.h"
-#include "scheduler/scheduler.h"
-
-#include "scheduler/scheduler_db_helpers.h"
-#include "http_server/http_server_db_helpers.h"
 
 #include "script_debugger.h"
 
@@ -228,58 +222,15 @@ int main(int argc, char *const argv[])
 		}
 	}
 	
-	Config configFile;
-#ifndef _MSC_VER
-	configFile.loadConfigFile("/Users/peter/sm_config.xml");
-#else
-	configFile.loadConfigFile();
-#endif
+	SitemonApp sitemon;
+	
+	sitemon.loadConfigSettings();
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	
 	if (runWeb)
 	{
-		std::string webContentPath = configFile.getWebContentPath();
-		std::string monitoringDBPath = configFile.getMonitoringDBPath();
-
-		SQLiteDB *pMonitoringDB = NULL;
-	
-		if (!monitoringDBPath.empty())
-		{
-			pMonitoringDB = new SQLiteDB(monitoringDBPath);
-		}
-		
-		if (!pMonitoringDB->isThreadSafe())
-		{
-			std::cout << "SQLite is not thread safe!\n";
-		}
-		
-		// create the needed tables first
-		createNeededHTTPServerTables(pMonitoringDB);
-		createNeededSchedulerTables(pMonitoringDB);
-		
-		Scheduler schedulerThread(pMonitoringDB);
-		schedulerThread.start();
-
-		std::cout << "Scheduler thread started...\n";
-
-		Thread::sleep(1); // to enable db tables to be created if needed
-
-		//
-		std::cout << "Starting web server on http://localhost:" << 8080 << "/...\n";
-
-		Socket::initWinsocks();		
-		
-		HTTPServer server(webContentPath, pMonitoringDB, 8080);
-		// keep in mind this halts execution, by design
-		server.start();
-		
 		curl_global_cleanup();
-
-		Socket::cleanupWinsocks();
-
-		if (pMonitoringDB)
-			delete pMonitoringDB;
 		
 		return 0;
 	}
@@ -327,7 +278,7 @@ int main(int argc, char *const argv[])
 			
 			std::cout << "Starting constant Profile Load test with " << threads << " threads, for " << minutes << " minutes...\n";
 			
-			if (performProfileLoadTest(newRequest, threads, minutes, outputFile))
+			if (sitemon.performProfileLoadTest(newRequest, threads, minutes, outputFile))
 			{
 				std::cout << "Load test completed successfully.\n";
 			}
@@ -363,7 +314,7 @@ int main(int argc, char *const argv[])
 				
 				std::cout << "Starting Profile Load Test with profile settings from script...\n";
 				
-				if (performProfileLoadTest(script, outputFile))
+				if (sitemon.performProfileLoadTest(script, outputFile))
 				{
 					std::cout << "Load test completed successfully.\n";
 				}
@@ -378,7 +329,7 @@ int main(int argc, char *const argv[])
 				
 				std::cout << "Starting constant Profile Load test with " << threads << " threads, for " << minutes << " minutes...\n";
 				
-				if (performProfileLoadTest(script, threads, minutes, outputFile))
+				if (sitemon.performProfileLoadTest(script, threads, minutes, outputFile))
 				{
 					std::cout << "Load test completed successfully.\n";
 				}
@@ -413,7 +364,7 @@ int main(int argc, char *const argv[])
 			
 			std::cout << "Starting Hit Load test with " << threads << " threads...\n";
 			
-			if (performHitLoadTest(newRequest, threads, outputFile))
+			if (sitemon.performHitLoadTest(newRequest, threads, outputFile))
 			{
 				std::cout << "Load test completed successfully.\n";
 			}
@@ -449,7 +400,7 @@ int main(int argc, char *const argv[])
 				
 				std::cout << "Starting Hit Load Test with profile settings from script...\n";
 				
-				if (performHitLoadTest(script, outputFile))
+				if (sitemon.performHitLoadTest(script, outputFile))
 				{
 					std::cout << "Load test completed successfully.\n";
 				}
@@ -464,7 +415,7 @@ int main(int argc, char *const argv[])
 				
 				std::cout << "Starting Hit Load test with " << threads << " threads...\n";
 				
-				if (performHitLoadTest(script, threads, outputFile))
+				if (sitemon.performHitLoadTest(script, threads, outputFile))
 				{
 					std::cout << "Load test completed successfully.\n";
 				}
@@ -489,7 +440,7 @@ int main(int argc, char *const argv[])
 			request.setDownloadContent(true);
 		}
 
-		performSingleRequest(request, outputHeader);
+		sitemon.performSingleRequest(request, outputHeader);
 	}
 	else
 	{
@@ -511,7 +462,7 @@ int main(int argc, char *const argv[])
 			script.setDownloadContent(true);
 		}
 
-		performScriptRequest(script);
+		sitemon.performScriptRequest(script);
 	}
 	
 	curl_global_cleanup();

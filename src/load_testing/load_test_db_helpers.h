@@ -23,5 +23,7 @@
 
 bool createNeededLoadTestTables(SQLiteDB *pDB);
 
+bool createRunIDRecord(SQLiteDB *pDB, const std::string &description, unsigned long &runID);
+
 #endif
 

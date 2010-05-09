@@ -21,53 +21,57 @@
 #include "load_test_results_saver.h"
 
 #include "../utils/misc.h"
+#include "load_test_db_helpers.h"
 
 StepResults::StepResults(int step, const std::string &description) : m_step(step), m_description(description)
 {
 	
 }
 
-LoadTestResultsSaver::LoadTestResultsSaver(bool continualSaving, const std::string &filePath) : m_continualSaving(continualSaving), m_filePath(filePath),
-						m_haveScript(false)
+LoadTestResultsSaver::LoadTestResultsSaver() : m_haveScript(false)
+{
+	
+}
+
+bool LoadTestResultsSaver::initStorage(const std::string &filePath)
 {
 	m_database = false;
-}
-
-LoadTestResultsSaver::LoadTestResultsSaver(bool continualSaving, SQLiteDB *pDB) : m_continualSaving(continualSaving), m_pMainDB(pDB), m_haveScript(false)
-{
-	m_database = true;
-}
-
-bool LoadTestResultsSaver::initStorage()
-{
-	if (m_database)
-	{
-		// init the database
-		if (!m_pMainDB)
-			return false;
-		
-		return initDatabase();
-	}
-	else
-	{
-		if (m_filePath.empty())
-			return false;
-	}
+	
+	if (filePath.empty())
+		return false;
+	
+	m_filePath = filePath;
+	
+	m_continualSaving = false;
 	
 	return true;
 }
 
-bool LoadTestResultsSaver::initDatabase()
+bool LoadTestResultsSaver::initStorage(const std::string &description, SQLiteDB *pDB)
 {
-	if (!m_pMainDB)
+	m_database = true;
+	
+	if (!pDB)
 		return false;
 	
+	m_pMainDB = pDB;
+	
+	m_testRunDescription = description;
+	
+	m_continualSaving = true;	
+	
+	return initDatabase();
+}
+
+bool LoadTestResultsSaver::initDatabase()
+{
 	// make sure the results tables exists
+	if (!createNeededLoadTestTables(m_pMainDB))
+		return false;
 	
-	
-	
-	
-	// create the run record
+	// create the run record ID
+	if (!createRunIDRecord(m_pMainDB, m_testRunDescription, m_loadTestRunID))
+		return false;
 	
 	return true;
 }
@@ -125,7 +129,78 @@ void LoadTestResultsSaver::storeResults()
 // for the database, this means we remove items from the results vector after they've been saved
 void LoadTestResultsSaver::databaseStore()
 {
+	// m_continualSaving
 	
+	if (m_aResults.empty())
+		return;
+	
+	if (!m_pMainDB)
+		return;
+	
+	SQLiteQuery q(*m_pMainDB, true);
+	
+	// use transactions
+	if (!q.execute("BEGIN IMMEDIATE"))
+	{
+		printf("problem starting results saving transaction\n");
+		return;
+	}
+	
+	std::vector<ScriptResult>::iterator itRes = m_aResults.begin();
+	std::vector<ScriptResult>::iterator itResEnd = m_aResults.end();
+	
+	char szTemp[1024];
+	
+	for (; itRes != itResEnd; ++itRes)
+	{
+		ScriptResult &result = *itRes;
+		
+		std::string sql = "insert into load_test_overall_results values (";
+		
+		memset(szTemp, 0, 1024);
+		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %i)", m_loadTestRunID, result.getRequestStartTime().get32bitLong(),
+				result.getOverallError(), result.getLastResponseCode(), result.getResponseCount());
+		
+		sql.append(szTemp);
+		
+		if (q.execute(sql))
+		{
+			unsigned long overallResultID = q.getInsertRowID();
+		
+			std::vector<HTTPResponse>::iterator itResponse = result.begin();
+			std::vector<HTTPResponse>::iterator itResponseEnd = result.end();
+			for (int step = 1; itResponse != itResponseEnd; ++itResponse, step++)
+			{
+				HTTPResponse &httpResponse = *itResponse;
+				
+				std::string sqlPageResult = "insert into load_test_page_results values (";
+				
+				memset(szTemp, 0, 1024);
+				sprintf(szTemp, "%ld, %ld, %i, datetime(%ld, 'unixepoch'), '%s', '%s', %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", m_loadTestRunID, overallResultID, step,
+								httpResponse.timestamp.get32bitLong(), httpResponse.requestedURL.c_str(), httpResponse.finalURL.c_str(), httpResponse.errorCode,
+								httpResponse.responseCode, httpResponse.lookupTime, httpResponse.connectTime, httpResponse.dataStartTime, httpResponse.totalTime,
+								httpResponse.redirectCount, httpResponse.contentSize, httpResponse.downloadSize, httpResponse.totalContentSize, httpResponse.totalDownloadSize);
+				sqlPageResult.append(szTemp);
+				
+				if (!q.execute(sqlPageResult))
+				{
+					printf("Couldn't insert load test page result into db...\n");
+				}					
+			}
+		}
+		else
+		{
+			printf("Couldn't insert load test overall result into db...\n");
+		}
+	}
+	
+	if (!q.execute("COMMIT"))
+	{
+		printf("problem committing results transaction\n");
+		return;
+	}
+	
+	m_aResults.clear();
 }
 
 void LoadTestResultsSaver::fileStore()
