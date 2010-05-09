@@ -230,6 +230,8 @@ int main(int argc, char *const argv[])
 	
 	if (runWeb)
 	{
+		sitemon.runWebServerAndScheduler();
+		
 		curl_global_cleanup();
 		
 		return 0;

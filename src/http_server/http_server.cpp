@@ -24,6 +24,8 @@
 
 #include "http_server_db_helpers.h"
 
+#include "http_server_request_despatcher.h"
+
 HTTPServer::HTTPServer(const std::string &webContentPath, SQLiteDB *pDB, int port) : m_port(port), m_webContentPath(webContentPath), m_pMainDB(pDB)
 {
 	
@@ -48,12 +50,15 @@ bool HTTPServer::start()
 		return false;
 	}
 	
+	HTTPServerRequestDespatcher despatcher(m_webContentPath, m_pMainDB);
+	despatcher.registerMappings();
+	
 	while (true)
 	{
 		Socket *newSock = new Socket();
 		if (mainSocket.accept(newSock))
 		{
-			HTTPServerRequestThread *newThread = new HTTPServerRequestThread(newSock, m_webContentPath, m_pMainDB);
+			HTTPServerRequestThread *newThread = new HTTPServerRequestThread(newSock, despatcher);
 			
 			if (newThread)
 			{

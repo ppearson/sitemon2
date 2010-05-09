@@ -21,20 +21,20 @@
 
 #include "../utils/Socket.h"
 #include "../utils/thread.h"
-#include "../utils/sqlite_query.h"
+
+#include "http_server_request_despatcher.h"
 
 class HTTPServerRequestThread: public Thread
 {
 public:
-	HTTPServerRequestThread(Socket *socket, const std::string &webContentPath = "", SQLiteDB *pMainDB = NULL);
+	HTTPServerRequestThread(Socket *socket, HTTPServerRequestDespatcher &despatcher);
 	virtual ~HTTPServerRequestThread();
 	
 	virtual void run();
 	
 protected:
 	Socket *	m_pSocket;
-	std::string	m_webContentPath;
-	SQLiteDB *	m_pMainDB;	
+	HTTPServerRequestDespatcher &	m_despatcher;
 };
 	
 #endif

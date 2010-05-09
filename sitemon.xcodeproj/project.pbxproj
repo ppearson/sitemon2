@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8DD76F6A0486A84900D96B5E /* sitemon.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* sitemon.1 */; };
+		D005FE7E1196DB6E00638FFB /* http_server_request_despatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D005FE7D1196DB6E00638FFB /* http_server_request_despatcher.cpp */; };
 		D007CFC711822BCF0096048B /* load_test_results_saver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D007CFC511822BCF0096048B /* load_test_results_saver.cpp */; };
 		D009830F1180E0AA00F6CA9A /* script_result.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D009830E1180E0AA00F6CA9A /* script_result.cpp */; };
 		D032CFE0117E585E004A4202 /* profile_load_request_thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D032CFDF117E585E004A4202 /* profile_load_request_thread.cpp */; };
@@ -70,6 +71,8 @@
 /* Begin PBXFileReference section */
 		8DD76F6C0486A84900D96B5E /* sitemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sitemon; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859E8B029090EE04C91782 /* sitemon.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = sitemon.1; sourceTree = "<group>"; };
+		D005FE7C1196DB6E00638FFB /* http_server_request_despatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_server_request_despatcher.h; sourceTree = "<group>"; };
+		D005FE7D1196DB6E00638FFB /* http_server_request_despatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_server_request_despatcher.cpp; sourceTree = "<group>"; };
 		D007CFC511822BCF0096048B /* load_test_results_saver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_test_results_saver.cpp; sourceTree = "<group>"; };
 		D007CFC611822BCF0096048B /* load_test_results_saver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_results_saver.h; sourceTree = "<group>"; };
 		D009830D1180E0AA00F6CA9A /* script_result.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = script_result.h; sourceTree = "<group>"; };
@@ -247,6 +250,8 @@
 				D046EAC3117A053800CF9C1C /* http_server_request_thread.h */,
 				D046EAC4117A053800CF9C1C /* http_server_responses.cpp */,
 				D046EAC5117A053800CF9C1C /* http_server_responses.h */,
+				D005FE7C1196DB6E00638FFB /* http_server_request_despatcher.h */,
+				D005FE7D1196DB6E00638FFB /* http_server_request_despatcher.cpp */,
 			);
 			path = http_server;
 			sourceTree = "<group>";
@@ -405,6 +410,7 @@
 				D007CFC711822BCF0096048B /* load_test_results_saver.cpp in Sources */,
 				D0F38B80118EFAB800FE2A49 /* load_test_db_helpers.cpp in Sources */,
 				D083B89E1191FB3D00937BE3 /* time.cpp in Sources */,
+				D005FE7E1196DB6E00638FFB /* http_server_request_despatcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
