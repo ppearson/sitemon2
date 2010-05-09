@@ -83,6 +83,9 @@ void ScheduledResultSaver::storeResults()
 
 void ScheduledResultSaver::storeSingleResults()
 {
+	if (m_aSingleResults.empty())
+		return;
+	
 	SQLiteQuery q(*m_pMainDB, true);
 	
 	std::vector<ScheduledResult>::iterator it = m_aSingleResults.begin();
@@ -110,7 +113,7 @@ void ScheduledResultSaver::storeSingleResults()
 		
 		if (q.execute(sql))
 		{
-			long runID = q.getInsertRowID();
+			unsigned long runID = q.getInsertRowID();
 			
 			// save component results if needed
 			
@@ -127,7 +130,7 @@ void ScheduledResultSaver::storeSingleResults()
 						compResult.lookupTime, compResult.connectTime, compResult.dataStartTime, compResult.totalTime, compResult.contentSize, compResult.downloadSize);
 				sqlComponentResults.append(szTemp);
 				
-				q.execute(sqlComponentResults);	
+				q.execute(sqlComponentResults);
 			}
 			
 			// we can delete it now, although we don't know for certain that the commit was successful...
@@ -151,6 +154,9 @@ void ScheduledResultSaver::storeSingleResults()
 
 void ScheduledResultSaver::storeScriptResults()
 {
+	if (m_aScriptResults.empty())
+		return;
+	
 	SQLiteQuery q(*m_pMainDB, true);
 	
 	std::vector<ScheduledResult>::iterator it = m_aScriptResults.begin();
