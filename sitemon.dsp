@@ -148,6 +148,10 @@ SOURCE=.\src\http_server\http_server_request.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\src\http_server\http_server_request_despatcher.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\http_server\http_server_request_thread.cpp
 # End Source File
 # Begin Source File
@@ -321,6 +325,10 @@ SOURCE=.\src\http_server\http_server_html_formatters.h
 # Begin Source File
 
 SOURCE=.\src\http_server\http_server_request.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\http_server\http_server_request_despatcher.h
 # End Source File
 # Begin Source File
 

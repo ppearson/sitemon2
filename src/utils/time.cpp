@@ -65,7 +65,7 @@ unsigned long Time::get32bitLong() const
 {
 	uint32_t unixTimestamp;
 
-	// 64-bit systems have a 64-bit time
+	// Recent Microsoft compilers have a 64-bit time
 	unixTimestamp = static_cast<uint32_t>(m_time);
 
 	return unixTimestamp;

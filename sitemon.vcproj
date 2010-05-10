@@ -136,7 +136,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;CURL_STATICLIB"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;CURL_STATICLIB;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -454,6 +454,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\http_server\http_server_request_despatcher.cpp"
+				>
 			</File>
 			<File
 				RelativePath="src\http_server\http_server_request_thread.cpp"
@@ -970,6 +974,10 @@
 			</File>
 			<File
 				RelativePath="src\http_server\http_server_request.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\http_server\http_server_request_despatcher.h"
 				>
 			</File>
 			<File

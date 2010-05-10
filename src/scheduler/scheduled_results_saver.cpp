@@ -183,7 +183,7 @@ void ScheduledResultSaver::storeScriptResults()
 		
 		if (q.execute(sql))
 		{
-			long runID = q.getInsertRowID();
+			unsigned long runID = q.getInsertRowID();
 			
 			// now save individual results
 			
