@@ -1508,6 +1508,10 @@ bool deleteScriptStepFromDB(SQLiteDB *pDB, unsigned long testID, unsigned long p
 		return false;
 	}
 	
+	char szTestID[16];
+	memset(szTestID, 0, 16);
+	sprintf(szTestID, "%ld", testID);
+	
 	char szPageID[16];
 	memset(szPageID, 0, 16);
 	sprintf(szPageID, "%ld", pageID);
@@ -1518,10 +1522,14 @@ bool deleteScriptStepFromDB(SQLiteDB *pDB, unsigned long testID, unsigned long p
 	std::string sql2 = "delete from scheduled_script_test_page_params where page_id = ";
 	sql2.append(szPageID);
 	
+	std::string sql3 = "update scheduled_script_tests set modified_timestamp = datetime('now') where rowid = ";
+	sql3.append(szTestID);
+	
 	SQLiteQuery q(*pDB, true);
 	
 	bool ret1 = q.execute(sql1);
 	bool ret2 = q.execute(sql2);
+	bool ret3 = q.execute(sql3);
 	
-	return ret1 && ret2;
+	return ret1 && ret2 && ret3;
 }
