@@ -44,7 +44,10 @@ void HTTPServerRequestDespatcher::registerMappings()
 	m_requestMappings["/single_details"] = &HTTPServerRequestDespatcher::singleDetails;
 	m_requestMappings["/single_components"] = &HTTPServerRequestDespatcher::singleComponents;
 	m_requestMappings["/view_script_test"] = &HTTPServerRequestDespatcher::viewScriptTest;
-	m_requestMappings["/script_details"] = &HTTPServerRequestDespatcher::scriptDetails;	
+	m_requestMappings["/script_details"] = &HTTPServerRequestDespatcher::scriptDetails;
+	m_requestMappings["/delete_single_test"] = &HTTPServerRequestDespatcher::deleteSingleTest;
+	m_requestMappings["/delete_script_test"] = &HTTPServerRequestDespatcher::deleteScriptTest;
+	m_requestMappings["/delete_script_step"] = &HTTPServerRequestDespatcher::deleteScriptStep;
 }
 
 void HTTPServerRequestDespatcher::handleRequest(HTTPServerRequest &request, std::string &response)
@@ -294,39 +297,6 @@ void HTTPServerRequestDespatcher::addScriptPage(HTTPServerRequest &request, std:
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (editScriptScheduledTestPage(m_pMainDB, request, thisResponse))
-		{
-			// okay
-			
-			HTTPServerRedirectResponse resp("/monitoring");
-			response = resp.responseString();
-		}
-		else
-		{
-			HTTPServerResponse resp(500, thisResponse);
-			response = resp.responseString();
-		}
-	}
-	else // otherwise, serve up the edit form
-	{
-		std::string templatePath = m_webContentPath + "form.tplt";
-		std::string title = "Edit Script Page";
-		std::string formContent;
-		
-		long testID = atoi(request.getParam("page_id").c_str());
-		
-		generateEditScriptScheduledTestPageForm(m_pMainDB, testID, formContent);
-		
-		HTTPServerTemplateFileResponse resp(templatePath, title, formContent);
-		response = resp.responseString();
-	}
-}
-
-void HTTPServerRequestDespatcher::editScriptPage(HTTPServerRequest &request, std::string &response)
-{
-	if (request.isPost()) // actual submission
-	{
-		std::string thisResponse;
 		if (addScriptScheduledTestPage(m_pMainDB, request, thisResponse))
 		{
 			// okay
@@ -349,6 +319,39 @@ void HTTPServerRequestDespatcher::editScriptPage(HTTPServerRequest &request, std
 		long scriptID = atoi(request.getParam("script_id").c_str());
 		
 		generateAddScriptScheduledTestPageForm(m_pMainDB, scriptID, formContent);
+		
+		HTTPServerTemplateFileResponse resp(templatePath, title, formContent);
+		response = resp.responseString();
+	}
+}
+
+void HTTPServerRequestDespatcher::editScriptPage(HTTPServerRequest &request, std::string &response)
+{
+	if (request.isPost()) // actual submission
+	{
+		std::string thisResponse;
+		if (editScriptScheduledTestPage(m_pMainDB, request, thisResponse))
+		{
+			// okay
+			
+			HTTPServerRedirectResponse resp("/monitoring");
+			response = resp.responseString();
+		}
+		else
+		{
+			HTTPServerResponse resp(500, thisResponse);
+			response = resp.responseString();
+		}
+	}
+	else // otherwise, serve up the edit form
+	{
+		std::string templatePath = m_webContentPath + "form.tplt";
+		std::string title = "Edit Script Page";
+		std::string formContent;
+		
+		long testID = atoi(request.getParam("page_id").c_str());
+		
+		generateEditScriptScheduledTestPageForm(m_pMainDB, testID, formContent);
 		
 		HTTPServerTemplateFileResponse resp(templatePath, title, formContent);
 		response = resp.responseString();
@@ -428,4 +431,65 @@ void HTTPServerRequestDespatcher::scriptDetails(HTTPServerRequest &request, std:
 	
 	HTTPServerTemplateFileResponse resp(filePath, dataContent);
 	response = resp.responseString();
+}
+
+void HTTPServerRequestDespatcher::deleteSingleTest(HTTPServerRequest &request, std::string &response)
+{
+	unsigned long testID = atoi(request.getParam("test_id").c_str());
+	
+	std::string output;
+	
+	if (deleteSingleTestFromDB(m_pMainDB, testID, output))
+	{
+		HTTPServerRedirectResponse resp("/monitoring");
+		response = resp.responseString();
+	}
+	else
+	{
+		HTTPServerResponse resp(500, output);
+		response = resp.responseString();
+	}
+}
+
+void HTTPServerRequestDespatcher::deleteScriptTest(HTTPServerRequest &request, std::string &response)
+{
+	unsigned long testID = atoi(request.getParam("test_id").c_str());
+	
+	std::string output;
+	
+	if (deleteScriptTestFromDB(m_pMainDB, testID, output))
+	{
+		HTTPServerRedirectResponse resp("/monitoring");
+		response = resp.responseString();
+	}
+	else
+	{
+		HTTPServerResponse resp(500, output);
+		response = resp.responseString();
+	}
+}
+
+void HTTPServerRequestDespatcher::deleteScriptStep(HTTPServerRequest &request, std::string &response)
+{
+	unsigned long testID = atoi(request.getParam("test_id").c_str());
+	unsigned long pageID = atoi(request.getParam("page_id").c_str());
+	
+	std::string output;
+	
+	if (deleteScriptStepFromDB(m_pMainDB, testID, pageID, output))
+	{
+		std::string newURL = "/edit_script_test?test_id=";
+		char szTemp[8];
+		memset(szTemp, 0, 8);
+		sprintf(szTemp, "%ld", testID);
+		newURL.append(szTemp);
+		
+		HTTPServerRedirectResponse resp(newURL);
+		response = resp.responseString();
+	}
+	else
+	{
+		HTTPServerResponse resp(500, output);
+		response = resp.responseString();
+	}
 }

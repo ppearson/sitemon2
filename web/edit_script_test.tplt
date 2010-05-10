@@ -1,6 +1,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+<script type="text/javascript" src="sitemon.js"></script>
 </head>
 <body>
 <ul id="sitenav">
@@ -19,7 +20,7 @@
 <table>
 <tr>
 	<th scope="col" width="30">Page</td>
-	<th scope="col" width="60">Edit</th>
+	<th scope="col" width="60">Modify</th>
 	<th scope="col" width="120">Description</th>
 	<th scope="col" width="290">URL</th>
 	<th scope="col" width="50">Request Type</th>

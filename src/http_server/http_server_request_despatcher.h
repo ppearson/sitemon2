@@ -56,6 +56,10 @@ public:
 	void viewScriptTest(HTTPServerRequest &request, std::string &response);
 	void scriptDetails(HTTPServerRequest &request, std::string &response);
 	
+	void deleteSingleTest(HTTPServerRequest &request, std::string &response);
+	void deleteScriptTest(HTTPServerRequest &request, std::string &response);
+	void deleteScriptStep(HTTPServerRequest &request, std::string &response);
+	
 protected:
 	std::map<std::string, MFP>	m_requestMappings;	
 	

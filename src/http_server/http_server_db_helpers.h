@@ -52,4 +52,8 @@ bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::
 bool getScriptScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output);
 bool getScriptScheduledTestResultsDetails(SQLiteDB *pDB, int testID, long runID, std::string &output);
 
+bool deleteSingleTestFromDB(SQLiteDB *pDB, unsigned long testID, std::string &output);
+bool deleteScriptTestFromDB(SQLiteDB *pDB, unsigned long testID, std::string &output);
+bool deleteScriptStepFromDB(SQLiteDB *pDB, unsigned long testID, unsigned long pageID, std::string &output);
+
 #endif

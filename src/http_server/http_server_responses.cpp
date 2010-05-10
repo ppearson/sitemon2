@@ -77,7 +77,25 @@ std::string HTTPServerFileResponse::responseString()
 {
 	std::string response;
 
-	std::fstream fileStream(m_path.c_str(), std::ios::in);
+	bool image = false;
+	// work out if it's an image
+	int extensionPos = m_path.rfind(".");
+	if (extensionPos != -1)
+	{
+		if (m_path.substr(extensionPos + 1) == "png")
+		{
+			image = true;
+		}
+	}
+
+	std::ios::openmode mode = std::ios::in;
+
+	if (image)
+	{
+		mode = std::ios::in | std::ios::binary;
+	}
+
+	std::fstream fileStream(m_path.c_str(), mode);
 	
 	std::string content;
 	int returnCode = 200;
@@ -89,13 +107,23 @@ std::string HTTPServerFileResponse::responseString()
 	}
 	else
 	{
-		std::string line;
-		char buf[1024];
-		
-		while (fileStream.getline(buf, 1024))
+		if (!image)
 		{
-			line.assign(buf);
-			content += line + "\n";		
+			std::string line;
+			char buf[1024];
+			
+			while (fileStream.getline(buf, 1024))
+			{
+				line.assign(buf);
+				content += line + "\n";		
+			}
+		}
+		else
+		{
+			std::stringstream ssOut;
+			ssOut << fileStream.rdbuf();
+			
+			content = ssOut.str();
 		}
 	}
 	fileStream.close();
@@ -106,7 +134,14 @@ std::string HTTPServerFileResponse::responseString()
 	sprintf(szTemp, "HTTP/1.1 %i \n", returnCode);
 	response += szTemp;
 	
-	response += "Content-Type: text/html; charset=UTF-8\n";
+	if (!image)
+	{
+		response += "Content-Type: text/html; charset=UTF-8\n";
+	}
+	else
+	{
+		response += "Content-Type: image/png\n";
+	}
 	
 	memset(szTemp, 0, 64);
 	sprintf(szTemp, "Content-Length: %ld\n\n", content.size());

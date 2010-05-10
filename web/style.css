@@ -37,6 +37,10 @@ color: #000;
   border-bottom: 2px solid #000;
 }
 
+img {
+	border: none;
+}
+
 table {
 	width:95%;
 	margin-left: 0px;
@@ -51,7 +55,7 @@ td {
 color:#black;
 border-bottom:1px solid #000080;
 border-left:1px solid #000080;
-padding:.1em 1em;
+padding:.1em .3em;
 text-align:center;
 }
 td#l {
@@ -63,6 +67,7 @@ td#r {
 tr {
 border-bottom:1px solid #000080;
 border-left:1px solid #000080;
+border-right:1px solid #000080;
 }
 
 th {

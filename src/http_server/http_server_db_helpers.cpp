@@ -237,9 +237,11 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 		std::string strAcceptCompressed = (acceptCompressed == 1) ? "YES" : "NO";
 		std::string strDownloadComponents = (downloadComponents == 1) ? "YES" : "NO";
 
-		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_monitor_test?test_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
+		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_monitor_test?test_id=%ld\" title=\"Edit Test\"><img src=\"images/edit.png\"></a> "
+				"<a href=\"JavaScript:deleteSingleTest(%ld)\" title=\"Delete test\"><image src=\"images/delete.png\"></a>"
+				"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
 				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_single_test?testid=%ld\">Results</a></td>\n</tr>\n",
-						testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
+						testID, testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
 		
 		output.append(szTemp);		
 	}
@@ -581,9 +583,11 @@ bool getScriptScheduledTestsList(SQLiteDB *pDB, std::string &output)
 		std::string strAcceptCompressed = (acceptCompressed == 1) ? "YES" : "NO";
 		std::string strDownloadComponents = (downloadComponents == 1) ? "YES" : "NO";
 		
-		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_script_test?test_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
+		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_script_test?test_id=%ld\" title=\"Edit Test\"><img src=\"images/edit.png\"></a> "
+				"<a href=\"JavaScript:deleteScriptTest(%ld)\" title=\"Delete test\"><image src=\"images/delete.png\"></a>"
+				"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
 				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_script_test?testid=%ld\">Results</a></td>\n</tr>\n",
-				testID, strEnabled.c_str(), description.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
+				testID, testID, strEnabled.c_str(), description.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
 		
 		output.append(szTemp);
 	}
@@ -634,7 +638,7 @@ bool addScriptScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::stri
 	{
 		for (int i = 1; i < 10; i++)
 		{
-			long scriptID = q.getInsertRowID();
+			unsigned long scriptID = q.getInsertRowID();
 			
 			memset(szDesc, 0, 64);
 			memset(szURL, 0, 64);
@@ -787,8 +791,10 @@ bool generateEditScriptScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 		
 		std::string strRequestType = (requestType == 1) ? "POST" : "GET";
 		
-		sprintf(szTemp, "<tr>\n <td id=\"l\">%i</td>\n<td id=\"l\"><a href=\"/edit_script_page?page_id=%ld\">Edit</a></td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
-				" <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n", pageNum, pageID, description.c_str(), url.c_str(), strRequestType.c_str(),
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%i</td>\n<td id=\"l\"><a href=\"/edit_script_page?page_id=%ld\" title=\"Edit Step\"><img src=\"images/edit.png\"></a> "
+						"<a href=\"JavaScript:deleteScriptStep(%i, %ld)\" title=\"Delete Step\"><image src=\"images/delete.png\"></a>"
+						"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
+				" <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n", pageNum, pageID, testID, pageID, description.c_str(), url.c_str(), strRequestType.c_str(),
 				expectedPhrase.c_str(), testID);
 		
 		pages.append(szTemp);
@@ -1212,7 +1218,7 @@ bool addScriptScheduledTestPage(SQLiteDB *pDB, HTTPServerRequest &request, std::
 		
 		ret = q.execute(scriptSQL);
 		
-		long pageID = q.getInsertRowID();
+		unsigned long pageID = q.getInsertRowID();
 		
 		char szParamName[16];
 		char szParamValue[16];
@@ -1395,4 +1401,127 @@ bool getScriptScheduledTestResultsDetails(SQLiteDB *pDB, int testID, long runID,
 	}
 	
 	return true;
+}
+
+bool deleteSingleTestFromDB(SQLiteDB *pDB, unsigned long testID, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+	
+	char szTestID[16];
+	memset(szTestID, 0, 16);
+	sprintf(szTestID, "%ld", testID);
+	
+	std::string sql1 = "delete from scheduled_single_tests where rowid = ";
+	sql1.append(szTestID);
+	
+	std::string sql2 = "delete from scheduled_single_test_results where test_id = ";
+	sql2.append(szTestID);
+	
+	std::string sql3 = "delete from scheduled_single_test_component_results where test_id = ";
+	sql3.append(szTestID);
+	
+	SQLiteQuery q(*pDB, true);
+	
+	bool ret1 = q.execute(sql1);
+	bool ret2 = q.execute(sql2);
+	bool ret3 = q.execute(sql3);
+	
+	return ret1 && ret2 && ret3;
+}
+
+bool deleteScriptTestFromDB(SQLiteDB *pDB, unsigned long testID, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+	
+	char szTestID[16];
+	memset(szTestID, 0, 16);
+	sprintf(szTestID, "%ld", testID);
+	
+	std::string sql1 = "delete from scheduled_script_tests where rowid = ";
+	sql1.append(szTestID);
+
+	// build up a list of pageIDs
+	std::vector<unsigned long> aPageIDs;
+	
+	std::string sql2 = "select rowid from scheduled_script_test_pages where script_id = ";
+	sql2.append(szTestID);
+
+	SQLiteQuery q(*pDB, true);
+
+	q.getResult(sql2);
+	while (q.fetchNext())
+	{
+		unsigned long pageID = q.getULong();
+
+		aPageIDs.push_back(pageID);
+	}
+
+	std::string sql3 = "delete from scheduled_script_test_pages where script_id = ";
+	sql3.append(szTestID);
+
+	char szTemp[256];
+
+	std::vector<unsigned long>::iterator itPI = aPageIDs.begin();
+	std::vector<unsigned long>::iterator itPIEnd = aPageIDs.end();
+	for (; itPI != itPIEnd; ++itPI)
+	{
+		memset(szTemp, 0, 256);
+		sprintf(szTemp, "delete from scheduled_script_test_page_params where page_id = %ld", *itPI);
+
+		std::string sql4(szTemp);
+
+		if (!q.execute(sql4))
+		{
+			printf("Couldn't delete params for script page...\n");
+		}
+	}
+	
+	// now delete results
+
+	std::string sql5 = "delete from scheduled_script_test_results where test_id = ";
+	sql5.append(szTestID);
+
+	std::string sql6 = "delete from scheduled_script_test_page_results where test_id = ";
+	sql6.append(szTestID);
+	
+	bool ret1 = q.execute(sql1);
+	bool ret2 = q.execute(sql3);
+	bool ret3 = q.execute(sql5);
+	bool ret4 = q.execute(sql6);
+	
+	return ret1 && ret2 && ret3 && ret4;
+}
+
+bool deleteScriptStepFromDB(SQLiteDB *pDB, unsigned long testID, unsigned long pageID, std::string &output)
+{
+	if (!pDB)
+	{
+		output = "No DB Connection";
+		return false;
+	}
+	
+	char szPageID[16];
+	memset(szPageID, 0, 16);
+	sprintf(szPageID, "%ld", pageID);
+	
+	std::string sql1 = "delete from scheduled_script_test_pages where rowid = ";
+	sql1.append(szPageID);
+	
+	std::string sql2 = "delete from scheduled_script_test_page_params where page_id = ";
+	sql2.append(szPageID);
+	
+	SQLiteQuery q(*pDB, true);
+	
+	bool ret1 = q.execute(sql1);
+	bool ret2 = q.execute(sql2);
+	
+	return ret1 && ret2;
 }
