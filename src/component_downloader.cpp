@@ -23,8 +23,8 @@ ComponentTask::ComponentTask(const std::string &url, const std::string &referrer
 
 }
 
-ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &response, bool acceptCompressed) : ThreadPool(),
-											m_response(response), m_acceptCompressed(acceptCompressed)
+ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, const std::string &userAgent, HTTPResponse &response, bool acceptCompressed) : ThreadPool(),
+											m_response(response), m_acceptCompressed(acceptCompressed), m_userAgent(userAgent)
 {
 	// reuse the original curl handle for the first thread, and init second one
 	m_aCURLHandles[0] = mainCURLHandle;
@@ -101,7 +101,7 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	if (pThisHandle == NULL)
 		return;
 	
-	if (curl_easy_setopt(pThisHandle, CURLOPT_USERAGENT, "Mozilla/5.0") != 0)
+	if (curl_easy_setopt(pThisHandle, CURLOPT_USERAGENT, m_userAgent.c_str()) != 0)
 		return;
 	
 	if (curl_easy_setopt(pThisHandle, CURLOPT_URL, pThisTask->getURL().c_str()) != 0)

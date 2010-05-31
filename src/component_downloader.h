@@ -48,7 +48,7 @@ struct cdLocks
 class ComponentDownloader : public ThreadPool
 {
 public:
-	ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &response, bool acceptCompressed = false);
+	ComponentDownloader(CURL *mainCURLHandle, const std::string &userAgent, HTTPResponse &response, bool acceptCompressed = false);
 	virtual ~ComponentDownloader();
 	
 	void addURL(const std::string &url);
@@ -66,6 +66,8 @@ protected:
 	Mutex	m_lock;
 	HTTPResponse &	m_response;
 	bool	m_acceptCompressed;
+	
+	std::string	m_userAgent;
 };
 
 #endif

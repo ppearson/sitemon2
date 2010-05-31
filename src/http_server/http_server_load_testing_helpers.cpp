@@ -65,7 +65,7 @@ bool getLoadTestRunResults(SQLiteDB *pDB, HTTPServerRequest &request, std::strin
 	sql += " where run_id = ";
 	
 	std::string runID = request.getParam("run_id");
-	
+
 	sql += runID;
 	
 	SQLiteQuery q(*pDB);

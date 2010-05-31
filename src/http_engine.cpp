@@ -23,6 +23,8 @@
 #include "html_parser.h"
 #include "component_downloader.h"
 
+static const char *kUserAgent = "Sitemon/0.5";
+
 HTTPEngine::HTTPEngine()
 {
 	m_handle = curl_easy_init();
@@ -45,7 +47,7 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 	if (curl_easy_setopt(handle, CURLOPT_MAXREDIRS, 12L) != 0)
 		return false;
 	
-	if (curl_easy_setopt(handle, CURLOPT_USERAGENT, "Mozilla/5.0") != 0)//"SiteMon" "/" "0.5") != 0)
+	if (curl_easy_setopt(handle, CURLOPT_USERAGENT, kUserAgent) != 0)
 		return false;
 
 	m_url = request.getUrl();	
@@ -252,7 +254,7 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	std::set<std::string> &aScripts = parser.getScripts();
 	std::set<std::string> &aImages = parser.getImages();
 	
-	ComponentDownloader compDownloader(mainHandle, response, acceptCompressed);
+	ComponentDownloader compDownloader(mainHandle, kUserAgent, response, acceptCompressed);
 	
 	std::set<std::string>::iterator it = aScripts.begin();
 	std::set<std::string>::iterator itEnd = aScripts.end();
