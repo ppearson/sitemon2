@@ -319,6 +319,8 @@ void LoadTestResultsSaver::fileStore()
 			fprintf(fp, "%s, %i, %ld,\n", szTime, result.getOverallError(), result.getLastResponseCode());		
 		}
 		
+		fprintf(fp, "Step, Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
+		
 		// now print all the detailed responses for each step
 		std::map<int, StepResults>::iterator itStepResults = aFullResults.begin();
 		std::map<int, StepResults>::iterator itStepResultsEnd = aFullResults.end();
@@ -328,9 +330,6 @@ void LoadTestResultsSaver::fileStore()
 			
 			if (stepResults.hasResults())
 			{
-				fprintf(fp, "Step %i, %s\n", stepResults.m_step, stepResults.m_description.c_str());
-				fprintf(fp, "Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
-				
 				std::vector<HTTPResponse>::iterator itResponses = stepResults.begin();
 				std::vector<HTTPResponse>::iterator itResponsesEnd = stepResults.end();
 				for (; itResponses != itResponsesEnd; ++itResponses)
@@ -342,8 +341,8 @@ void LoadTestResultsSaver::fileStore()
 					pTimeinfo = localtime(&runTime);
 					strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 					
-					fprintf(fp, "%s, %i, %ld, %f, %f, %f, %f, %ld,\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
-							resp.totalTime, resp.contentSize);				
+					fprintf(fp, "%i, %s, %i, %ld, %f, %f, %f, %f, %ld,\n", stepResults.m_step, szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime,
+							resp.dataStartTime, resp.totalTime, resp.contentSize);				
 				}
 			}
 		}
