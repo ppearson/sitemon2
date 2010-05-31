@@ -51,6 +51,7 @@ public:
 	
 	int getThread();
 	void freeThread(int thread);
+	bool isActive(int thread);
 	
 protected:
 	Mutex						m_lock;

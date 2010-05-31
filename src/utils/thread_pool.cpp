@@ -44,6 +44,22 @@ ThreadController::ThreadController(int threads) : m_numberOfThreads(threads)
 	}
 }
 
+bool ThreadController::isActive(int thread)
+{
+	m_lock.lock();
+
+	bool isAvailable = false;
+	
+	if (!m_bsThreadsAvailable.test(thread))
+	{
+		isAvailable = true;
+	}
+
+	m_lock.unlock();
+
+	return isAvailable;
+}
+
 int ThreadController::getThread()
 {
 	int thread = -1;
@@ -69,7 +85,6 @@ int ThreadController::getThread()
 	{
 		m_lock.unlock();
 		
-//		
 		m_threadAvailable.wait();
 				
 		m_lock.lock();
@@ -128,7 +143,7 @@ void ThreadPoolThread::run()
 		m_pTask = m_pThreadPool->getNextTask();
 	}
 
-	// otherwise, free the thread		
+	// otherwise, free the thread
 	m_pThreadPool->freeThread(m_threadID);
 }
 
@@ -173,7 +188,8 @@ Task *ThreadPool::getNextTask()
 void ThreadPool::startPoolAndWaitForCompletion()
 {
 	int threadID = -1;
-	while (!m_aTasks.empty())
+
+	for (int j = 0; j < m_numberOfThreads; j++)
 	{
 		threadID = m_controller.getThread();
 		
@@ -212,7 +228,7 @@ void ThreadPool::startPoolAndWaitForCompletion()
 	
 	for (int i = 0; i < m_numberOfThreads; i++)
 	{
-		if (m_pThreads[i])
+		if (m_controller.isActive(i))
 		{
 			m_pThreads[i]->waitForCompletion();
 		}
@@ -222,8 +238,4 @@ void ThreadPool::startPoolAndWaitForCompletion()
 void ThreadPool::freeThread(int threadID)
 {
 	m_controller.freeThread(threadID);
-	
-	// clean up the thread handle so we don't bother waiting on it
-	
-	m_pThreads[threadID] = NULL;
 }
