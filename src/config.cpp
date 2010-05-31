@@ -82,6 +82,14 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 		{
 			m_configSettings.m_loadTestingDBPath = content;
 		}
+		else if (elementName == "web_server_port")
+		{
+			if (!content.empty())
+			{
+				int port = atoi(content.c_str());
+				m_configSettings.m_webServerPort = port;
+			}
+		}
 	}	
 	
 	return true;

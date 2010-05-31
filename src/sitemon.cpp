@@ -44,9 +44,9 @@ void SitemonApp::loadConfigSettings()
 
 bool SitemonApp::runWebServerAndScheduler()
 {
-	std::string webContentPath = m_configSettings.getWebContentPath();
-	std::string monitoringDBPath = m_configSettings.getMonitoringDBPath();
-	std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+	std::string webContentPath = m_configSettings.m_webContentPath;
+	std::string monitoringDBPath = m_configSettings.m_monitoringDBPath;
+	std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 	
 	SQLiteDB *pMonitoringDB = NULL;
 	
@@ -82,12 +82,14 @@ bool SitemonApp::runWebServerAndScheduler()
 	schedulerThread.start();
 	
 	std::cout << "Scheduler thread started...\n";
+	
+	int port = m_configSettings.m_webServerPort;
 		
-	std::cout << "Starting web server on http://localhost:" << 8080 << "/...\n";
+	std::cout << "Starting web server on http://localhost:" << port << "/...\n";
 	
 	Socket::initWinsocks();		
 	
-	HTTPServer server(webContentPath, pMonitoringDB, pLoadTestingDB, 8080);
+	HTTPServer server(webContentPath, pMonitoringDB, pLoadTestingDB, port);
 	// keep in mind this halts execution, by design
 	server.start();
 	
@@ -161,7 +163,7 @@ bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std
 	{
 		if (outputPath == ":db")
 		{
-			std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 			
 			if (loadTestingDBPath.empty())
 			{
@@ -208,7 +210,7 @@ bool SitemonApp::performHitLoadTest(Script &script, int threads, const std::stri
 	{
 		if (outputPath == ":db")
 		{
-			std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 			
 			if (loadTestingDBPath.empty())
 			{
@@ -255,7 +257,7 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 	{
 		if (outputPath == ":db")
 		{
-			std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 			
 			if (loadTestingDBPath.empty())
 			{
@@ -301,7 +303,7 @@ bool SitemonApp::performProfileLoadTest(HTTPRequest &request, int threads, int d
 	{
 		if (outputPath == ":db")
 		{
-			std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 			
 			if (loadTestingDBPath.empty())
 			{
@@ -342,7 +344,7 @@ bool SitemonApp::performProfileLoadTest(Script &script, int threads, int duratio
 	{
 		if (outputPath == ":db")
 		{
-			std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 			
 			if (loadTestingDBPath.empty())
 			{
@@ -388,7 +390,7 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 	{
 		if (outputPath == ":db")
 		{
-			std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
+			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
 			
 			if (loadTestingDBPath.empty())
 			{

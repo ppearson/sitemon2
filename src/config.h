@@ -31,6 +31,11 @@ struct ProxySettings
 
 struct ConfigSettings
 {
+	ConfigSettings()
+	{
+		m_useProxy = false;
+		m_webServerPort = 8080;
+	}
 	std::string		m_webContentPath;
 	std::string		m_monitoringDBPath;
 	std::string		m_loadTestingDBPath;
@@ -38,13 +43,9 @@ struct ConfigSettings
 	bool			m_useProxy;
 	ProxySettings	m_proxySettings;
 	
+	int				m_webServerPort;
+	
 	//
-	
-	std::string	getWebContentPath() { return m_webContentPath; }
-	std::string	getMonitoringDBPath() { return m_monitoringDBPath; }
-	std::string getLoadTestingDBPath() { return m_loadTestingDBPath; }
-	
-	bool shouldUseProxy() { return m_useProxy; }
 	ProxySettings & getProxySettings() { return m_proxySettings; }
 };
 
