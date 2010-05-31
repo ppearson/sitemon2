@@ -1,0 +1,27 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+<script type="text/javascript" src="sitemon.js"></script>
+</head>
+<body>
+<ul id="sitenav">
+<li><a href="/">Home</a></li>
+<li><a href="/history">History</a></li>
+<li><a href="/monitoring">Monitoring</a></li>
+<li><a href="/load_testing">Load Testing</a></li>
+<li><a href="/help.html">Help</a></li>
+</ul>
+
+<br><br>
+
+<table>
+<tr>
+	<th scope="col" width="60">Run Time</th>
+	<th scope="col" width="150">Description</th>
+	<th scope="col" width="90">View Results</th>
+</tr>
+<%%>
+</table>
+
+</body>
+</html>

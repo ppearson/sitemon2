@@ -30,7 +30,7 @@
 class HTTPServerRequestDespatcher
 {
 public:
-	HTTPServerRequestDespatcher(const std::string &webContentPath = "", SQLiteDB *pMainDB = NULL);
+	HTTPServerRequestDespatcher(const std::string &webContentPath = "", SQLiteDB *pMonitoringDB = NULL, SQLiteDB *pLoadTestingDB = NULL);
 	
 	void registerMappings();
 	
@@ -60,11 +60,15 @@ public:
 	void deleteScriptTest(HTTPServerRequest &request, std::string &response);
 	void deleteScriptStep(HTTPServerRequest &request, std::string &response);
 	
+	void loadTesting(HTTPServerRequest &request, std::string &response);
+	void loadTestingRunResults(HTTPServerRequest &request, std::string &response);
+	
 protected:
 	std::map<std::string, MFP>	m_requestMappings;	
 	
 	std::string	m_webContentPath;
-	SQLiteDB *	m_pMainDB;
+	SQLiteDB *	m_pMonitoringDB;
+	SQLiteDB *	m_pLoadTestingDB;
 };
 
 #endif

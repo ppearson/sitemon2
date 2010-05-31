@@ -16,24 +16,14 @@
  
  */
 
-#ifndef HTTP_SERVER_H
-#define HTTP_SERVER_H
+#ifndef HTTP_SERVER_LOAD_TESTING_HELPERS_H
+#define HTTP_SERVER_LOAD_TESTING_HELPERS_H
 
-#include <string>
-#include "../utils/sqlite_db.h"
+#include "../http_engine.h"
+#include "../utils/sqlite_query.h"
+#include "http_server_request.h"
 
-class HTTPServer
-{
-public:
-	HTTPServer(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB = NULL, int port = 8080);
-	
-	bool start();
-	
-protected:
-	int m_port;
-	std::string m_webContentPath;
-	SQLiteDB *m_pMonitoringDB;
-	SQLiteDB *m_pLoadTestingDB;
-};
+bool getLoadTestRunsList(SQLiteDB *pDB, std::string &output);
+bool getLoadTestRunResults(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
 
 #endif

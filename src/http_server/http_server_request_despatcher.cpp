@@ -22,9 +22,10 @@
 
 #include "http_server_db_helpers.h"
 #include "http_server_html_formatters.h"
+#include "http_server_load_testing_helpers.h"
 
-HTTPServerRequestDespatcher::HTTPServerRequestDespatcher(const std::string &webContentPath, SQLiteDB *pMainDB) :
-								m_webContentPath(webContentPath), m_pMainDB(pMainDB)
+HTTPServerRequestDespatcher::HTTPServerRequestDespatcher(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB) :
+								m_webContentPath(webContentPath), m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB)
 {
 	
 }
@@ -48,6 +49,9 @@ void HTTPServerRequestDespatcher::registerMappings()
 	m_requestMappings["/delete_single_test"] = &HTTPServerRequestDespatcher::deleteSingleTest;
 	m_requestMappings["/delete_script_test"] = &HTTPServerRequestDespatcher::deleteScriptTest;
 	m_requestMappings["/delete_script_step"] = &HTTPServerRequestDespatcher::deleteScriptStep;
+	
+	m_requestMappings["/load_testing"] = &HTTPServerRequestDespatcher::loadTesting;
+	m_requestMappings["/load_test_results"] = &HTTPServerRequestDespatcher::loadTestingRunResults;
 }
 
 void HTTPServerRequestDespatcher::handleRequest(HTTPServerRequest &request, std::string &response)
@@ -126,7 +130,7 @@ void HTTPServerRequestDespatcher::inlineSimple(HTTPServerRequest &request, std::
 			content += "Couldn't perform test: " + httpTestResponse.errorString + "<br>\n";				
 		}
 		
-		addResponseToSingleTestHistoryTable(m_pMainDB, httpTestResponse);
+		addResponseToSingleTestHistoryTable(m_pMonitoringDB, httpTestResponse);
 		
 		HTTPServerResponse resp(200, content);
 		response = resp.responseString();
@@ -144,7 +148,7 @@ void HTTPServerRequestDespatcher::history(HTTPServerRequest &request, std::strin
 	std::string filePath = m_webContentPath + "history.tplt";
 	
 	std::string dataContent;
-	getSingleTestHistoryList(m_pMainDB, dataContent, offset);
+	getSingleTestHistoryList(m_pMonitoringDB, dataContent, offset);
 	
 	HTTPServerTemplateFileResponse resp(filePath, dataContent);
 	response = resp.responseString();
@@ -155,10 +159,10 @@ void HTTPServerRequestDespatcher::monitoring(HTTPServerRequest &request, std::st
 	std::string filePath = m_webContentPath + "monitoring.tplt";
 	
 	std::string singleTests;
-	getSingleScheduledTestsList(m_pMainDB, singleTests);
+	getSingleScheduledTestsList(m_pMonitoringDB, singleTests);
 	
 	std::string scriptTests;
-	getScriptScheduledTestsList(m_pMainDB, scriptTests);
+	getScriptScheduledTestsList(m_pMonitoringDB, scriptTests);
 	
 	HTTPServerTemplateFileResponse resp(filePath, singleTests, scriptTests);
 	response = resp.responseString();
@@ -169,7 +173,7 @@ void HTTPServerRequestDespatcher::addSingleTest(HTTPServerRequest &request, std:
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (addSingleScheduledTest(m_pMainDB, request, thisResponse))
+		if (addSingleScheduledTest(m_pMonitoringDB, request, thisResponse))
 		{
 			// okay
 			
@@ -199,7 +203,7 @@ void HTTPServerRequestDespatcher::addScriptTest(HTTPServerRequest &request, std:
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (addScriptScheduledTest(m_pMainDB, request, thisResponse))
+		if (addScriptScheduledTest(m_pMonitoringDB, request, thisResponse))
 		{
 			// okay
 			
@@ -229,7 +233,7 @@ void HTTPServerRequestDespatcher::editMonitorTest(HTTPServerRequest &request, st
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (editSingleScheduledTest(m_pMainDB, request, thisResponse))
+		if (editSingleScheduledTest(m_pMonitoringDB, request, thisResponse))
 		{
 			// okay
 			
@@ -250,7 +254,7 @@ void HTTPServerRequestDespatcher::editMonitorTest(HTTPServerRequest &request, st
 		
 		long testID = atoi(request.getParam("test_id").c_str());
 		
-		generateEditSingleScheduledTestForm(m_pMainDB, testID, formContent);
+		generateEditSingleScheduledTestForm(m_pMonitoringDB, testID, formContent);
 		
 		HTTPServerTemplateFileResponse resp(templatePath, title, formContent);
 		response = resp.responseString();
@@ -262,7 +266,7 @@ void HTTPServerRequestDespatcher::editScriptTest(HTTPServerRequest &request, std
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (editScriptScheduledTest(m_pMainDB, request, thisResponse))
+		if (editScriptScheduledTest(m_pMonitoringDB, request, thisResponse))
 		{
 			// okay
 			
@@ -285,7 +289,7 @@ void HTTPServerRequestDespatcher::editScriptTest(HTTPServerRequest &request, std
 		
 		long testID = atoi(request.getParam("test_id").c_str());
 		
-		generateEditScriptScheduledTestForm(m_pMainDB, testID, formContent, tableContent, addNewPageLink);
+		generateEditScriptScheduledTestForm(m_pMonitoringDB, testID, formContent, tableContent, addNewPageLink);
 		
 		HTTPServerTemplateFileResponse resp(templatePath, formContent, tableContent, addNewPageLink);
 		response = resp.responseString();
@@ -297,7 +301,7 @@ void HTTPServerRequestDespatcher::addScriptPage(HTTPServerRequest &request, std:
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (addScriptScheduledTestPage(m_pMainDB, request, thisResponse))
+		if (addScriptScheduledTestPage(m_pMonitoringDB, request, thisResponse))
 		{
 			// okay
 			
@@ -318,7 +322,7 @@ void HTTPServerRequestDespatcher::addScriptPage(HTTPServerRequest &request, std:
 		
 		long scriptID = atoi(request.getParam("script_id").c_str());
 		
-		generateAddScriptScheduledTestPageForm(m_pMainDB, scriptID, formContent);
+		generateAddScriptScheduledTestPageForm(m_pMonitoringDB, scriptID, formContent);
 		
 		HTTPServerTemplateFileResponse resp(templatePath, title, formContent);
 		response = resp.responseString();
@@ -330,7 +334,7 @@ void HTTPServerRequestDespatcher::editScriptPage(HTTPServerRequest &request, std
 	if (request.isPost()) // actual submission
 	{
 		std::string thisResponse;
-		if (editScriptScheduledTestPage(m_pMainDB, request, thisResponse))
+		if (editScriptScheduledTestPage(m_pMonitoringDB, request, thisResponse))
 		{
 			// okay
 			
@@ -351,7 +355,7 @@ void HTTPServerRequestDespatcher::editScriptPage(HTTPServerRequest &request, std
 		
 		long testID = atoi(request.getParam("page_id").c_str());
 		
-		generateEditScriptScheduledTestPageForm(m_pMainDB, testID, formContent);
+		generateEditScriptScheduledTestPageForm(m_pMonitoringDB, testID, formContent);
 		
 		HTTPServerTemplateFileResponse resp(templatePath, title, formContent);
 		response = resp.responseString();
@@ -369,7 +373,7 @@ void HTTPServerRequestDespatcher::viewSingleTest(HTTPServerRequest &request, std
 	
 	std::string description;			
 	std::string dataContent;
-	getSingleScheduledTestResultsList(m_pMainDB, testID, description, dataContent);
+	getSingleScheduledTestResultsList(m_pMonitoringDB, testID, description, dataContent);
 	
 	HTTPServerTemplateFileResponse resp(filePath, description, dataContent);
 	response = resp.responseString();
@@ -382,7 +386,7 @@ void HTTPServerRequestDespatcher::singleDetails(HTTPServerRequest &request, std:
 	std::string filePath = m_webContentPath + "single_details.tplt";
 	
 	std::string dataContent;
-	formatDBSingleTestResponseToHTMLDL(m_pMainDB, runID, dataContent);
+	formatDBSingleTestResponseToHTMLDL(m_pMonitoringDB, runID, dataContent);
 	
 	HTTPServerTemplateFileResponse resp(filePath, dataContent);
 	response = resp.responseString();
@@ -396,7 +400,7 @@ void HTTPServerRequestDespatcher::singleComponents(HTTPServerRequest &request, s
 	std::string filePath = m_webContentPath + "single_components.tplt";
 	
 	std::string dataContent;
-	getSingleScheduledTestComponentsList(m_pMainDB, testID, runID, dataContent);
+	getSingleScheduledTestComponentsList(m_pMonitoringDB, testID, runID, dataContent);
 	
 	HTTPServerTemplateFileResponse resp(filePath, dataContent);
 	response = resp.responseString();
@@ -413,7 +417,7 @@ void HTTPServerRequestDespatcher::viewScriptTest(HTTPServerRequest &request, std
 	
 	std::string description;			
 	std::string dataContent;
-	getScriptScheduledTestResultsList(m_pMainDB, testID, description, dataContent);
+	getScriptScheduledTestResultsList(m_pMonitoringDB, testID, description, dataContent);
 	
 	HTTPServerTemplateFileResponse resp(filePath, description, dataContent);
 	response = resp.responseString();
@@ -427,7 +431,7 @@ void HTTPServerRequestDespatcher::scriptDetails(HTTPServerRequest &request, std:
 	std::string filePath = m_webContentPath + "script_details.tplt";
 	
 	std::string dataContent;
-	getScriptScheduledTestResultsDetails(m_pMainDB, testID, runID, dataContent);
+	getScriptScheduledTestResultsDetails(m_pMonitoringDB, testID, runID, dataContent);
 	
 	HTTPServerTemplateFileResponse resp(filePath, dataContent);
 	response = resp.responseString();
@@ -439,7 +443,7 @@ void HTTPServerRequestDespatcher::deleteSingleTest(HTTPServerRequest &request, s
 	
 	std::string output;
 	
-	if (deleteSingleTestFromDB(m_pMainDB, testID, output))
+	if (deleteSingleTestFromDB(m_pMonitoringDB, testID, output))
 	{
 		HTTPServerRedirectResponse resp("/monitoring");
 		response = resp.responseString();
@@ -457,7 +461,7 @@ void HTTPServerRequestDespatcher::deleteScriptTest(HTTPServerRequest &request, s
 	
 	std::string output;
 	
-	if (deleteScriptTestFromDB(m_pMainDB, testID, output))
+	if (deleteScriptTestFromDB(m_pMonitoringDB, testID, output))
 	{
 		HTTPServerRedirectResponse resp("/monitoring");
 		response = resp.responseString();
@@ -476,7 +480,7 @@ void HTTPServerRequestDespatcher::deleteScriptStep(HTTPServerRequest &request, s
 	
 	std::string output;
 	
-	if (deleteScriptStepFromDB(m_pMainDB, testID, pageID, output))
+	if (deleteScriptStepFromDB(m_pMonitoringDB, testID, pageID, output))
 	{
 		std::string newURL = "/edit_script_test?test_id=";
 		char szTemp[8];
@@ -485,6 +489,42 @@ void HTTPServerRequestDespatcher::deleteScriptStep(HTTPServerRequest &request, s
 		newURL.append(szTemp);
 		
 		HTTPServerRedirectResponse resp(newURL);
+		response = resp.responseString();
+	}
+	else
+	{
+		HTTPServerResponse resp(500, output);
+		response = resp.responseString();
+	}
+}
+
+void HTTPServerRequestDespatcher::loadTesting(HTTPServerRequest &request, std::string &response)
+{
+	std::string output;
+	
+	if (getLoadTestRunsList(m_pLoadTestingDB, output))
+	{
+		std::string filePath = m_webContentPath + "load_testing.tplt";
+		
+		HTTPServerTemplateFileResponse resp(filePath, output);
+		response = resp.responseString();		
+	}
+	else
+	{
+		HTTPServerResponse resp(500, output);
+		response = resp.responseString();
+	}
+}
+
+void HTTPServerRequestDespatcher::loadTestingRunResults(HTTPServerRequest &request, std::string &response)
+{
+	std::string output;
+	
+	if (getLoadTestRunResults(m_pLoadTestingDB, request, output))
+	{
+		std::string filePath = m_webContentPath + "load_testing_run_results.tplt";
+		
+		HTTPServerTemplateFileResponse resp(filePath, output);
 		response = resp.responseString();
 	}
 	else

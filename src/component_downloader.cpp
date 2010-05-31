@@ -34,10 +34,12 @@ ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &res
 	// personalisation (I'm looking at you Fatwire) require cookies in order to respond correctly with content to requests.
 	// However, only the thread which did the initial request for the HTML got the cookie back, hence the need to share it
 	
-	m_CURLSharedData = curl_share_init();
+/*	m_CURLSharedData = curl_share_init();
 	if (m_CURLSharedData)
 	{
 		// OS X doesn't seem to need these - it crashes with them anyway...
+
+*/
 /*
 #ifdef _MSC_VER
 		curl_share_setopt(m_CURLSharedData, CURLSHOPT_LOCKFUNC, share_lock);
@@ -51,7 +53,7 @@ ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, HTTPResponse &res
 		}
 #endif
 */
-	}
+//	}
 }
 
 ComponentDownloader::~ComponentDownloader()
@@ -65,10 +67,11 @@ ComponentDownloader::~ComponentDownloader()
 		}
 	}
 	
-	if (m_CURLSharedData)
+/*	if (m_CURLSharedData)
 	{
 		curl_share_cleanup(m_CURLSharedData);
 	}
+*/
 }
 
 void ComponentDownloader::addURL(const std::string &url)

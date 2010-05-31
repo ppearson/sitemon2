@@ -26,7 +26,8 @@
 
 #include "http_server_request_despatcher.h"
 
-HTTPServer::HTTPServer(const std::string &webContentPath, SQLiteDB *pDB, int port) : m_port(port), m_webContentPath(webContentPath), m_pMainDB(pDB)
+HTTPServer::HTTPServer(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB, int port) : m_port(port), m_webContentPath(webContentPath),
+			m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB)
 {
 	
 }
@@ -50,7 +51,7 @@ bool HTTPServer::start()
 		return false;
 	}
 	
-	HTTPServerRequestDespatcher despatcher(m_webContentPath, m_pMainDB);
+	HTTPServerRequestDespatcher despatcher(m_webContentPath, m_pMonitoringDB, m_pLoadTestingDB);
 	despatcher.registerMappings();
 	
 	while (true)

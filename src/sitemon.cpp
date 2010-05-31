@@ -29,6 +29,7 @@
 
 #include "scheduler/scheduler_db_helpers.h"
 #include "http_server/http_server_db_helpers.h"
+#include "load_testing/load_test_db_helpers.h"
 
 void SitemonApp::loadConfigSettings()
 {
@@ -45,6 +46,7 @@ bool SitemonApp::runWebServerAndScheduler()
 {
 	std::string webContentPath = m_configSettings.getWebContentPath();
 	std::string monitoringDBPath = m_configSettings.getMonitoringDBPath();
+	std::string loadTestingDBPath = m_configSettings.getLoadTestingDBPath();
 	
 	SQLiteDB *pMonitoringDB = NULL;
 	
@@ -57,24 +59,35 @@ bool SitemonApp::runWebServerAndScheduler()
 	{
 		std::cout << "SQLite is not thread safe!\n";
 	}
+
+	SQLiteDB *pLoadTestingDB = NULL;
+	
+	if (!loadTestingDBPath.empty())
+	{
+		pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
+	}
 	
 	// create the needed tables first
 	createNeededHTTPServerTables(pMonitoringDB);
 	createNeededSchedulerTables(pMonitoringDB);
+
+	if (pLoadTestingDB)
+	{
+		createNeededLoadTestTables(pLoadTestingDB);
+	}
+
+	Thread::sleep(1); // to enable db tables to be created if needed
 	
 	Scheduler schedulerThread(pMonitoringDB);
 	schedulerThread.start();
 	
 	std::cout << "Scheduler thread started...\n";
-	
-	Thread::sleep(1); // to enable db tables to be created if needed
-	
-	//
+		
 	std::cout << "Starting web server on http://localhost:" << 8080 << "/...\n";
 	
 	Socket::initWinsocks();		
 	
-	HTTPServer server(webContentPath, pMonitoringDB, 8080);
+	HTTPServer server(webContentPath, pMonitoringDB, pLoadTestingDB, 8080);
 	// keep in mind this halts execution, by design
 	server.start();
 	
@@ -82,6 +95,9 @@ bool SitemonApp::runWebServerAndScheduler()
 	
 	if (pMonitoringDB)
 		delete pMonitoringDB;
+
+	if (pLoadTestingDB)
+		delete pLoadTestingDB;
 	
 	return true;
 }
