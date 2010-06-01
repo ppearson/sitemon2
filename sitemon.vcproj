@@ -436,6 +436,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\http_server\http_server_load_testing_helpers.cpp"
+				>
+			</File>
+			<File
 				RelativePath="src\http_server\http_server_request.cpp"
 				>
 				<FileConfiguration
@@ -970,6 +974,10 @@
 			</File>
 			<File
 				RelativePath="src\http_server\http_server_html_formatters.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\http_server\http_server_load_testing_helpers.h"
 				>
 			</File>
 			<File

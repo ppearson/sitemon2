@@ -18,7 +18,9 @@
 
 #ifdef _MSC_VER
 #include <direct.h>
+#include <windows.h>
 #else
+#include <dlfcn.h>
 #include <unistd.h>
 #endif
 
@@ -48,6 +50,63 @@ char *getCurrentDirectory(bool appendFinal)
 	}
 	
 	return szCurrentDir;
+}
+
+// this gets the path the Sitemon executable file is in
+// regardless of the current working directory from which
+// Sitemon is started. This allows Sitemon to be started
+// from anywhere at the command prompt and still find the
+// config file in the same directory as the executable
+std::string getExecutablePath(bool appendFinal)
+{
+#ifdef _MSC_VER
+	TCHAR szHome[MAX_PATH];
+	::GetModuleFileName(NULL, szHome, MAX_PATH);
+
+	std::string path(szHome);
+
+	int finalSlash = path.rfind("\\");
+	if (finalSlash != -1)
+	{
+		if (appendFinal)
+			finalSlash ++;
+
+		std::string finalPath = path.substr(0, finalSlash);
+		return finalPath;
+	}
+	else
+	{
+		return getCurrentDirectory(appendFinal);
+	}
+
+#else
+	int ret;
+	Dl_info DlInfo;
+	ret = dladdr((void *)getExecutablePath, &DlInfo);
+	
+	if (ret)
+	{
+		std::string path(DlInfo.dli_fname);
+		
+		int finalSlash = path.rfind("/");
+		if (finalSlash != -1)
+		{
+			if (appendFinal)
+				finalSlash ++;
+			
+			std::string finalPath = path.substr(0, finalSlash);
+			return finalPath;
+		}
+		else
+		{
+			return getCurrentDirectory(appendFinal);
+		}
+	}
+	else
+	{
+		return getCurrentDirectory(appendFinal);
+	}
+#endif
 }
 
 bool isFullPath(const std::string &path)

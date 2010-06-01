@@ -35,14 +35,12 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 	}
 	else
 	{
-		char *szCurrentDir = getCurrentDirectory();
-		if (szCurrentDir == 0)
-		{
-			return false;
-		}
-		
-		finalPath = szCurrentDir;
-		
+#ifndef _DEBUG
+		finalPath = getExecutablePath();
+#else
+		finalPath = getCurrentDirectory();
+#endif
+				
 		finalPath += "sm_config.xml";
 	}
 
