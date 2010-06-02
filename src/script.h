@@ -26,49 +26,7 @@
 #include "http_request.h"
 #include "debug_settings.h"
 
-enum LoadTestType
-{
-	LOAD_HIT_TEST,
-	LOAD_PROFILE_TEST
-};
-
-struct LoadTestProfileSeg
-{
-	LoadTestProfileSeg(int threads, int duration) : m_threads(threads), m_duration(duration) { }
-
-	int	m_threads;
-	int	m_duration;
-};
-
-class LoadTestSettings
-{
-public:
-	LoadTestSettings();
-	
-	bool loadLoadTestElement(TiXmlElement *pElement);
-	void loadSegmentsElement(TiXmlElement *pElement);
-	
-	inline std::vector<LoadTestProfileSeg>::iterator begin() { return m_aProfileSegments.begin(); }
-	inline std::vector<LoadTestProfileSeg>::iterator end() { return m_aProfileSegments.end(); }
-	
-	int getHitThreads() { return m_threads; }
-	int getHitRepeats() { return m_repeats; }
-	
-	bool			m_set;
-	
-	LoadTestType	m_type;
-	
-protected:
-
-	void addProfile(LoadTestProfileSeg &seg);
-
-	// hit settings
-	int		m_threads;
-	int		m_repeats;
-
-	// profile settings
-	std::vector<LoadTestProfileSeg>	m_aProfileSegments;
-};
+#include "load_test_settings.h"
 
 class Script
 {

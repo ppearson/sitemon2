@@ -52,6 +52,7 @@
 		D046EB1D117A053900CF9C1C /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D046EAF6117A053900CF9C1C /* tinyxmlerror.cpp */; };
 		D046EB1E117A053900CF9C1C /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D046EAF7117A053900CF9C1C /* tinyxmlparser.cpp */; };
 		D083B89E1191FB3D00937BE3 /* time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D083B89D1191FB3D00937BE3 /* time.cpp */; };
+		D0DD6A7C11B6DF6100045AD2 /* load_test_settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0DD6A7B11B6DF6100045AD2 /* load_test_settings.cpp */; };
 		D0EA6D9F119F52A900A6FF85 /* http_server_load_testing_helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0EA6D9D119F52A900A6FF85 /* http_server_load_testing_helpers.cpp */; };
 		D0F38B80118EFAB800FE2A49 /* load_test_db_helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0F38B7F118EFAB800FE2A49 /* load_test_db_helpers.cpp */; };
 /* End PBXBuildFile section */
@@ -157,6 +158,8 @@
 		D046EAF7117A053900CF9C1C /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		D083B89C1191FB3D00937BE3 /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
 		D083B89D1191FB3D00937BE3 /* time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = time.cpp; sourceTree = "<group>"; };
+		D0DD6A7A11B6DF6100045AD2 /* load_test_settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_settings.h; sourceTree = "<group>"; };
+		D0DD6A7B11B6DF6100045AD2 /* load_test_settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_test_settings.cpp; sourceTree = "<group>"; };
 		D0EA6D9D119F52A900A6FF85 /* http_server_load_testing_helpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_server_load_testing_helpers.cpp; sourceTree = "<group>"; };
 		D0EA6D9E119F52A900A6FF85 /* http_server_load_testing_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_server_load_testing_helpers.h; sourceTree = "<group>"; };
 		D0F38B7E118EFAB800FE2A49 /* load_test_db_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_db_helpers.h; sourceTree = "<group>"; };
@@ -216,6 +219,8 @@
 				D046EADD117A053800CF9C1C /* uri_helper.cpp */,
 				D046EADE117A053800CF9C1C /* uri_helper.h */,
 				D046EADF117A053800CF9C1C /* utils */,
+				D0DD6A7A11B6DF6100045AD2 /* load_test_settings.h */,
+				D0DD6A7B11B6DF6100045AD2 /* load_test_settings.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -417,6 +422,7 @@
 				D083B89E1191FB3D00937BE3 /* time.cpp in Sources */,
 				D005FE7E1196DB6E00638FFB /* http_server_request_despatcher.cpp in Sources */,
 				D0EA6D9F119F52A900A6FF85 /* http_server_load_testing_helpers.cpp in Sources */,
+				D0DD6A7C11B6DF6100045AD2 /* load_test_settings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
