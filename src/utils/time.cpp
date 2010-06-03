@@ -70,3 +70,20 @@ unsigned long Time::get32bitLong() const
 
 	return unixTimestamp;
 }
+
+std::string Time::formatString(const std::string &format)
+{
+	struct tm * pTimeinfo;
+	pTimeinfo = localtime(&m_time);
+	
+	char szTime[64];
+	strftime(szTime, 64, format.c_str(), pTimeinfo);
+	
+	std::string finalString(szTime);
+	return finalString;
+}
+
+void Time::incrementDays(int days)
+{
+	m_time += (60 * 60 * 24 * days);
+}

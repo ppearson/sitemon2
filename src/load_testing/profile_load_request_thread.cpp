@@ -29,6 +29,8 @@ ProfileLoadRequestThread::ProfileLoadRequestThread(ProfileThreadData *data) : m_
 	
 	if (data->m_pSaver)
 		m_pSaver = data->m_pSaver;
+	else
+		m_pSaver = NULL;
 	
 	delete data;
 }

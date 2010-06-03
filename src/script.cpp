@@ -31,7 +31,13 @@ Script::Script(HTTPRequest *pRequest) : m_scriptHasDebugSettings(false), m_hasLo
 
 Script::~Script()
 {
-	
+	// clean up any dynamic parameter objects
+	std::vector<HTTPRequest>::iterator it = m_aSteps.begin();
+
+	for (; it != m_aSteps.end(); ++it)
+	{
+		it->cleanupDynamicParameters();
+	}
 }
 
 void Script::copyScript(Script *pScript)
@@ -202,12 +208,32 @@ void Script::loadParamsElement(TiXmlElement *pElement, HTTPRequest &request)
 	{
 		if (pItem->ValueStr() == "param")
 		{
-			std::string content;
-			if (pItem->GetText())
-				content = pItem->GetText();
 			std::string name = pItem->Attribute("name");
+			
+			// if it's a dynamic parameter
+			if (pItem->Attribute("type"))
+			{
+				std::string type = pItem->Attribute("type");
+				if (type == "date")
+				{
+					if (pItem->Attribute("days_forward") && pItem->Attribute("format"))
+					{
+						int daysInFuture = atoi(pItem->Attribute("days_forward"));
+						std::string format = pItem->Attribute("format");
+						
+						DynamicDateParameter *pParam = new DynamicDateParameter(name, format, daysInFuture);
+						request.addDynamicParameter(pParam);
+					}					
+				}				
+			}
+			else // otherwise, it's a standard one
+			{			
+				std::string content;
+				if (pItem->GetText())
+					content = pItem->GetText();
 
-			request.addParameter(name, content);
+				request.addParameter(name, content);
+			}
 		}
 	}
 }

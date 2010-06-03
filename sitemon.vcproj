@@ -248,6 +248,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\dynamic_parameters.cpp"
+				>
+			</File>
+			<File
 				RelativePath="src\utils\event.cpp"
 				>
 				<FileConfiguration
@@ -509,6 +513,10 @@
 			</File>
 			<File
 				RelativePath=".\src\load_testing\load_test_results_saver.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\load_test_settings.cpp"
 				>
 			</File>
 			<File
@@ -933,6 +941,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\dynamic_parameters.h"
+				>
+			</File>
+			<File
 				RelativePath="src\utils\event.h"
 				>
 			</File>
@@ -1002,6 +1014,10 @@
 			</File>
 			<File
 				RelativePath=".\src\load_testing\load_test_results_saver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\load_test_settings.h"
 				>
 			</File>
 			<File

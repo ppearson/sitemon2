@@ -21,6 +21,9 @@
 
 #include <string>
 #include <vector>
+#include <map>
+
+#include "dynamic_parameters.h"
 
 enum RequestType
 {
@@ -36,12 +39,6 @@ enum HTTPAuthType
 	AUTH_NTLM
 };
 
-struct HTTPParameter
-{
-	std::string name;
-	std::string value;
-};
-
 struct HTTPCookie
 {
 	std::string name;
@@ -52,8 +49,12 @@ class HTTPRequest
 {
 public:
 	HTTPRequest();
+	HTTPRequest(const HTTPRequest &request);
 	HTTPRequest(const std::string &url);
 	HTTPRequest(const std::string &url, const std::string &description, bool post = false);
+	~HTTPRequest();
+
+	const HTTPRequest& operator=(const HTTPRequest& rhs);
 	
 	const RequestType getRequestType() { return m_requestType; }
 	const std::string getDescription() { return m_description; }
@@ -101,10 +102,14 @@ public:
 	bool hasParameters() const { return !m_aParameters.empty(); }
 	bool hasCookies() const { return !m_aCookies.empty(); }
 	
+	void addDynamicParameter(DynamicParameter *pDynamicParameter);
+	void processDynamicParameters();
+	
 	void clearParameters() { m_aParameters.clear(); }
+	void cleanupDynamicParameters();
 
-	inline std::vector<HTTPParameter>::iterator params_begin() { return m_aParameters.begin(); }
-	inline std::vector<HTTPParameter>::iterator params_end() { return m_aParameters.end(); }
+	inline std::map<std::string, std::string>::iterator params_begin() { return m_aParameters.begin(); }
+	inline std::map<std::string, std::string>::iterator params_end() { return m_aParameters.end(); }
 
 	inline std::vector<HTTPCookie>::iterator cookies_begin() { return m_aCookies.begin(); }
 	inline std::vector<HTTPCookie>::iterator cookies_end() { return m_aCookies.end(); }
@@ -138,8 +143,10 @@ protected:
 
 	int				m_pauseTime;
 	
-	std::vector<HTTPParameter> m_aParameters;
+	std::map<std::string, std::string> m_aParameters;
 	std::vector<HTTPCookie> m_aCookies;
+	
+	std::vector<DynamicParameter *>	m_aDynamicParameters;
 };
 
 #endif

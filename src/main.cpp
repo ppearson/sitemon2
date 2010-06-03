@@ -474,7 +474,7 @@ int main(int argc, char *const argv[])
 
 void printUsage()
 {
-	printf("Sitemon version 0.5\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
+	printf("Sitemon version 0.6\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
 		   "Single Script test:\t\t\tsitemon [<options>] script <script_path>\n"
 		   "Debug script:\t\t\t\tsitemon debug <script_path> [body_response_file_path]\n"
 		   "Run local web server for interface:\tsitemon -web\n"

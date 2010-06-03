@@ -20,6 +20,7 @@
 #define TIME_H
 
 #include <ctime>
+#include <string>
 
 class Time
 {
@@ -34,6 +35,8 @@ public:
 	
 	~Time() { }
 	
+	std::string formatString(const std::string &format);
+	
 	bool operator==(Time time) const { return m_time == time.m_time; }
 	bool operator!=(Time time) const { return m_time != time.m_time; }
 	bool operator>(Time time) const { return m_time > time.m_time; }
@@ -44,6 +47,7 @@ public:
 	void now();
 
 	void incrementMinutes(int minutes) { m_time += (60 * minutes); }
+	void incrementDays(int days);
 	
 	time_t getNativeTime() const;
 	unsigned long get32bitLong() const;

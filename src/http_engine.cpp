@@ -23,7 +23,7 @@
 #include "html_parser.h"
 #include "component_downloader.h"
 
-static const char *kUserAgent = "Sitemon/0.5";
+static const char *kUserAgent = "Sitemon/0.6";
 
 HTTPEngine::HTTPEngine()
 {
@@ -50,7 +50,9 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 	if (curl_easy_setopt(handle, CURLOPT_USERAGENT, kUserAgent) != 0)
 		return false;
 
-	m_url = request.getUrl();	
+	m_url = request.getUrl();
+	
+	request.processDynamicParameters();
 	
 	if (request.hasParameters())
 	{
@@ -335,14 +337,17 @@ static std::string buildParametersString(HTTPRequest &request)
 {
 	std::string params;
 
-	std::vector<HTTPParameter>::iterator it = request.params_begin();
-	std::vector<HTTPParameter>::iterator itEnd = request.params_end();
+	std::map<std::string, std::string>::iterator it = request.params_begin();
+	std::map<std::string, std::string>::iterator itEnd = request.params_end();
 
 	for (; it != itEnd; ++it)
 	{
-		params += (*it).name;
+		const std::string &name = (*it).first;
+		const std::string &value = (*it).second;
+		
+		params += name;
 		params += "=";
-		params += (*it).value;
+		params += value;
 		params += "&";
 	}
 

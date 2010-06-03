@@ -159,6 +159,8 @@ bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std
 	
 	SQLiteDB *pLoadTestingDB = NULL;
 	
+	HitTestEngine engine;
+	
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
@@ -178,12 +180,11 @@ bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std
 		{
 			saver.initStorage(outputPath);
 		}
-	}
+
+		engine.setResultsSaver(&saver);
+	}	
 	
-	HitTestEngine engine;
 	engine.initialise(request, threads);
-	
-	engine.setResultsSaver(&saver);
 	
 	saver.start();	
 	if (engine.start())
@@ -205,6 +206,8 @@ bool SitemonApp::performHitLoadTest(Script &script, int threads, const std::stri
 	LoadTestResultsSaver saver;
 	
 	SQLiteDB *pLoadTestingDB = NULL;
+
+	HitTestEngine engine;
 	
 	if (!outputPath.empty())
 	{
@@ -225,12 +228,11 @@ bool SitemonApp::performHitLoadTest(Script &script, int threads, const std::stri
 		{
 			saver.initStorage(outputPath);
 		}
+
+		engine.setResultsSaver(&saver);
 	}
-	
-	HitTestEngine engine;
+		
 	engine.initialise(script, threads);
-	
-	engine.setResultsSaver(&saver);
 	
 	saver.start();	
 	if (engine.start())
@@ -252,6 +254,8 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 	LoadTestResultsSaver saver;
 	
 	SQLiteDB *pLoadTestingDB = NULL;
+
+	HitTestEngine engine;
 	
 	if (!outputPath.empty())
 	{
@@ -272,15 +276,15 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 		{
 			saver.initStorage(outputPath);
 		}
+
+		engine.setResultsSaver(&saver);
 	}
 	
 	LoadTestSettings &ltSettings = script.getLoadTestSettings();
 	
-	HitTestEngine engine;
+	
 	engine.initialise(script, ltSettings.getHitThreads(), ltSettings.getHitRepeats());
-	
-	engine.setResultsSaver(&saver);
-	
+		
 	saver.start();
 	if (engine.start())
 	{
@@ -298,6 +302,8 @@ bool SitemonApp::performProfileLoadTest(HTTPRequest &request, int threads, int d
 	LoadTestResultsSaver saver;
 	
 	SQLiteDB *pLoadTestingDB = NULL;
+
+	ProfileTestEngine engine;
 	
 	if (!outputPath.empty())
 	{
@@ -318,10 +324,9 @@ bool SitemonApp::performProfileLoadTest(HTTPRequest &request, int threads, int d
 		{
 			saver.initStorage(outputPath);
 		}
-	}
-	
-	ProfileTestEngine engine;
-	engine.setResultsSaver(&saver);
+
+		engine.setResultsSaver(&saver);
+	}	
 	
 	engine.initialise(request, 2);
 	engine.addProfileSegment(threads, duration);
@@ -339,6 +344,8 @@ bool SitemonApp::performProfileLoadTest(Script &script, int threads, int duratio
 	LoadTestResultsSaver saver;
 	
 	SQLiteDB *pLoadTestingDB = NULL;
+
+	ProfileTestEngine engine;
 	
 	if (!outputPath.empty())
 	{
@@ -359,10 +366,9 @@ bool SitemonApp::performProfileLoadTest(Script &script, int threads, int duratio
 		{
 			saver.initStorage(outputPath);
 		}
-	}
 
-	ProfileTestEngine engine;
-	engine.setResultsSaver(&saver);
+		engine.setResultsSaver(&saver);
+	}	
 
 	engine.initialise(script);
 	engine.addProfileSegment(threads, duration);
@@ -385,6 +391,8 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 	LoadTestResultsSaver saver;
 	
 	SQLiteDB *pLoadTestingDB = NULL;
+
+	ProfileTestEngine engine;
 	
 	if (!outputPath.empty())
 	{
@@ -405,10 +413,9 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 		{
 			saver.initStorage(outputPath);
 		}
-	}
-	
-	ProfileTestEngine engine;
-	engine.setResultsSaver(&saver);
+
+		engine.setResultsSaver(&saver);
+	}	
 	
 	engine.initialise(script);
 	

@@ -30,6 +30,8 @@ HitLoadRequestThread::HitLoadRequestThread(RequestThreadData *data)
 	
 	if (data->m_pSaver)
 		m_pSaver = data->m_pSaver;
+	else
+		m_pSaver = NULL;
 	
 	delete data;
 }

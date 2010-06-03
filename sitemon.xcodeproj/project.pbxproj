@@ -53,6 +53,7 @@
 		D046EB1E117A053900CF9C1C /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D046EAF7117A053900CF9C1C /* tinyxmlparser.cpp */; };
 		D083B89E1191FB3D00937BE3 /* time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D083B89D1191FB3D00937BE3 /* time.cpp */; };
 		D0DD6A7C11B6DF6100045AD2 /* load_test_settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0DD6A7B11B6DF6100045AD2 /* load_test_settings.cpp */; };
+		D0DD6A8D11B6EBDB00045AD2 /* dynamic_parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0DD6A8C11B6EBDB00045AD2 /* dynamic_parameters.cpp */; };
 		D0EA6D9F119F52A900A6FF85 /* http_server_load_testing_helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0EA6D9D119F52A900A6FF85 /* http_server_load_testing_helpers.cpp */; };
 		D0F38B80118EFAB800FE2A49 /* load_test_db_helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0F38B7F118EFAB800FE2A49 /* load_test_db_helpers.cpp */; };
 /* End PBXBuildFile section */
@@ -160,6 +161,8 @@
 		D083B89D1191FB3D00937BE3 /* time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = time.cpp; sourceTree = "<group>"; };
 		D0DD6A7A11B6DF6100045AD2 /* load_test_settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_settings.h; sourceTree = "<group>"; };
 		D0DD6A7B11B6DF6100045AD2 /* load_test_settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_test_settings.cpp; sourceTree = "<group>"; };
+		D0DD6A8B11B6EBDB00045AD2 /* dynamic_parameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dynamic_parameters.h; sourceTree = "<group>"; };
+		D0DD6A8C11B6EBDB00045AD2 /* dynamic_parameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dynamic_parameters.cpp; sourceTree = "<group>"; };
 		D0EA6D9D119F52A900A6FF85 /* http_server_load_testing_helpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_server_load_testing_helpers.cpp; sourceTree = "<group>"; };
 		D0EA6D9E119F52A900A6FF85 /* http_server_load_testing_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_server_load_testing_helpers.h; sourceTree = "<group>"; };
 		D0F38B7E118EFAB800FE2A49 /* load_test_db_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_db_helpers.h; sourceTree = "<group>"; };
@@ -204,6 +207,8 @@
 				D046EAB2117A053800CF9C1C /* http_engine.h */,
 				D046EAB3117A053800CF9C1C /* http_request.cpp */,
 				D046EAB4117A053800CF9C1C /* http_request.h */,
+				D0DD6A8B11B6EBDB00045AD2 /* dynamic_parameters.h */,
+				D0DD6A8C11B6EBDB00045AD2 /* dynamic_parameters.cpp */,
 				D046EAB5117A053800CF9C1C /* http_response.cpp */,
 				D046EAB6117A053800CF9C1C /* http_response.h */,
 				D046EAB7117A053800CF9C1C /* http_server */,
@@ -423,6 +428,7 @@
 				D005FE7E1196DB6E00638FFB /* http_server_request_despatcher.cpp in Sources */,
 				D0EA6D9F119F52A900A6FF85 /* http_server_load_testing_helpers.cpp in Sources */,
 				D0DD6A7C11B6DF6100045AD2 /* load_test_settings.cpp in Sources */,
+				D0DD6A8D11B6EBDB00045AD2 /* dynamic_parameters.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
