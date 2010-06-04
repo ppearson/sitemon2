@@ -46,7 +46,6 @@ protected:
 	Time				m_requestStartTime;
 	HTTPResponseError	m_overallError;
 	long				m_lastResponseCode;
-	int					m_problemStep;
 	
 	std::vector<HTTPResponse>	m_stepResponses;	
 };

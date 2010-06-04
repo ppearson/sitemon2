@@ -285,7 +285,7 @@ void LoadTestResultsSaver::fileStore()
 			aFullResults.insert(std::pair<int, StepResults>(step, newStep));
 		}
 		
-		fprintf(fp, "Overall:\nRequest Time, Overall Error, Last Response code, \n");
+		fprintf(fp, "Overall:\nRequest Time, Last Error, Last Response code, Last step,\n");
 		
 		std::vector<ScriptResult>::iterator itRes = m_aResults.begin();
 		std::vector<ScriptResult>::iterator itResEnd = m_aResults.end();
@@ -316,7 +316,7 @@ void LoadTestResultsSaver::fileStore()
 			pTimeinfo = localtime(&runTime);
 			strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 			
-			fprintf(fp, "%s, %i, %ld,\n", szTime, result.getOverallError(), result.getLastResponseCode());		
+			fprintf(fp, "%s, %i, %ld, %i,\n", szTime, result.getOverallError(), result.getLastResponseCode(), result.getResponseCount());
 		}
 		
 		fprintf(fp, "Step, Time, Error, Response code, DNS lookup time, Connection time, Data start time, Total time, Content Size\n");
