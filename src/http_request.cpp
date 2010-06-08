@@ -64,7 +64,7 @@ HTTPRequest::HTTPRequest(const HTTPRequest &request)
 		DynamicParameter *pCopy = (*it)->clone();
 
 		m_aDynamicParameters.push_back(pCopy);
-	}	
+	}
 }
 
 HTTPRequest::HTTPRequest(const std::string &url) : m_url(url), m_requestType(HTTP_GET), m_pauseTime(0), m_acceptCompressed(false), m_storeHeader(true), m_storeBody(true),
@@ -93,7 +93,49 @@ HTTPRequest::~HTTPRequest()
 
 const HTTPRequest& HTTPRequest::operator=(const HTTPRequest& rhs)
 {
-
+	m_requestType = rhs.m_requestType;
+	
+	m_connectTimeout = rhs.m_connectTimeout;
+	m_totalTimeout = rhs.m_totalTimeout;
+	
+	m_description = rhs.m_description;
+	
+	m_url = rhs.m_url;
+	m_host = rhs.m_host;
+	m_referrer = rhs.m_referrer;
+	
+	m_acceptMain = rhs.m_acceptMain;
+	m_acceptLanguage = rhs.m_acceptLanguage;
+	m_acceptEncoding = rhs.m_acceptEncoding;
+	m_acceptCharset = rhs.m_acceptCharset;
+	
+	m_contentType = rhs.m_contentType;
+	
+	m_acceptCompressed = rhs.m_acceptCompressed;
+	m_downloadContent = rhs.m_downloadContent;
+	
+	m_expectedPhrase = rhs.m_expectedPhrase;
+	
+	m_storeHeader = rhs.m_storeHeader;
+	m_storeBody = rhs.m_storeBody;
+	
+	m_pauseTime = rhs.m_pauseTime;
+	
+	m_aParameters = rhs.m_aParameters;
+	m_aCookies = rhs.m_aCookies;
+	
+	std::vector<DynamicParameter *>::const_iterator it = rhs.m_aDynamicParameters.begin();
+	std::vector<DynamicParameter *>::const_iterator itEnd = rhs.m_aDynamicParameters.end();
+	
+	m_aDynamicParameters.clear();
+	
+	for (; it != itEnd; ++it)
+	{
+		DynamicParameter *pCopy = (*it)->clone();
+		
+		m_aDynamicParameters.push_back(pCopy);
+	}
+	
 	return *this;
 }
 
