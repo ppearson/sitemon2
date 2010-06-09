@@ -474,10 +474,15 @@ int main(int argc, char *const argv[])
 
 void printUsage()
 {
-	printf("Sitemon version 0.6\nUsage:\nSingle test:\t\t\t\tsitemon [<options>] <URL>\n"
-		   "Single Script test:\t\t\tsitemon [<options>] script <script_path>\n"
-		   "Debug script:\t\t\t\tsitemon debug <script_path> [body_response_file_path]\n"
-		   "Run local web server for interface:\tsitemon -web\n"
+	printf("Sitemon version 0.6\nUsage:\nSingle test:\t\t\tsitemon [<options>] <URL>\n"
+		   "Single Script test:\t\tsitemon [<options>] script <script_path>\n"
+		   "Debug script:\t\t\tsitemon debug <script_path> [body_response_file_path.html]\n\n"
+		   "Load Testing:\n"
+		   "Hit test URL:\t\tsitemon lt-hit <URL> <number_of_requests> [<repeats>] [<output_results_file.csv>]\n"
+		   "Hit test Script:\tsitemon lt-hit <script_path> <number_of_requests> [<repeats>] [<output_results_file.csv>]\n"
+		   "Profile test URL:\tsitemon lt-profile <URL> <conc._requests> <time_in_min> [<output_results_file.csv>]\n"
+		   "Profile test Script:\tsitemon lt-profile <script_path> [<conc._requests> <time_in_min>] [<output_results_file.csv>]\n\n"
+		   "Run local web server for interface:\tsitemon -web\n\n"
 		   "Options:\n-ac\t\t: Accept compressed content\n"
 		   "-dc\t\t: Download linked JS and Image content\n"
 		   "-oh\t\t: Output header\n"
