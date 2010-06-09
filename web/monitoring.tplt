@@ -24,7 +24,7 @@
 	<th scope="col" width="50">Interval</th>
 	<th scope="col" width="110" title="Accept Compressed">A C</th>
 	<th scope="col" width="110" title="Download Components">D C</th>
-	<th scope="col" width="90">View Results</th>
+	<th scope="col" width="90">Results</th>
 </tr>
 <%1%>
 </table>
@@ -38,7 +38,7 @@
 	<th scope="col" width="50">Interval</th>
 	<th scope="col" width="110" title="Accept Compressed">A C</th>
 	<th scope="col" width="110" title="Download Components">D C</th>
-	<th scope="col" width="90">View Results</th>
+	<th scope="col" width="90">Results</th>
 </tr>
 <%2%>
 </table>

@@ -240,7 +240,9 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_monitor_test?test_id=%ld\" title=\"Edit Test\"><img src=\"images/edit.png\"></a> "
 				"<a href=\"JavaScript:deleteSingleTest(%ld)\" title=\"Delete test\"><image src=\"images/delete.png\"></a>"
 				"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
-				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_single_test?testid=%ld\">Results</a></td>\n</tr>\n",
+				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
+				" <td><a href=\"/view_single_test?testid=%ld\"><img src=\"images/view_details.png\" title=\"View Results\"></a></td>\n"
+				"</tr>\n",
 						testID, testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
 		
 		output.append(szTemp);		
@@ -586,7 +588,9 @@ bool getScriptScheduledTestsList(SQLiteDB *pDB, std::string &output)
 		sprintf(szTemp, "<tr>\n <td id=\"l\"><a href=\"/edit_script_test?test_id=%ld\" title=\"Edit Test\"><img src=\"images/edit.png\"></a> "
 				"<a href=\"JavaScript:deleteScriptTest(%ld)\" title=\"Delete test\"><image src=\"images/delete.png\"></a>"
 				"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
-				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td><a href=\"/view_script_test?testid=%ld\">Results</a></td>\n</tr>\n",
+				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
+				" <td><a href=\"/view_script_test?testid=%ld\"><img src=\"images/view_details.png\" title=\"View Results\"></a></td>"
+				"\n</tr>\n",
 				testID, testID, strEnabled.c_str(), description.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
 		
 		output.append(szTemp);
