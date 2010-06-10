@@ -200,11 +200,11 @@ bool SQLiteQuery::fetchNext()
 	return false;
 }
 
-sqlite_int64 SQLiteQuery::getInsertRowID()
+unsigned long SQLiteQuery::getInsertRowID()
 {
 	if (m_pConn)
 	{
-		return sqlite3_last_insert_rowid(m_pConn->m_pDB);
+		return static_cast<unsigned long>(sqlite3_last_insert_rowid(m_pConn->m_pDB));
 	}
 	else
 	{

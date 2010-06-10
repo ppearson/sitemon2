@@ -43,7 +43,7 @@ public:
 	void freeResults();
 	bool fetchNext();
 	
-	sqlite_int64 getInsertRowID();
+	unsigned long getInsertRowID();
 	
 	long rowCount();
 	int colCount();
