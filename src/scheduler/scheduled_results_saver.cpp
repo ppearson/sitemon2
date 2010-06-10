@@ -37,7 +37,7 @@ void ScheduledResultsSaver::run()
 {
 	while (m_isRunning)
 	{
-		sleep(30); // sleep for 30 secs
+		sleep(20); // sleep for 20 secs
 		
 		storeResults();
 	}
@@ -86,9 +86,10 @@ void ScheduledResultsSaver::storeSingleResults()
 	if (m_aSingleResults.empty())
 		return;
 	
-	SQLiteQuery q(*m_pMainDB, true);
-	
 	std::vector<ScheduledResult>::iterator it = m_aSingleResults.begin();
+	std::vector<ScheduledResult>::iterator itEnd = m_aSingleResults.end();
+	
+	SQLiteQuery q(*m_pMainDB, true);
 	
 	// use transactions
 	if (!q.execute("BEGIN IMMEDIATE"))
@@ -98,7 +99,7 @@ void ScheduledResultsSaver::storeSingleResults()
 	}
 	
 	char szTemp[1024];
-	for (; it != m_aSingleResults.end(); ++it)
+	for (; it != itEnd; ++it)
 	{
 		ScheduledResult &result = *it;
 		
@@ -150,9 +151,10 @@ void ScheduledResultsSaver::storeScriptResults()
 	if (m_aScriptResults.empty())
 		return;
 	
-	SQLiteQuery q(*m_pMainDB, true);
-	
 	std::vector<ScheduledResult>::iterator it = m_aScriptResults.begin();
+	std::vector<ScheduledResult>::iterator itEnd = m_aScriptResults.end();
+	
+	SQLiteQuery q(*m_pMainDB, true);
 	
 	// use transactions
 	if (!q.execute("BEGIN IMMEDIATE"))
@@ -162,7 +164,7 @@ void ScheduledResultsSaver::storeScriptResults()
 	}
 	
 	char szTemp[1024];
-	for (; it != m_aScriptResults.end(); ++it)
+	for (; it != itEnd; ++it)
 	{
 		ScheduledResult &result = *it;
 		
