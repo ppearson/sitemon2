@@ -20,7 +20,8 @@
 
 SQLiteDB::SQLiteDB(const std::string &path, bool useMutex) : m_path(path), m_useMutex(useMutex)
 {
-	
+	// enable shared caching
+	sqlite3_enable_shared_cache(1);
 }
 
 SQLiteDB::~SQLiteDB()
