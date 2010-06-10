@@ -90,6 +90,7 @@ bool SitemonApp::runWebServerAndScheduler()
 	Socket::initWinsocks();		
 	
 	HTTPServer server(webContentPath, pMonitoringDB, pLoadTestingDB, port);
+	server.setScheduledResultSaver(schedulerThread.getScheduledResultsSaver());
 	// keep in mind this halts execution, by design
 	server.start();
 	

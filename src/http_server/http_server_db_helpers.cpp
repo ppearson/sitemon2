@@ -19,6 +19,7 @@
 #include "http_server_db_helpers.h"
 #include "http_server_html_formatters.h"
 #include "http_form_generator.h"
+#include "../script.h"
 
 bool createNeededHTTPServerTables(SQLiteDB *pDB)
 {
@@ -241,9 +242,9 @@ bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output)
 				"<a href=\"JavaScript:deleteSingleTest(%ld)\" title=\"Delete test\"><image src=\"images/delete.png\"></a>"
 				"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
 				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
-				" <td><a href=\"/view_single_test?testid=%ld\"><img src=\"images/view_details.png\" title=\"View Results\"></a></td>\n"
-				"</tr>\n",
-						testID, testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
+				" <td><a href=\"/view_single_test?testid=%ld\"><img src=\"images/view_details.png\" title=\"View Results\"></a> "
+				" <a href=\"JavaScript:runManualSingleTest(%ld)\" title=\"Run Manual Test Now\"><image src=\"images/run.png\"></a></td>\n</tr>\n",
+						testID, testID, strEnabled.c_str(), description.c_str(), url.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID, testID);
 		
 		output.append(szTemp);		
 	}
@@ -589,9 +590,9 @@ bool getScriptScheduledTestsList(SQLiteDB *pDB, std::string &output)
 				"<a href=\"JavaScript:deleteScriptTest(%ld)\" title=\"Delete test\"><image src=\"images/delete.png\"></a>"
 				"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
 				" <td id=\"l\">%ld</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n"
-				" <td><a href=\"/view_script_test?testid=%ld\"><img src=\"images/view_details.png\" title=\"View Results\"></a></td>"
-				"\n</tr>\n",
-				testID, testID, strEnabled.c_str(), description.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID);
+				" <td><a href=\"/view_script_test?testid=%ld\"><img src=\"images/view_details.png\" title=\"View Results\"></a>"
+				" <a href=\"JavaScript:runManualScriptTest(%ld)\" title=\"Run Manual Test Now\"><image src=\"images/run.png\"></a></td>\n</tr>\n",
+				testID, testID, strEnabled.c_str(), description.c_str(), interval, strAcceptCompressed.c_str(), strDownloadComponents.c_str(), testID, testID);
 		
 		output.append(szTemp);
 	}
@@ -1536,4 +1537,158 @@ bool deleteScriptStepFromDB(SQLiteDB *pDB, unsigned long testID, unsigned long p
 	bool ret3 = q.execute(sql3);
 	
 	return ret1 && ret2 && ret3;
+}
+
+bool runManualSingleTest(SQLiteDB *pDB, ScheduledResultsSaver *pSaver, unsigned long testID)
+{
+	if (!pDB || !pSaver)
+	{
+		return false;
+	}
+
+	std::string sql = "select url, expected_phrase, accept_compressed, download_components from scheduled_single_tests where rowid = ";
+	char szTestID[12];
+	memset(szTestID, 0, 12);
+	sprintf(szTestID, "%ld", testID);
+	sql.append(szTestID);
+
+	SQLiteQuery q(*pDB);
+
+	long schedID = 0;
+	
+	q.getResult(sql);
+	if (q.fetchNext())
+	{
+		std::string url = q.getString();
+		std::string expectedPhrase = q.getString();
+		long acceptCompressed = q.getLong();
+		long downloadComponents = q.getLong();
+
+		if (url.empty())
+			return false;
+
+		HTTPRequest newRequest(url);
+		newRequest.setExpectedPhrase(expectedPhrase);
+		newRequest.setAcceptCompressed(acceptCompressed == 1);
+		newRequest.setDownloadContent(downloadComponents == 1);
+
+		HTTPEngine engine;
+		HTTPResponse response;
+
+		engine.performRequest(newRequest, response);
+			
+		pSaver->addResult(response, testID);
+
+		return true;		
+	}
+
+	return false;
+}
+
+bool runManualScriptTest(SQLiteDB *pDB, ScheduledResultsSaver *pSaver, unsigned long testID)
+{
+	if (!pDB || !pSaver)
+	{
+		return false;
+	}
+
+	std::string sql = "select accept_compressed, download_components from scheduled_script_tests where rowid = ";
+	char szTestID[12];
+	memset(szTestID, 0, 12);
+	sprintf(szTestID, "%ld", testID);
+	sql.append(szTestID);
+	
+	SQLiteQuery q(*pDB);
+	
+	q.getResult(sql);
+	if (q.fetchNext())
+	{
+		long acceptCompressed = q.getLong();
+		long downloadComponents = q.getLong();
+		
+		SQLiteQuery qPages(*pDB);
+		
+		std::string pageSQL = "select rowid, description, url, request_type, expected_phrase, pause_time from scheduled_script_test_pages"
+								" where script_id = ";
+		pageSQL += szTestID;
+		pageSQL += " order by page_num asc";
+		
+		if (qPages.getResult(pageSQL))
+		{
+			Script newScript;
+			
+			while (qPages.fetchNext())
+			{
+				long pageID = qPages.getLong();
+				std::string desc = qPages.getString();
+				std::string url = qPages.getString();
+				long requestType = qPages.getLong();
+				std::string expectedPhrase = qPages.getString();
+				long pauseTime = qPages.getLong();
+				
+				HTTPRequest newPage(url, desc, requestType == 1);
+				
+				newPage.setExpectedPhrase(expectedPhrase);
+				newPage.setPauseTime(pauseTime);
+				
+				// now get any parameters
+				
+				char szPageID[12];
+				memset(szPageID, 0, 12);
+				sprintf(szPageID, "%ld", pageID);
+				
+				SQLiteQuery qParams(*pDB);
+				
+				std::string paramSQL = "select name, value from scheduled_script_test_page_params where page_id = ";
+				paramSQL.append(szPageID);
+				
+				if (qParams.getResult(paramSQL))
+				{
+					while (qParams.fetchNext())
+					{
+						std::string name = qParams.getString();
+						std::string value = qParams.getString();
+						
+						if (!name.empty())
+							newPage.addParameter(name, value);
+					}
+				}				
+				
+				newScript.addStep(newPage);				
+			}
+			
+			newScript.setAcceptCompressed(acceptCompressed == 1);
+			newScript.setDownloadContent(downloadComponents == 1);
+			
+			HTTPEngine engine;
+			ScriptResult result;
+		
+			for (std::vector<HTTPRequest>::iterator it = newScript.begin(); it != newScript.end(); ++it)
+			{
+				HTTPRequest &request = *it;
+				
+				HTTPResponse response;
+					
+				if (engine.performRequest(request, response))
+				{
+					result.addResponse(response);
+				}
+				else
+				{
+					result.addResponse(response);
+					
+					break; // break out and end, as there's been an issue
+				}
+				
+				if (request.getPauseTime() > 0)
+				{
+					Thread::sleep(request.getPauseTime());
+				}
+			}
+			
+			pSaver->addResult(result, testID);
+		}
+	}
+
+	return false;
 }

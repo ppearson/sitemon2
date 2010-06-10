@@ -29,14 +29,14 @@
 class SchedulerTestThread : public Thread
 {
 public:
-	SchedulerTestThread(ScheduledResultSaver *pSaver, ScheduledItem &item);
+	SchedulerTestThread(ScheduledResultsSaver *pSaver, ScheduledItem &item);
 	virtual ~SchedulerTestThread() { }
 	
 	virtual void run();
 	
 protected:
 	SQLiteDB	*m_pMainDB;
-	ScheduledResultSaver	*m_pSaver;
+	ScheduledResultsSaver	*m_pSaver;
 
 	unsigned long m_testID;
 

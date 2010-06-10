@@ -37,6 +37,7 @@ public:
 	bool hasParams() const { return !m_aParams.empty(); }
 	bool hasParam(const std::string &name);
 	std::string getParam(const std::string &name) { return m_aParams[name]; }
+	unsigned long getParamAsLong(const std::string &name);
 	
 protected:
 	void addParams(const std::string &params);

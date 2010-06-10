@@ -20,7 +20,7 @@
 #include "../utils/sqlite_query.h"
 #include "scheduler_db_helpers.h"
 
-SchedulerTestThread::SchedulerTestThread(ScheduledResultSaver *pSaver, ScheduledItem &item)
+SchedulerTestThread::SchedulerTestThread(ScheduledResultsSaver *pSaver, ScheduledItem &item)
 				: m_pSaver(pSaver), m_single(item.isSingle()), m_testID(item.getTestID())
 {
 	m_autoDestruct = true;

@@ -143,3 +143,15 @@ bool HTTPServerRequest::hasParam(const std::string &name)
 
 	return itFind != m_aParams.end();
 }
+
+unsigned long HTTPServerRequest::getParamAsLong(const std::string &name)
+{
+	std::string paramValue = getParam(name);
+
+	if (name.empty())
+	{
+		return -1;
+	}
+
+	return atol(paramValue.c_str());
+}

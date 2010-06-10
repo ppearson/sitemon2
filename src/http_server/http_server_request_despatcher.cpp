@@ -46,6 +46,10 @@ void HTTPServerRequestDespatcher::registerMappings()
 	m_requestMappings["/single_components"] = &HTTPServerRequestDespatcher::singleComponents;
 	m_requestMappings["/view_script_test"] = &HTTPServerRequestDespatcher::viewScriptTest;
 	m_requestMappings["/script_details"] = &HTTPServerRequestDespatcher::scriptDetails;
+
+	m_requestMappings["/run_man_single"] = &HTTPServerRequestDespatcher::runManualSingleTest;
+	m_requestMappings["/run_man_script"] = &HTTPServerRequestDespatcher::runManualScriptTest;
+
 	m_requestMappings["/delete_single_test"] = &HTTPServerRequestDespatcher::deleteSingleTest;
 	m_requestMappings["/delete_script_test"] = &HTTPServerRequestDespatcher::deleteScriptTest;
 	m_requestMappings["/delete_script_step"] = &HTTPServerRequestDespatcher::deleteScriptStep;
@@ -531,5 +535,31 @@ void HTTPServerRequestDespatcher::loadTestingRunResults(HTTPServerRequest &reque
 	{
 		HTTPServerResponse resp(500, output);
 		response = resp.responseString();
+	}
+}
+
+void HTTPServerRequestDespatcher::runManualSingleTest(HTTPServerRequest &request, std::string &response)
+{
+	if (request.isPost())
+	{
+		unsigned long testID = request.getParamAsLong("test_id");
+
+		if (testID >= 0)
+		{
+			::runManualSingleTest(m_pMonitoringDB, m_pResultsSaver, testID);
+		}
+	}
+}
+
+void HTTPServerRequestDespatcher::runManualScriptTest(HTTPServerRequest &request, std::string &response)
+{
+	if (request.isPost())
+	{
+		unsigned long testID = request.getParamAsLong("test_id");
+
+		if (testID >= 0)
+		{
+			::runManualScriptTest(m_pMonitoringDB, m_pResultsSaver, testID);
+		}
 	}
 }

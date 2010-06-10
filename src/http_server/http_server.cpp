@@ -52,6 +52,8 @@ bool HTTPServer::start()
 	}
 	
 	HTTPServerRequestDespatcher despatcher(m_webContentPath, m_pMonitoringDB, m_pLoadTestingDB);
+	despatcher.setResultsSaver(m_pResultsSaver);
+
 	despatcher.registerMappings();
 	
 	while (true)

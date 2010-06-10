@@ -28,12 +28,12 @@ ScheduledResult::ScheduledResult(const ScriptResult &scriptResult, unsigned long
 	
 }
 
-ScheduledResultSaver::ScheduledResultSaver(SQLiteDB *pDB) : m_pMainDB(pDB)
+ScheduledResultsSaver::ScheduledResultsSaver(SQLiteDB *pDB) : m_pMainDB(pDB)
 {
 	
 }
 
-void ScheduledResultSaver::run()
+void ScheduledResultsSaver::run()
 {
 	while (m_isRunning)
 	{
@@ -43,7 +43,7 @@ void ScheduledResultSaver::run()
 	}
 }
 
-void ScheduledResultSaver::addResult(const HTTPResponse &response, unsigned long testID)
+void ScheduledResultsSaver::addResult(const HTTPResponse &response, unsigned long testID)
 {
 	m_mutex.lock();
 	
@@ -54,7 +54,7 @@ void ScheduledResultSaver::addResult(const HTTPResponse &response, unsigned long
 	m_mutex.unlock();	
 }
 
-void ScheduledResultSaver::addResult(const ScriptResult &scriptResult, unsigned long testID)
+void ScheduledResultsSaver::addResult(const ScriptResult &scriptResult, unsigned long testID)
 {
 	m_mutex.lock();
 	
@@ -65,7 +65,7 @@ void ScheduledResultSaver::addResult(const ScriptResult &scriptResult, unsigned 
 	m_mutex.unlock();	
 }
 
-void ScheduledResultSaver::storeResults()
+void ScheduledResultsSaver::storeResults()
 {
 	m_mutex.lock();
 	
@@ -81,7 +81,7 @@ void ScheduledResultSaver::storeResults()
 	m_mutex.unlock();
 }
 
-void ScheduledResultSaver::storeSingleResults()
+void ScheduledResultsSaver::storeSingleResults()
 {
 	if (m_aSingleResults.empty())
 		return;
@@ -98,7 +98,7 @@ void ScheduledResultSaver::storeSingleResults()
 	}
 	
 	char szTemp[1024];
-	for (; it != m_aSingleResults.end();)
+	for (; it != m_aSingleResults.end(); ++it)
 	{
 		ScheduledResult &result = *it;
 		
@@ -131,17 +131,7 @@ void ScheduledResultSaver::storeSingleResults()
 				sqlComponentResults.append(szTemp);
 				
 				q.execute(sqlComponentResults);
-			}
-			
-			// we can delete it now, although we don't know for certain that the commit was successful...
-			
-			it = m_aSingleResults.erase(it);			
-		}
-		else
-		{
-			// todo: need to see if the error wasn't busy and if so probably delete it, but for now just get the next one
-			
-			++it;
+			}		
 		}
 	}
 	
@@ -150,9 +140,12 @@ void ScheduledResultSaver::storeSingleResults()
 		printf("problem committing results transaction\n");
 		return;
 	}
+
+	// everything was okay, so we can clear the results
+	m_aSingleResults.clear();
 }
 
-void ScheduledResultSaver::storeScriptResults()
+void ScheduledResultsSaver::storeScriptResults()
 {
 	if (m_aScriptResults.empty())
 		return;
@@ -169,7 +162,7 @@ void ScheduledResultSaver::storeScriptResults()
 	}
 	
 	char szTemp[1024];
-	for (; it != m_aScriptResults.end();)
+	for (; it != m_aScriptResults.end(); ++it)
 	{
 		ScheduledResult &result = *it;
 		
@@ -203,17 +196,7 @@ void ScheduledResultSaver::storeScriptResults()
 				{
 					printf("Problem saving individual page test result for script...\n");
 				}
-			}
-			
-			// we can delete it now, although we don't know for certain that the commit was successful...
-			
-			it = m_aScriptResults.erase(it);			
-		}
-		else
-		{
-			// todo: need to see if the error wasn't busy and if so probably delete it, but for now just get the next one
-			
-			++it;
+			}		
 		}
 	}
 	
@@ -222,4 +205,7 @@ void ScheduledResultSaver::storeScriptResults()
 		printf("problem committing results transaction\n");
 		return;
 	}
+
+	// everything was okay, so we can clear the results
+	m_aScriptResults.clear();
 }

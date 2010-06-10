@@ -23,6 +23,8 @@
 #include "../utils/sqlite_query.h"
 #include "http_server_request.h"
 
+#include "../scheduler/scheduled_results_saver.h"
+
 bool createNeededHTTPServerTables(SQLiteDB *pDB);
 bool createSingleTestHistoryTable(SQLiteDB *pDB);
 bool addResponseToSingleTestHistoryTable(SQLiteDB *pDB, HTTPResponse &response);
@@ -55,5 +57,8 @@ bool getScriptScheduledTestResultsDetails(SQLiteDB *pDB, int testID, long runID,
 bool deleteSingleTestFromDB(SQLiteDB *pDB, unsigned long testID, std::string &output);
 bool deleteScriptTestFromDB(SQLiteDB *pDB, unsigned long testID, std::string &output);
 bool deleteScriptStepFromDB(SQLiteDB *pDB, unsigned long testID, unsigned long pageID, std::string &output);
+
+bool runManualSingleTest(SQLiteDB *pDB, ScheduledResultsSaver *pSaver, unsigned long testID);
+bool runManualScriptTest(SQLiteDB *pDB, ScheduledResultsSaver *pSaver, unsigned long testID);
 
 #endif

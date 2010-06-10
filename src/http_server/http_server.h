@@ -21,11 +21,14 @@
 
 #include <string>
 #include "../utils/sqlite_db.h"
+#include "../scheduler/scheduled_results_saver.h"
 
 class HTTPServer
 {
 public:
 	HTTPServer(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB = NULL, int port = 8080);
+
+	void setScheduledResultSaver(ScheduledResultsSaver *pSaver) { m_pResultsSaver = pSaver; }
 	
 	bool start();
 	
@@ -34,6 +37,8 @@ protected:
 	std::string m_webContentPath;
 	SQLiteDB *m_pMonitoringDB;
 	SQLiteDB *m_pLoadTestingDB;
+
+	ScheduledResultsSaver	*m_pResultsSaver;
 };
 
 #endif

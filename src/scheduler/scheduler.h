@@ -94,6 +94,8 @@ public:
 	
 	void buildScheduledItemsFromDB(SQLiteDB *pDB);
 
+	ScheduledResultsSaver *	getScheduledResultsSaver() { return m_pSaver; }
+
 protected:
 	SQLiteDB	*m_pMainDB;
 	
@@ -101,7 +103,7 @@ protected:
 	std::vector<ScheduledItem> m_aScheduledSingleItems;
 	std::vector<ScheduledItem> m_aScheduledScriptItems;
 	
-	ScheduledResultSaver	*	m_pSaver;
+	ScheduledResultsSaver	*	m_pSaver;
 };
 
 #endif

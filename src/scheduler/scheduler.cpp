@@ -26,18 +26,19 @@
 
 Scheduler::Scheduler(SQLiteDB *pDB) : m_pMainDB(pDB)
 {
-	
+	m_pSaver = new ScheduledResultsSaver(m_pMainDB);
 }
 
 Scheduler::~Scheduler()
 {
-	
+	if (m_pSaver)
+	{
+		delete m_pSaver;
+	}
 }
 
 void Scheduler::run()
 {
-	m_pSaver = new ScheduledResultSaver(m_pMainDB);
-	
 	if (m_pSaver)
 	{
 		m_pSaver->start();
@@ -107,11 +108,6 @@ void Scheduler::run()
 		m_scheduledItemsLock.unlock();
 
 		sleep(1);
-	}
-	
-	if (m_pSaver)
-	{
-		delete m_pSaver;
 	}
 }
 

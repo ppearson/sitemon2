@@ -47,11 +47,11 @@ public:
 };
 
 
-class ScheduledResultSaver : public Thread
+class ScheduledResultsSaver : public Thread
 {
 public:
-	ScheduledResultSaver(SQLiteDB *pDB);
-	virtual ~ScheduledResultSaver() { }
+	ScheduledResultsSaver(SQLiteDB *pDB);
+	virtual ~ScheduledResultsSaver() { }
 	
 	virtual void run();
 	
