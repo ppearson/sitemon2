@@ -223,7 +223,7 @@ void Script::loadParamsElement(TiXmlElement *pElement, HTTPRequest &request)
 						
 						DynamicDateParameter *pParam = new DynamicDateParameter(name, format, daysInFuture);
 						request.addDynamicParameter(pParam);
-					}					
+					}
 				}				
 			}
 			else // otherwise, it's a standard one
