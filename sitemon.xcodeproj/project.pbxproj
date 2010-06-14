@@ -167,6 +167,7 @@
 		D0EA6D9E119F52A900A6FF85 /* http_server_load_testing_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_server_load_testing_helpers.h; sourceTree = "<group>"; };
 		D0F38B7E118EFAB800FE2A49 /* load_test_db_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_test_db_helpers.h; sourceTree = "<group>"; };
 		D0F38B7F118EFAB800FE2A49 /* load_test_db_helpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_test_db_helpers.cpp; sourceTree = "<group>"; };
+		D0FFBFAC11C37E0700E5301A /* extraction_item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extraction_item.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +227,7 @@
 				D046EADF117A053800CF9C1C /* utils */,
 				D0DD6A7A11B6DF6100045AD2 /* load_test_settings.h */,
 				D0DD6A7B11B6DF6100045AD2 /* load_test_settings.cpp */,
+				D0FFBFAC11C37E0700E5301A /* extraction_item.h */,
 			);
 			path = src;
 			sourceTree = "<group>";

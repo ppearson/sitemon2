@@ -24,6 +24,9 @@
 #include <map>
 
 #include "dynamic_parameters.h"
+#include "extraction_item.h"
+
+class HTTPEngine;
 
 enum RequestType
 {
@@ -103,16 +106,21 @@ public:
 	bool hasCookies() const { return !m_aCookies.empty(); }
 	
 	void addDynamicParameter(DynamicParameter *pDynamicParameter);
-	void processDynamicParameters();
+	void processDynamicParameters(HTTPEngine &engine);
 	
 	void clearParameters() { m_aParameters.clear(); }
 	void cleanupDynamicParameters();
+	
+	void addExtractionItem(ExtractionItem &item);
 
 	inline std::map<std::string, std::string>::iterator params_begin() { return m_aParameters.begin(); }
 	inline std::map<std::string, std::string>::iterator params_end() { return m_aParameters.end(); }
 
 	inline std::vector<HTTPCookie>::iterator cookies_begin() { return m_aCookies.begin(); }
 	inline std::vector<HTTPCookie>::iterator cookies_end() { return m_aCookies.end(); }
+	
+	inline std::vector<ExtractionItem>::iterator extractionItems_begin() { return m_aExtractionItems.begin(); }
+	inline std::vector<ExtractionItem>::iterator extractionItems_end() { return m_aExtractionItems.end(); }
 	
 protected:
 	RequestType		m_requestType;
@@ -147,6 +155,7 @@ protected:
 	std::vector<HTTPCookie> m_aCookies;
 	
 	std::vector<DynamicParameter *>	m_aDynamicParameters;
+	std::vector<ExtractionItem> m_aExtractionItems;
 };
 
 #endif

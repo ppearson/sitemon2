@@ -61,6 +61,7 @@ protected:
 	void loadRequestElement(TiXmlElement *pElement);
 	void loadParamsElement(TiXmlElement *pElement, HTTPRequest &request);
 	void loadCookiesElement(TiXmlElement *pElement, HTTPRequest &request);
+	void loadExtractionItemsElement(TiXmlElement *pElement, HTTPRequest &request);
 	
 protected:
 	std::string		m_description;

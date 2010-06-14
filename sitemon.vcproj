@@ -136,8 +136,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				WholeProgramOptimization="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;CURL_STATICLIB;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
+				ExceptionHandling="1"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/sitemon.pch"
@@ -160,12 +162,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ssleay32.lib libeay32.lib libs\libcurld.lib ws2_32.lib libs\zlib.lib"
+				AdditionalDependencies="ssleay32.lib libeay32.lib libs\libcurl.lib ws2_32.lib libs\zlib.lib"
 				OutputFile=".\Release/sitemon.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/sitemon.pdb"
 				SubSystem="1"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -946,6 +949,10 @@
 			</File>
 			<File
 				RelativePath="src\utils\event.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\extraction_item.h"
 				>
 			</File>
 			<File

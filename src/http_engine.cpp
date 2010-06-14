@@ -52,7 +52,7 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 
 	m_url = request.getUrl();
 	
-	request.processDynamicParameters();
+	request.processDynamicParameters(*this);
 	
 	if (request.hasParameters())
 	{
@@ -232,6 +232,8 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 		}
 	}
 	
+	processExtractionItems(request, response);
+	
 	if (request.getDownloadContent())
 	{
 		downloadContent(m_handle, response, request.getAcceptCompressed());
@@ -277,6 +279,45 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	}
 	
 	compDownloader.downloadComponents();
+}
+
+void HTTPEngine::processExtractionItems(HTTPRequest &request, HTTPResponse &response)
+{
+	std::vector<ExtractionItem>::iterator it = request.extractionItems_begin();
+	std::vector<ExtractionItem>::iterator itEnd = request.extractionItems_end();
+	
+	for (; it != itEnd; ++it)
+	{
+		ExtractionItem &extrItem = *it;
+		
+		const std::string &content = response.content;
+		
+		// we assume that the ExtractionItem has valid parameters
+		
+		std::string startText = extrItem.getStartText();
+		std::string endText = extrItem.getEndText();
+
+		// todo - need to cope with getting the n'th item
+		int itemNum = extrItem.getItemNum();
+		
+		int nFindStart = content.find(startText);
+		
+		if (nFindStart >= 0)
+		{
+			int nItemStart = nFindStart + startText.size();
+			
+			int nFindEnd = content.find(endText, nItemStart);
+			
+			if (nFindEnd >= 0)
+			{
+				std::string extractedContent = content.substr(nItemStart, nFindEnd - nItemStart);
+				
+				std::string	itemName = extrItem.getName();
+				
+				m_aExtractedItems[itemName] = extractedContent;
+			}
+		}		
+	}	
 }
 
 static size_t writeBodyData(void *buffer, size_t size, size_t nmemb, void *userp)
@@ -359,3 +400,4 @@ static std::string buildParametersString(HTTPRequest &request)
 
 	return params;
 }
+

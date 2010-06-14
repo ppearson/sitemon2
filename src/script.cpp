@@ -173,6 +173,10 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 		{
 			loadCookiesElement(pItem, request);
 		}
+		else if (elementName == "extraction_items")
+		{
+			loadExtractionItemsElement(pItem, request);
+		}
 		else if (elementName == "referrer")
 		{
 			request.setReferrer(content);
@@ -224,7 +228,17 @@ void Script::loadParamsElement(TiXmlElement *pElement, HTTPRequest &request)
 						DynamicDateParameter *pParam = new DynamicDateParameter(name, format, daysInFuture);
 						request.addDynamicParameter(pParam);
 					}
-				}				
+				}
+				else if (type == "extract")
+				{
+					if (pItem->Attribute("key"))
+					{
+						std::string key = pItem->Attribute("key");
+
+						DynamicExtractionParameter *pParam = new DynamicExtractionParameter(name, key);
+						request.addDynamicParameter(pParam);
+					}
+				}
 			}
 			else // otherwise, it's a standard one
 			{			
@@ -250,6 +264,36 @@ void Script::loadCookiesElement(TiXmlElement *pElement, HTTPRequest &request)
 			std::string name = pItem->Attribute("name");
 
 			request.addCookie(name, content);
+		}
+	}
+}
+
+void Script::loadExtractionItemsElement(TiXmlElement *pElement, HTTPRequest &request)
+{
+	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
+	{
+		if (pItem->ValueStr() == "extr_item")
+		{
+			std::string name = pItem->Attribute("name");
+			std::string startText, endText;
+
+			TiXmlElement *pSubItem = pItem->FirstChildElement("start_text");
+			if (pSubItem)
+			{
+				startText = pSubItem->GetText();
+			}
+			
+			pSubItem = pItem->FirstChildElement("end_text");
+			if (pSubItem)
+			{
+				endText = pSubItem->GetText();
+			}
+			
+			if (!name.empty() && !startText.empty() && !endText.empty())
+			{
+				ExtractionItem newItem(name, startText, endText, 0);
+				request.addExtractionItem(newItem);
+			}
 		}
 	}
 }

@@ -65,6 +65,8 @@ HTTPRequest::HTTPRequest(const HTTPRequest &request)
 
 		m_aDynamicParameters.push_back(pCopy);
 	}
+	
+	m_aExtractionItems = request.m_aExtractionItems;
 }
 
 HTTPRequest::HTTPRequest(const std::string &url) : m_url(url), m_requestType(HTTP_GET), m_pauseTime(0), m_acceptCompressed(false), m_storeHeader(true), m_storeBody(true),
@@ -136,6 +138,8 @@ const HTTPRequest& HTTPRequest::operator=(const HTTPRequest& rhs)
 		m_aDynamicParameters.push_back(pCopy);
 	}
 	
+	m_aExtractionItems = rhs.m_aExtractionItems;
+	
 	return *this;
 }
 
@@ -158,7 +162,7 @@ void HTTPRequest::addDynamicParameter(DynamicParameter *pDynamicParameter)
 	m_aDynamicParameters.push_back(pDynamicParameter);
 }
 
-void HTTPRequest::processDynamicParameters()
+void HTTPRequest::processDynamicParameters(HTTPEngine &engine)
 {
 	std::vector<DynamicParameter *>::iterator it = m_aDynamicParameters.begin();
 	std::vector<DynamicParameter *>::iterator itEnd = m_aDynamicParameters.end();
@@ -168,7 +172,7 @@ void HTTPRequest::processDynamicParameters()
 		if (pDynParam)
 		{
 			std::string name = pDynParam->getName();
-			std::string value = pDynParam->getValue();
+			std::string value = pDynParam->getValue(engine);
 			
 			addParameter(name, value);			
 		}		
@@ -192,4 +196,9 @@ void HTTPRequest::cleanupDynamicParameters()
 	}
 	
 	m_aDynamicParameters.clear();
+}
+
+void HTTPRequest::addExtractionItem(ExtractionItem &item)
+{
+	m_aExtractionItems.push_back(item);
 }

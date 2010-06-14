@@ -37,11 +37,15 @@ public:
 	
 	bool performRequest(HTTPRequest &request, HTTPResponse &response);
 	
+	std::string extractedItem(const std::string &name) { return m_aExtractedItems[name]; }
+	
 protected:
 	bool setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request);
 	bool extractResponseFromCURLHandle(CURL *handle, HTTPResponse &response);
 	
 	void downloadContent(CURL *mainHandle, HTTPResponse &response, bool acceptCompressed);
+	
+	void processExtractionItems(HTTPRequest &request, HTTPResponse &response);
 	
 protected:
 	CURL *	m_handle;
@@ -52,6 +56,8 @@ protected:
 	std::string		m_parametersString;
 	std::string		m_url;
 	std::string		m_cookies;
+	
+	std::map<std::string, std::string>	m_aExtractedItems;
 	
 };
 

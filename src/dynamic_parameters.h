@@ -21,6 +21,8 @@
 
 #include <string>
 
+class HTTPEngine;
+
 class DynamicParameter
 {
 public:
@@ -31,7 +33,7 @@ public:
 	virtual DynamicParameter* clone() = 0;
 	
 	std::string		getName() { return m_name; }
-	virtual std::string	getValue() = 0;
+	virtual std::string	getValue(HTTPEngine &engine) = 0;
 	
 protected:
 	std::string		m_name;
@@ -46,11 +48,26 @@ public:
 
 	virtual DynamicDateParameter* clone();
 	
-	virtual std::string getValue();
+	virtual std::string getValue(HTTPEngine &engine);
 	
 protected:
 	std::string		m_dateFormat;
 	int				m_daysInFuture;
+};
+
+class DynamicExtractionParameter : public DynamicParameter
+{
+public:
+	DynamicExtractionParameter(const DynamicExtractionParameter &rhs);
+	DynamicExtractionParameter(const std::string &name, const std::string &key);
+	virtual ~DynamicExtractionParameter() { }
+	
+	virtual DynamicExtractionParameter* clone();
+	
+	virtual std::string getValue(HTTPEngine &engine);
+	
+protected:
+	std::string		m_key;
 };
 
 #endif

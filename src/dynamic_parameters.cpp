@@ -18,6 +18,7 @@
 
 #include "dynamic_parameters.h"
 #include "utils/time.h"
+#include "http_engine.h"
 
 DynamicParameter::DynamicParameter(const std::string &name) : m_name(name)
 {
@@ -37,7 +38,7 @@ DynamicDateParameter::DynamicDateParameter(const DynamicDateParameter &rhs)
 	m_daysInFuture = rhs.m_daysInFuture;
 }
 
-std::string DynamicDateParameter::getValue()
+std::string DynamicDateParameter::getValue(HTTPEngine &engine)
 {
 	Time paramTime;
 	paramTime.now();
@@ -51,6 +52,31 @@ std::string DynamicDateParameter::getValue()
 DynamicDateParameter* DynamicDateParameter::clone()
 {
 	DynamicDateParameter *pNew = new DynamicDateParameter(*this);
+	
+	return pNew;
+}
+
+DynamicExtractionParameter::DynamicExtractionParameter(const DynamicExtractionParameter &rhs)
+{
+	m_name = rhs.m_name;
+	m_key = rhs.m_key;
+}
+
+DynamicExtractionParameter::DynamicExtractionParameter(const std::string &name, const std::string &key) : DynamicParameter(name), m_key(key)
+{
+	
+}
+
+std::string DynamicExtractionParameter::getValue(HTTPEngine &engine)
+{
+	std::string keyValue = engine.extractedItem(m_key);
+	
+	return keyValue;
+}
+
+DynamicExtractionParameter* DynamicExtractionParameter::clone()
+{
+	DynamicExtractionParameter *pNew = new DynamicExtractionParameter(*this);
 	
 	return pNew;
 }
