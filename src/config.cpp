@@ -88,6 +88,10 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 				m_configSettings.m_webServerPort = port;
 			}
 		}
+		else if (elementName == "proxy")
+		{
+			loadProxySettings(pItem);
+		}
 	}	
 	
 	return true;
@@ -95,6 +99,43 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 
 void Config::loadProxySettings(TiXmlElement *pElement)
 {
+	m_configSettings.m_useProxy = true;
+	
+	if (pElement->Attribute("enabled"))
+	{
+		const char *pEnabled = pElement->Attribute("enabled");
+		
+		int enabled = atoi(pEnabled);
+		
+		if (enabled == 0)
+		{
+			m_configSettings.m_useProxy = false;
+		}
+	}
+		
+	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
+	{
+		const std::string elementName = pItem->ValueStr();
 
-
+		std::string content;
+		if (pItem->GetText())
+			content = pItem->GetText();	
+		
+		if (elementName == "host")
+		{
+			m_configSettings.m_proxySettings.m_proxyHost = content;
+		}
+		else if (elementName == "port")
+		{
+			m_configSettings.m_proxySettings.m_proxyPort = content;
+		}
+		else if (elementName == "user")
+		{
+			m_configSettings.m_proxySettings.m_proxyUser = content;
+		}
+		else if (elementName == "pass")
+		{
+			m_configSettings.m_proxySettings.m_proxyPass = content;
+		}
+	}
 }
