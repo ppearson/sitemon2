@@ -35,6 +35,8 @@ public:
 	
 	bool			m_outputBodyResponse;
 	bool			m_veryVerboseOutput;
+
+	bool			m_outputHeaderRequest;
 };
 
 #endif

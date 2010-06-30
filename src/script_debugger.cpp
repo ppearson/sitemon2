@@ -42,7 +42,7 @@ void ScriptDebugger::run()
 {
 	std::ofstream debugLogFileStream;
 	bool loggingToFile = false;
-	
+
 	if (m_debugSettings.m_outputBodyResponse)
 	{
 		std::string fullPath;
@@ -74,7 +74,7 @@ void ScriptDebugger::run()
 		}
 	}
 	
-	HTTPEngine engine;
+	HTTPEngine engine(true); // we want debug enabled
 	
 	int step = 1;
 	
@@ -83,15 +83,15 @@ void ScriptDebugger::run()
 		HTTPRequest &request = *it;
 		HTTPResponse response;
 		
-		std::cout << "Running step " << step << ": " << request.getDescription() << " ...\n";
+		std::cout << "Running step " << step << ": " << request.getDescription() << "... ";
 		
 		if (engine.performRequest(request, response))
 		{
-			std::cout << "Step " << step << " completed successfully.\n";
+			std::cout << "completed successfully.\n";
 		}
 		else
 		{
-			std::cout << "Step " << step << " failed with error code: " << response.errorCode << " (" << response.errorString << "), response code: " << response.responseCode << "\n";
+			std::cout << "failed:\n " << " failed with error code: " << response.errorCode << " (" << response.errorString << "), response code: " << response.responseCode << "\n";
 			
 			if (loggingToFile)
 			{
@@ -100,6 +100,11 @@ void ScriptDebugger::run()
 					debugLogFileStream << response.content << "\n";
 					std::cout << "Body response for this step written to: " << m_debugSettings.m_outputPath << "\n";
 				}
+			}
+
+			if (m_debugSettings.m_outputHeaderRequest)
+			{
+				std::cout << "Header sent:\n" << engine.getRequestHeader() << "\n";
 			}
 			
 			break;

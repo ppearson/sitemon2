@@ -23,9 +23,9 @@
 #include "html_parser.h"
 #include "component_downloader.h"
 
-static const char *kUserAgent = "Sitemon/0.6";
+static const char *kUserAgent = "Sitemon/0.65";
 
-HTTPEngine::HTTPEngine()
+HTTPEngine::HTTPEngine(bool debug) : m_debug(debug)
 {
 	m_handle = curl_easy_init();
 }
@@ -75,6 +75,12 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, HTTPRequest &request)
 	
 	if (curl_easy_setopt(handle, CURLOPT_URL, m_url.c_str()) != 0)
 		return false;
+
+	m_referrer = request.getReferrer();
+	if (!m_referrer.empty())
+	{
+		curl_easy_setopt(handle, CURLOPT_REFERER, m_referrer.c_str());
+	}
 	
 	curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT, request.getConnectTimeout());
 	
@@ -171,6 +177,17 @@ bool HTTPEngine::performRequest(HTTPRequest &request, HTTPResponse &response)
 	
 	if (curl_easy_setopt(m_handle, CURLOPT_HEADERDATA, (void *)&response) != 0)
 		return false;
+
+	if (m_debug)
+	{
+		if (curl_easy_setopt(m_handle, CURLOPT_DEBUGFUNCTION, debugFunction) != 0)
+			return false;
+
+		if (curl_easy_setopt(m_handle, CURLOPT_DEBUGDATA, this) != 0)
+			return false;
+
+		curl_easy_setopt(m_handle, CURLOPT_VERBOSE, 1L);
+	}
 	
 	curl_easy_setopt(m_handle, CURLOPT_NOSIGNAL, 1L);
 
@@ -372,6 +389,24 @@ static size_t writeHeaderData(void *buffer, size_t size, size_t nmemb, void *use
 	}
 	
 	return full_size;
+}
+
+static int debugFunction(CURL *handle, curl_infotype type, unsigned char *data, size_t size, void *userp)
+{
+	HTTPEngine *pEngine = static_cast<HTTPEngine *>(userp);
+
+	switch (type)
+	{
+		case CURLINFO_HEADER_OUT:
+			if (data)
+			{
+				std::string header((char *)data, size);
+				pEngine->setRequestHeader(header);
+			}
+			break;
+	}
+
+	return 0;
 }
 
 static std::string buildParametersString(HTTPRequest &request)

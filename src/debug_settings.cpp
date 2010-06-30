@@ -18,13 +18,13 @@
 
 #include "debug_settings.h"
 
-DebugSettings::DebugSettings() : m_outputBodyResponse(false), m_veryVerboseOutput(false)
+DebugSettings::DebugSettings() : m_outputBodyResponse(false), m_veryVerboseOutput(false), m_outputHeaderRequest(false)
 {
 	
 }
 
 DebugSettings::DebugSettings(const std::string &debugOutput) : m_outputBodyResponse(true), m_veryVerboseOutput(false),
-																m_outputPath(debugOutput)
+																m_outputPath(debugOutput), m_outputHeaderRequest(false)
 {
 	
 }
@@ -51,6 +51,13 @@ void DebugSettings::loadDebugElement(TiXmlElement *pElement)
 				if (content == "yes" || content == "true")
 				{
 					m_outputBodyResponse = true;
+				}
+			}
+			else if (elementName == "output_header_request")
+			{
+				if (content == "yes" || content == "true")
+				{
+					m_outputHeaderRequest = true;
 				}
 			}
 		}			
