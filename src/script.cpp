@@ -78,21 +78,31 @@ bool Script::loadScriptFile(const std::string &file)
 	}
 	
 	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem = NULL;
+	TiXmlElement* pElem = NULL, *pScriptElem = NULL;
 	TiXmlHandle hRoot(0);
 	
-	pElem = hDoc.FirstChildElement("script").Element();
+	pScriptElem = hDoc.FirstChildElement("script").Element();
 	
-	if (!pElem) // no script item...
+	if (!pScriptElem) // no script item...
 		return false;
 	
 	// see if there's a description attribute
-	if (pElem->Attribute("desc"))
+	if (pScriptElem->Attribute("desc"))
 	{
-		m_description = pElem->Attribute("desc");
+		m_description = pScriptElem->Attribute("desc");
+	}
+
+	// see if it's got a hostname tag
+	pElem = pScriptElem->FirstChildElement("hostname");
+	if (pElem)
+	{
+		if (pElem->GetText())
+		{
+			m_hostName = pElem->GetText();
+		}
 	}
 	
-	for (pElem = pElem->FirstChildElement("request"); pElem; pElem = pElem->NextSiblingElement())
+	for (pElem = pScriptElem->FirstChildElement("request"); pElem; pElem = pElem->NextSiblingElement())
 	{
 		loadRequestElement(pElem);
 	}
@@ -144,7 +154,20 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 		
 		if (elementName == "url")
 		{
-			request.setUrl(content);
+			// replace @ with hostname if we have one
+			if (!m_hostName.empty() && content.find("@") != -1)
+			{
+				int hostPos = content.find("@");
+
+				content.erase(hostPos, 1);
+				content.insert(hostPos, m_hostName);
+
+				request.setUrl(content);
+			}
+			else
+			{
+				request.setUrl(content);
+			}
 		}
 		else if (elementName == "desc")
 		{

@@ -36,6 +36,7 @@ public:
 	~Script();
 	
 	std::string getDescription() { return m_description; }
+	std::string getHostName() { return m_hostName; }
 
 	void copyScript(Script *pScript);
 	
@@ -66,6 +67,8 @@ protected:
 protected:
 	std::string		m_description;
 	std::vector<HTTPRequest> m_aSteps;
+
+	std::string		m_hostName;
 	
 	DebugSettings	m_debugSettings;
 	bool			m_scriptHasDebugSettings;
