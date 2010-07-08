@@ -16,6 +16,9 @@
  
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include <fstream>
 
 #include "http_server_responses.h"

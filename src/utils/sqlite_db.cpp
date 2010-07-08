@@ -16,6 +16,9 @@
  
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "sqlite_db.h"
 
 SQLiteDB::SQLiteDB(const std::string &path, bool useMutex) : m_path(path), m_useMutex(useMutex)

@@ -19,6 +19,10 @@
 #include <sstream>
 #include <iostream>
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "http_server_request.h"
 #include "../utils/string_helper.h"
 

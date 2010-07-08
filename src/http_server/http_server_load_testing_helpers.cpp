@@ -16,6 +16,9 @@
  
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "http_server_load_testing_helpers.h"
 
 bool getLoadTestRunsList(SQLiteDB *pDB, std::string &output)

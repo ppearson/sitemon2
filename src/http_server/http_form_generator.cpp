@@ -16,6 +16,9 @@
  
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "http_form_generator.h"
 
 HTTPFormItem::HTTPFormItem(const std::string &label, const std::string &name) : m_label(label), m_name(name)

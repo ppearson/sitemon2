@@ -3,7 +3,8 @@ Instructions for building Sitemon from source
 
 Sitemon builds under Windows, Mac OS X, Linux, Solaris and BSD.
 
-Sitemon cannot be easily built under MS Visual C++ 6, due to the number of template size warnings (warning C4786)
-that VC++ 6 stupidly throws out for no reason, which causes the build of the whole
-thing to fail with a Fatal Error C1063 error.
+MS Visual C++ 2005 is needed to build under Windows.
 
+It builds under GCC 4.1+ and LLVM 2.5+ under UNIX environments.
+
+libCURL and zlib libs and headers are needed under Windows (see libs directory).

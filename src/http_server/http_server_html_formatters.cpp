@@ -16,6 +16,9 @@
  
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "http_server_html_formatters.h"
 #include "http_form_generator.h"
 

@@ -26,7 +26,7 @@
 #include <windows.h>
 #endif
 
-#include "Mutex.h"
+#include "mutex.h"
 
 class Thread
 {

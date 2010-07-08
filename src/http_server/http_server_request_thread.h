@@ -19,7 +19,7 @@
 #ifndef HTTP_SERVER_REQUEST_THREAD_H
 #define HTTP_SERVER_REQUEST_THREAD_H
 
-#include "../utils/Socket.h"
+#include "../utils/socket.h"
 #include "../utils/thread.h"
 
 #include "http_server_request_despatcher.h"

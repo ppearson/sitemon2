@@ -16,6 +16,9 @@
  
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "sqlite_query.h"
 
 SQLiteQuery::SQLiteQuery(SQLiteDB &db, bool write) : m_db(db), m_pConn(db.getDBConnection(write)), m_result(NULL), m_hasRow(false),
