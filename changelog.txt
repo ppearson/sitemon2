@@ -1,4 +1,29 @@
+0.65
+----
+
+* Added support for global hostname at a script level, with @ denoting the host for url entries
+* Tweaked formatting of script debugging screen output
+* Added support for outputting the request header Sitemon sends for failed steps when using the
+  script debugger
+
 0.6
 ---
 
-* Added support for dynamic parameters - specificly date parameters
+* Added support for dynamic parameters: date parameters and extracted item parameters
+* Added support for extracted items
+* Added problem step column to the overall results section of CSV output of load testing
+* Added ability to manually run scheduled tests on demand by clicking the Play icon link
+* Better handling of SQLIte busy errors when saving scheduled results, ensuring results
+  are never lost
+* Improved DB concurrency locking performance
+
+0.5
+---
+
+* Fixes to CSS for Firefox
+* Added Step number to CSV load testing results output
+* Sitemon can now detect the location of the Sitemon.exe executable under Windows
+  allowing it to be run locally and still find its config file without having to
+  change to its directory first due to using current working directory
+* Fix a few minor threading issues in content downloader thread pool
+* Web Server port number can now be configured in the config file
