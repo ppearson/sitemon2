@@ -3,8 +3,10 @@ CXX_LDFLAGS = -lpthread -lcurl
 INCLDFLAGS = -I./http_server/ -I./load_testing/ -I./scheduler/ -I./utils/ 
 OBS = component_downloader.o config.o debug_settings.o dynamic_parameters.o html_parser.o http_engine.o http_request.o http_response.o load_test_settings.o main.o script.o script_debugger.o script_result.o sitemon.o uri_helper.o http_form_generator.o http_server.o http_server_db_helpers.o http_server_html_formatters.o http_server_load_testing_helpers.o http_server_request.o http_server_request_despatcher.o http_server_request_thread.o http_server_responses.o hit_load_request_thread.o hit_test_engine.o load_test_db_helpers.o load_test_results_saver.o profile_load_request_thread.o profile_test_engine.o scheduled_results_saver.o scheduler.o scheduler_db_helpers.o scheduler_test_thread.o event.o misc.o mutex.o socket.o sqlite3.o sqlite_db.o sqlite_query.o string_helper.o thread.o thread_pool.o time.o tinyxml.o tinyxmlerror.o tinyxmlparser.o 
 
-MAIN_CC=g++ -c -g -Wall $(INCLDFLAGS)
-MAIN_C=g++ -x c -c -g -Wall $(INCLDFLAGS)
+#MAIN_CC=g++ -c -g -Wall $(INCLDFLAGS)
+#MAIN_C=g++ -x c -c -g -Wall $(INCLDFLAGS)
+MAIN_CC=g++ -c -O3 -Wall $(INCLDFLAGS)
+MAIN_C=g++ -x c -c -O3 -Wall $(INCLDFLAGS)
 
 all: sitemon
 
