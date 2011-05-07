@@ -30,21 +30,21 @@ Time::Time(unsigned long timestamp) : m_time(timestamp)
 	
 }
 
-const Time& Time::operator=(const Time& rhs)
+Time& Time::operator=(const Time& rhs)
 {
 	m_time = rhs.m_time;
 	
 	return *this;
 }
 
-const Time& Time::operator=(time_t time)
+Time& Time::operator=(time_t time)
 {
 	m_time = time;
 	
 	return *this;
 }
 
-const Time& Time::operator=(unsigned long timestamp)
+Time& Time::operator=(unsigned long timestamp)
 {
 	m_time = timestamp;
 

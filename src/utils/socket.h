@@ -60,7 +60,7 @@ class Socket
 public:
 	Socket();
 	Socket(int port);
-	Socket(std::string host, int port);
+	Socket(std::string& host, int port);
 	
 	virtual ~Socket();
 	
@@ -71,10 +71,10 @@ public:
 	bool accept(Socket *sock) const;
 	
 	bool connect();
-	bool connect(const std::string host, const int port);
+	bool connect(const std::string& host, const int port);
 	void close();
 	
-	bool send(const std::string data) const;
+	bool send(const std::string& data) const;
 	int recv(std::string &data) const;
 	
 	bool isValid() const { return m_sock != -1; }

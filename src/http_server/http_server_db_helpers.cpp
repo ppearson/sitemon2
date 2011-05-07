@@ -786,7 +786,7 @@ bool generateEditScriptScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 		memset(szTemp, 0, 2048);
 		
 		long pageID = q.getLong();
-		std::string description = q.getString();
+		description = q.getString();
 		std::string url = q.getString();
 		long requestType = q.getLong();
 		std::string expectedPhrase = q.getString();

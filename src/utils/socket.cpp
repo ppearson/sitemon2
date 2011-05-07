@@ -30,7 +30,7 @@ Socket::Socket(int port) : m_sock(-1), m_port(port)
 	create();
 }
 
-Socket::Socket(std::string host, int port) : m_sock(-1), m_host(host), m_port(port)
+Socket::Socket(std::string& host, int port) : m_sock(-1), m_host(host), m_port(port)
 {
 	memset(&m_addr, 0, sizeof(m_addr));
 	create();
@@ -126,7 +126,7 @@ bool Socket::connect()
 	return true;
 }
 
-bool Socket::connect(const std::string host, const int port)
+bool Socket::connect(const std::string& host, const int port)
 {
 	m_host = host;
 	m_port = port;
@@ -175,7 +175,7 @@ bool Socket::accept(Socket *sock) const
 	return true;	
 }
 
-bool Socket::send(const std::string data) const
+bool Socket::send(const std::string& data) const
 {
 	if (!isValid())
 		return false;

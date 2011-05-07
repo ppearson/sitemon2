@@ -29,9 +29,9 @@ public:
 	Time(time_t time);
 	Time(unsigned long timestamp);
 	
-	const Time& operator=(const Time& rhs);
-	const Time& operator=(time_t time);
-	const Time& operator=(unsigned long timestamp);
+	Time& operator=(const Time& rhs);
+	Time& operator=(time_t time);
+	Time& operator=(unsigned long timestamp);
 	
 	~Time() { }
 	

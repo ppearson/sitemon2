@@ -18,8 +18,8 @@
 
 #include "http_request.h"
 
-HTTPRequest::HTTPRequest() : m_requestType(HTTP_GET), m_pauseTime(0), m_acceptCompressed(false), m_storeHeader(true),
-								m_storeBody(true), m_downloadContent(false), m_connectTimeout(30), m_totalTimeout(240)
+HTTPRequest::HTTPRequest() : m_requestType(HTTP_GET), m_connectTimeout(30), m_totalTimeout(240), m_pauseTime(0),
+            m_acceptCompressed(false), m_downloadContent(false), m_storeHeader(true), m_storeBody(true) 
 {
 
 }
@@ -93,7 +93,7 @@ HTTPRequest::~HTTPRequest()
 	
 }
 
-const HTTPRequest& HTTPRequest::operator=(const HTTPRequest& rhs)
+HTTPRequest& HTTPRequest::operator=(const HTTPRequest& rhs)
 {
 	m_requestType = rhs.m_requestType;
 	

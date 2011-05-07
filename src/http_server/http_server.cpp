@@ -27,7 +27,7 @@
 #include "http_server_request_despatcher.h"
 
 HTTPServer::HTTPServer(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB, int port) : m_port(port), m_webContentPath(webContentPath),
-			m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB)
+			m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB), m_pResultsSaver(NULL)
 {
 	
 }

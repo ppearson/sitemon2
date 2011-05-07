@@ -23,8 +23,7 @@ DebugSettings::DebugSettings() : m_outputBodyResponse(false), m_outputHeaderRequ
 	
 }
 
-DebugSettings::DebugSettings(const std::string &debugOutput) : m_outputBodyResponse(true), m_outputHeaderRequest(false),
-																m_outputPath(debugOutput), m_veryVerboseOutput(false)
+DebugSettings::DebugSettings(const std::string &debugOutput) : m_outputPath(debugOutput), m_outputBodyResponse(true), m_veryVerboseOutput(false), m_outputHeaderRequest(false)
 {
 	
 }

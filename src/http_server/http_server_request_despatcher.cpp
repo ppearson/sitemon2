@@ -29,7 +29,7 @@
 #include "http_server_load_testing_helpers.h"
 
 HTTPServerRequestDespatcher::HTTPServerRequestDespatcher(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB) :
-								m_webContentPath(webContentPath), m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB)
+								m_webContentPath(webContentPath), m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB), m_pResultsSaver(NULL)
 {
 	
 }

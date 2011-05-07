@@ -57,7 +57,7 @@ public:
 	HTTPRequest(const std::string &url, const std::string &description, bool post = false);
 	~HTTPRequest();
 
-	const HTTPRequest& operator=(const HTTPRequest& rhs);
+	HTTPRequest& operator=(const HTTPRequest& rhs);
 	
 	const RequestType getRequestType() { return m_requestType; }
 	const std::string getDescription() { return m_description; }
