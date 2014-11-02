@@ -23,7 +23,9 @@
 #include "html_parser.h"
 #include "component_downloader.h"
 
-static const char *kUserAgent = "Sitemon/0.65";
+//static const char *kUserAgent = "Sitemon/0.65";
+//static const char *kUserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.125 Safari/533.4";
+static const char* kUserAgent = "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.120 Safari/535.2";
 
 HTTPEngine::HTTPEngine(bool debug) : m_debug(debug)
 {

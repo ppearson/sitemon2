@@ -442,7 +442,7 @@ int main(int argc, char *const argv[])
 			request.setDownloadContent(true);
 		}
 
-		sitemon.performSingleRequest(request, outputHeader);
+		sitemon.performSingleRequest(request, outputHeader, outputBody);
 	}
 	else
 	{

@@ -105,7 +105,7 @@ bool SitemonApp::runWebServerAndScheduler()
 	return true;
 }
 
-bool SitemonApp::performSingleRequest(HTTPRequest &request, bool outputHeader)
+bool SitemonApp::performSingleRequest(HTTPRequest &request, bool outputHeader, bool outputBody)
 {
 	HTTPEngine engine;
 	HTTPResponse response;
@@ -114,7 +114,12 @@ bool SitemonApp::performSingleRequest(HTTPRequest &request, bool outputHeader)
 	{
 		if (outputHeader)
 		{
-			std::cout << response.header << "\n";
+			std::cout << response.header << "\n---\n";
+		}
+		
+		if (outputBody)
+		{
+			std::cout << response.content << "\n";
 		}
 
 		outputResponse(request, response);		

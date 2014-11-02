@@ -33,7 +33,7 @@ public:
 	
 	bool runWebServerAndScheduler();
 	
-	bool performSingleRequest(HTTPRequest &request, bool outputHeader);
+	bool performSingleRequest(HTTPRequest &request, bool outputHeader, bool outputBody);
 	bool performScriptRequest(Script &script);
 
 	bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath);
