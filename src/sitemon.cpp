@@ -1,19 +1,19 @@
 /*
  Sitemon
  Copyright 2010 Peter Pearson.
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  You may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- 
+
  */
 
 #include "http_engine.h"
@@ -35,11 +35,11 @@ void SitemonApp::loadConfigSettings()
 {
 	Config configFile(m_configSettings);
 #ifndef _MSC_VER
-	configFile.loadConfigFile("/Users/peter/sm_config.xml");
+	configFile.loadConfigFile("/Users/peter/Documents/Coding/sitemon2/build_release/sm_config.xml");
 #else
 	configFile.loadConfigFile();
 #endif
-	
+
 }
 
 bool SitemonApp::runWebServerAndScheduler()
@@ -47,26 +47,26 @@ bool SitemonApp::runWebServerAndScheduler()
 	std::string webContentPath = m_configSettings.m_webContentPath;
 	std::string monitoringDBPath = m_configSettings.m_monitoringDBPath;
 	std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-	
+
 	SQLiteDB *pMonitoringDB = NULL;
-	
+
 	if (!monitoringDBPath.empty())
 	{
 		pMonitoringDB = new SQLiteDB(monitoringDBPath);
 	}
-	
+
 	if (!pMonitoringDB->isThreadSafe())
 	{
 		std::cout << "SQLite is not thread safe!\n";
 	}
 
 	SQLiteDB *pLoadTestingDB = NULL;
-	
+
 	if (!loadTestingDBPath.empty())
 	{
 		pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 	}
-	
+
 	// create the needed tables first
 	createNeededHTTPServerTables(pMonitoringDB);
 	createNeededSchedulerTables(pMonitoringDB);
@@ -77,31 +77,31 @@ bool SitemonApp::runWebServerAndScheduler()
 	}
 
 	Thread::sleep(1); // to enable db tables to be created if needed
-	
+
 	Scheduler schedulerThread(pMonitoringDB);
 	schedulerThread.start();
-	
+
 	std::cout << "Scheduler thread started...\n";
-	
+
 	int port = m_configSettings.m_webServerPort;
-		
+
 	std::cout << "Starting web server on http://localhost:" << port << "/...\n";
-	
-	Socket::initWinsocks();		
-	
+
+	Socket::initWinsocks();
+
 	HTTPServer server(webContentPath, pMonitoringDB, pLoadTestingDB, port);
 	server.setScheduledResultSaver(schedulerThread.getScheduledResultsSaver());
 	// keep in mind this halts execution, by design
 	server.start();
-	
+
 	Socket::cleanupWinsocks();
-	
+
 	if (pMonitoringDB)
 		delete pMonitoringDB;
 
 	if (pLoadTestingDB)
 		delete pLoadTestingDB;
-	
+
 	return true;
 }
 
@@ -116,13 +116,13 @@ bool SitemonApp::performSingleRequest(HTTPRequest &request, bool outputHeader, b
 		{
 			std::cout << response.header << "\n---\n";
 		}
-		
+
 		if (outputBody)
 		{
 			std::cout << response.content << "\n";
 		}
 
-		outputResponse(request, response);		
+		outputResponse(request, response);
 	}
 	else
 	{
@@ -162,23 +162,23 @@ bool SitemonApp::performScriptRequest(Script &script)
 bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath)
 {
 	LoadTestResultsSaver saver;
-	
+
 	SQLiteDB *pLoadTestingDB = NULL;
-	
+
 	HitTestEngine engine;
-	
+
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
 		{
 			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-			
+
 			if (loadTestingDBPath.empty())
 			{
 				std::cout << "No load testing DB path specified in Sitemon's config file...\n";
 				return false;
-			}			
-			
+			}
+
 			pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 			saver.initStorage("", pLoadTestingDB);
 		}
@@ -188,11 +188,11 @@ bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std
 		}
 
 		engine.setResultsSaver(&saver);
-	}	
-	
+	}
+
 	engine.initialise(request, threads);
-	
-	saver.start();	
+
+	saver.start();
 	if (engine.start())
 	{
 		if (!outputPath.empty())
@@ -200,33 +200,33 @@ bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std
 			saver.stop();
 		}
 	}
-	
+
 	if (pLoadTestingDB)
 		delete pLoadTestingDB;
-	
+
 	return true;
 }
 
 bool SitemonApp::performHitLoadTest(Script &script, int threads, const std::string &outputPath)
 {
 	LoadTestResultsSaver saver;
-	
+
 	SQLiteDB *pLoadTestingDB = NULL;
 
 	HitTestEngine engine;
-	
+
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
 		{
 			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-			
+
 			if (loadTestingDBPath.empty())
 			{
 				std::cout << "No load testing DB path specified in Sitemon's config file...\n";
 				return false;
-			}			
-			
+			}
+
 			pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 			saver.initStorage("", pLoadTestingDB);
 		}
@@ -237,10 +237,10 @@ bool SitemonApp::performHitLoadTest(Script &script, int threads, const std::stri
 
 		engine.setResultsSaver(&saver);
 	}
-		
+
 	engine.initialise(script, threads);
-	
-	saver.start();	
+
+	saver.start();
 	if (engine.start())
 	{
 		if (!outputPath.empty())
@@ -248,7 +248,7 @@ bool SitemonApp::performHitLoadTest(Script &script, int threads, const std::stri
 			saver.stop();
 		}
 	}
-	
+
 	return true;
 }
 
@@ -256,25 +256,25 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 {
 	if (!script.hasLoadTestSettings())
 		return false;
-	
+
 	LoadTestResultsSaver saver;
-	
+
 	SQLiteDB *pLoadTestingDB = NULL;
 
 	HitTestEngine engine;
-	
+
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
 		{
 			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-			
+
 			if (loadTestingDBPath.empty())
 			{
 				std::cout << "No load testing DB path specified in Sitemon's config file...\n";
 				return false;
-			}			
-			
+			}
+
 			pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 			saver.initStorage("", pLoadTestingDB);
 		}
@@ -285,12 +285,12 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 
 		engine.setResultsSaver(&saver);
 	}
-	
+
 	LoadTestSettings &ltSettings = script.getLoadTestSettings();
-	
-	
+
+
 	engine.initialise(script, ltSettings.getHitThreads(), ltSettings.getHitRepeats());
-		
+
 	saver.start();
 	if (engine.start())
 	{
@@ -299,30 +299,30 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 			saver.stop();
 		}
 	}
-	
+
 	return true;
 }
 
 bool SitemonApp::performProfileLoadTest(HTTPRequest &request, int threads, int duration, const std::string &outputPath)
 {
 	LoadTestResultsSaver saver;
-	
+
 	SQLiteDB *pLoadTestingDB = NULL;
 
 	ProfileTestEngine engine;
-	
+
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
 		{
 			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-			
+
 			if (loadTestingDBPath.empty())
 			{
 				std::cout << "No load testing DB path specified in Sitemon's config file...\n";
 				return false;
-			}			
-			
+			}
+
 			pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 			saver.initStorage("", pLoadTestingDB);
 		}
@@ -332,39 +332,39 @@ bool SitemonApp::performProfileLoadTest(HTTPRequest &request, int threads, int d
 		}
 
 		engine.setResultsSaver(&saver);
-	}	
-	
+	}
+
 	engine.initialise(request, 2);
 	engine.addProfileSegment(threads, duration);
-	
+
 	saver.start();
 	engine.start();
-	
+
 	saver.stop();
-	
+
 	return true;
 }
 
 bool SitemonApp::performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath)
 {
 	LoadTestResultsSaver saver;
-	
+
 	SQLiteDB *pLoadTestingDB = NULL;
 
 	ProfileTestEngine engine;
-	
+
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
 		{
 			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-			
+
 			if (loadTestingDBPath.empty())
 			{
 				std::cout << "No load testing DB path specified in Sitemon's config file...\n";
 				return false;
-			}			
-			
+			}
+
 			pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 			saver.initStorage("", pLoadTestingDB);
 		}
@@ -374,44 +374,44 @@ bool SitemonApp::performProfileLoadTest(Script &script, int threads, int duratio
 		}
 
 		engine.setResultsSaver(&saver);
-	}	
+	}
 
 	engine.initialise(script);
 	engine.addProfileSegment(threads, duration);
-	
+
 	saver.start();
 	engine.start();
 
 	saver.stop();
-	
+
 	return true;
 }
 
 bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outputPath)
 {
 	LoadTestSettings &settings = script.getLoadTestSettings();
-	
+
 	if (settings.m_type != LOAD_PROFILE_TEST)
 		return false;
-	
+
 	LoadTestResultsSaver saver;
-	
+
 	SQLiteDB *pLoadTestingDB = NULL;
 
 	ProfileTestEngine engine;
-	
+
 	if (!outputPath.empty())
 	{
 		if (outputPath == ":db")
 		{
 			std::string loadTestingDBPath = m_configSettings.m_loadTestingDBPath;
-			
+
 			if (loadTestingDBPath.empty())
 			{
 				std::cout << "No load testing DB path specified in Sitemon's config file...\n";
 				return false;
-			}			
-			
+			}
+
 			pLoadTestingDB = new SQLiteDB(loadTestingDBPath);
 			saver.initStorage("", pLoadTestingDB);
 		}
@@ -421,22 +421,22 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 		}
 
 		engine.setResultsSaver(&saver);
-	}	
-	
+	}
+
 	engine.initialise(script);
-	
+
 	// add the segments
 	std::vector<LoadTestProfileSeg>::iterator itSeg = settings.begin();
 	for (; itSeg != settings.end(); ++itSeg)
 	{
 		engine.addProfileSegment((*itSeg).m_threads, (*itSeg).m_duration);
 	}
-	
+
 	saver.start();
 	engine.start();
-	
+
 	saver.stop();
-	
+
 	return true;
 }
 
@@ -457,7 +457,7 @@ void SitemonApp::outputResponse(HTTPRequest &request, HTTPResponse &response)
 
 //	std::cout << "Data transfer:\t\t" << response.dataTransferTime << " seconds.\n";
 	std::cout << "Total time:\t\t" << response.totalTime << " seconds.\n\n";
-	
+
 	std::cout << "HTML Content size:\t" << response.contentSize << "\n";
 	std::cout << "HTML Download size:\t" << response.downloadSize << "\n";
 
@@ -468,28 +468,28 @@ void SitemonApp::outputResponse(HTTPRequest &request, HTTPResponse &response)
 		std::cout << "Compression Savings:\t" << compression << "%\n";
 		std::cout << "Content Encoding:\t" << response.contentEncoding << "\n";
 	}
-	
+
 	if (request.getDownloadContent())
-	{	
+	{
 		std::cout << "Total Content size:\t" << response.totalContentSize << "\n";
 		std::cout << "Total Download size:\t" << response.totalDownloadSize << "\n";
-		
+
 		if (response.componentProblem)
 		{
 			std::cout << "Issues downloading one or more components:\n";
-			
+
 			const std::vector<HTTPComponentResponse> &components = response.getComponents();
-			
+
 			std::vector<HTTPComponentResponse>::const_iterator it = components.begin();
 			for (; it != components.end(); ++it)
 			{
 				const HTTPComponentResponse &compResponse = *it;
-				
+
 				if (compResponse.errorCode != HTTP_OK || compResponse.responseCode != 200)
 				{
-					printf("%i\t%ld\t%s\n", compResponse.errorCode, compResponse.responseCode, compResponse.requestedURL.c_str());					
-				}				
-			}			
+					printf("%i\t%ld\t%s\n", compResponse.errorCode, compResponse.responseCode, compResponse.requestedURL.c_str());
+				}
+			}
 		}
 	}
 }

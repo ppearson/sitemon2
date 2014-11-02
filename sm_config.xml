@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+	<web_content_path>/</web_content_path>
+	<mon_db_path></mon_db_path>
+
+	<web_server_port>9393</web_server_port>
+</config>
