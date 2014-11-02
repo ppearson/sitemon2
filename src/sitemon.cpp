@@ -35,11 +35,10 @@ void SitemonApp::loadConfigSettings()
 {
 	Config configFile(m_configSettings);
 #ifndef _MSC_VER
-	configFile.loadConfigFile("/Users/peter/Documents/Coding/sitemon2/build_release/sm_config.xml");
+	configFile.loadConfigFile("");
 #else
 	configFile.loadConfigFile();
 #endif
-
 }
 
 bool SitemonApp::runWebServerAndScheduler()
