@@ -39,7 +39,7 @@ DBConn *SQLiteDB::getDBConnection(bool write)
 		m_mutex.lock();
 	}
 
-	DBConn * pConn = new DBConn;
+	DBConn* pConn = new DBConn;
 
 	if (!pConn)
 	{
@@ -51,7 +51,7 @@ DBConn *SQLiteDB::getDBConnection(bool write)
 		return NULL;
 	}
 
-	int flags = SQLITE_OPEN_READONLY;
+	int flags = SQLITE_OPEN_READONLY;// | SQLITE_OPEN_CREATE;
 
 	if (write)
 	{

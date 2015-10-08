@@ -54,6 +54,11 @@ bool SitemonApp::runWebServerAndScheduler()
 		pMonitoringDB = new SQLiteDB(monitoringDBPath);
 	}
 
+	if (!pMonitoringDB)
+	{
+		std::cout << "Can't open SQLite database connection.\n";
+	}
+
 	if (!pMonitoringDB->isThreadSafe())
 	{
 		std::cout << "SQLite is not thread safe!\n";
