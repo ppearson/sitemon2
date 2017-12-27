@@ -3,7 +3,10 @@ project (sitemon)
 
 enable_language(CXX)
 
-SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG")
+#SET(DEBUG_WARNINGS "-Wall -Wextra")
+#SET(DEBUG_WARNINGS_SUPPRESS "-Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
+#SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG -D_GLIBCXX_DEBUG ${DEBUG_WARNINGS} ${DEBUG_WARNINGS_SUPPRESS}")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG ${DEBUG_WARNINGS} ${DEBUG_WARNINGS_SUPPRESS}")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -fvisibility-inlines-hidden -fvisibility=hidden")
 
 if(NOT CMAKE_BUILD_TYPE)
