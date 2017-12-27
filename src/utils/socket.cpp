@@ -180,6 +180,8 @@ bool Socket::send(const std::string& data) const
 	if (!isValid())
 		return false;
 	
+	// TODO: use MAX_SEND_LENGTH
+	
 	int bytesSent = ::send(m_sock, data.c_str(), data.size(), 0);
 	
 	if (bytesSent == -1)
@@ -201,6 +203,8 @@ int Socket::recv(std::string &data) const
 	
 	do
 	{
+		// TODO: is this necessary given we're appending a NULL to the end of the buffer below? Possibly good practice, but
+		//       but could cost us a bit in performance... Currently this code isn't used for anything performance-critical, but...
 		memset(buffer, 0, sizeof(buffer));
 		
 		ret = ::recv(m_sock, buffer, MAX_RECV_LENGTH, 0);
@@ -211,7 +215,11 @@ int Socket::recv(std::string &data) const
 		
 			data.append(buffer);
 			length += ret;
-		}		
+		}
+		else
+		{
+			// TODO: break here?
+		}
 	}
 	while (ret >= MAX_RECV_LENGTH);
 	
