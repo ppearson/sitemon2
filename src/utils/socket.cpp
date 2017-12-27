@@ -213,7 +213,7 @@ int Socket::recv(std::string &data) const
 			length += ret;
 		}		
 	}
-	while (ret > MAX_RECV_LENGTH);
+	while (ret >= MAX_RECV_LENGTH);
 	
 	return length;	
 }

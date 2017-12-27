@@ -18,7 +18,7 @@
 
 #include "thread.h"
 
-Thread::Thread() : m_thread(NULL), m_isRunning(false), m_autoDestruct(false)
+Thread::Thread() : m_thread(0), m_isRunning(false), m_autoDestruct(false)
 {
 
 }
@@ -111,7 +111,7 @@ void Thread::stop(bool kill)
 #endif
 	}
 	
-	m_thread = NULL;
+	m_thread = 0;
 
 	setRunning(false);
 }

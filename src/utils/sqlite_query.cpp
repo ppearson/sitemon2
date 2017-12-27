@@ -53,7 +53,7 @@ bool SQLiteQuery::execute(const std::string &sql)
 		m_result = NULL;
 	}
 
-	const char *s = NULL;
+	const char* s = NULL;
 	int rc = sqlite3_prepare(m_pConn->m_pDB, sql.c_str(), sql.size(), &m_result, &s);
 	if (rc != SQLITE_OK)
 	{

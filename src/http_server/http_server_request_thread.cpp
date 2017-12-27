@@ -36,7 +36,7 @@ void HTTPServerRequestThread::run()
 	if (!m_pSocket)
 		return;
 	
-	std::string clientAddress = m_pSocket->getClientAddress();
+//	std::string clientAddress = m_pSocket->getClientAddress();
 	
 	std::string recvData;
 	m_pSocket->recv(recvData);

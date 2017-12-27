@@ -3,6 +3,7 @@ project (sitemon)
 
 enable_language(CXX)
 
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -fvisibility-inlines-hidden -fvisibility=hidden")
 
 if(NOT CMAKE_BUILD_TYPE)

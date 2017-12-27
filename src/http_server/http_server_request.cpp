@@ -33,6 +33,7 @@ HTTPServerRequest::HTTPServerRequest(const std::string &request) : m_request(req
 
 bool HTTPServerRequest::parse()
 {
+	// TODO: doing it this way is very hacky as it means we lose blank lines (end of header, etc)...
 	std::vector<std::string> lines;
 	split(m_request, lines);
 	
@@ -40,12 +41,11 @@ bool HTTPServerRequest::parse()
 		return false;
 	
 	// first line should contain main request
-	std::string &line = lines[0];
+	const std::string &line = lines[0];
 	
 	if (line.find("HTTP/") == -1)
 		return false;
 	
-	// only support GET requests for the moment
 	if (line.substr(0, 3) != "GET")
 	{
 		if (line.substr(0, 4) != "POST")
@@ -61,7 +61,7 @@ bool HTTPServerRequest::parse()
 	if (pathEnd == -1)
 		return false;
 	
-	const std::string &path = line.substr(pathStart, pathEnd - pathStart);
+	const std::string path = line.substr(pathStart, pathEnd - pathStart);
 	
 	int nQuestionMark = path.find("?");
 	if (nQuestionMark == -1)
@@ -75,17 +75,25 @@ bool HTTPServerRequest::parse()
 		// if POST has this on the end, ignore the URL params
 		if (!m_post)
 		{
-			const std::string &params = path.substr(nQuestionMark + 1);
+			std::string params = path.substr(nQuestionMark + 1);
 		
 			addParams(params);
 		}
 	}
 	
+	// TODO: this is crap - we should check for the double CR and use that to detect the end of the header...
+	//       or as a hacky stop-gap to be more robust (and detect missing POST data), match the line
+	//       by the Content-Length....
 	if (m_post && lines.size() > 1)
 	{
 		// hopefully, last line of HTTP request should be the POST params
 		
-		std::string &params = lines.back();
+		const std::string& params = lines.back();
+
+		// Note: Sometimes we don't seem to have any POST data...
+		// WebKit in embedded mode (Web (Epiphany 3.8.2?) on Raspberry Pi) appears to have this bug:
+		// WebKit BZ: 145410 - which strips off POST data when submitting it.
+		// Firefox and Chrome (Linux, OS X and Pi) work fine as does Safari on OS X.
 		
 		addParams(params);
 	}
