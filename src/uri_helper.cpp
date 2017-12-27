@@ -37,6 +37,13 @@ std::string URIBuilder::getFullLocation()
 	if (m_base.substr(0, 7) != "http://" && m_base.substr(0, 8) != "https://")
 		return "";
 	
+	// if the relative path starts with "//", it's a URL pointing to a completely different domain, so
+	if (m_relative.substr(0, 2) == "//")
+	{
+		// TODO: not sure what to do about http vs https? Inherit base's? Try https first? Just use redirect status?
+		return "http:" + m_relative;
+	}
+	
 	bool bSecure = false;
 	
 	if (m_base.find("https://") != -1)
