@@ -16,6 +16,9 @@
 
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "utils/misc.h"
 
 #include "config.h"
@@ -25,28 +28,41 @@ Config::Config(ConfigSettings &configSettings) : m_configSettings(configSettings
 
 }
 
-bool Config::loadConfigFile(const std::string &configFilePath)
+bool Config::loadConfigFile()
 {
-	std::string finalPath;
-
-	if (!configFilePath.empty())
-	{
-		finalPath = configFilePath;
-	}
-	else
-	{
+	std::string dirPath;
 #ifndef _DEBUG
-		finalPath = getExecutablePath();
+	dirPath = getExecutablePath();
 #else
-		finalPath = getCurrentDirectory();
+	dirPath = getCurrentDirectory();
 #endif
-
-		finalPath += "sm_config.xml";
+	
+	// if we have an env variable set for this, use that...
+	const char* smPathEnv = getenv("SITEMON_PATH");
+	if (smPathEnv && strlen(smPathEnv) > 0)
+	{
+		dirPath.assign(smPathEnv);
 	}
+	
+	if (dirPath.substr(dirPath.size() - 1, 1) != "/")
+	{
+		dirPath += "/";
+	}
+	
+	std::string finalPath = dirPath;
+	
+	// try XML config file first...
+	if (loadXMLConfigFile(finalPath + "sm_config.xml"))
+	{
+		return true;
+	}
+	
+	return false;
+}
 
-//	finalPath = "/Users/peter/sm_config.xml";
-
-	TiXmlDocument doc(finalPath);
+bool Config::loadXMLConfigFile(const std::string& filename)
+{
+	TiXmlDocument doc(filename);
 
 	if (!doc.LoadFile())
 	{
@@ -91,14 +107,14 @@ bool Config::loadConfigFile(const std::string &configFilePath)
 		}
 		else if (elementName == "proxy")
 		{
-			loadProxySettings(pItem);
+			loadXMLProxySettings(pItem);
 		}
 	}
-
+	
 	return true;
 }
 
-void Config::loadProxySettings(TiXmlElement *pElement)
+void Config::loadXMLProxySettings(TiXmlElement* pElement)
 {
 	m_configSettings.m_useProxy = true;
 

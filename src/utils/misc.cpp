@@ -24,12 +24,14 @@
 #include <unistd.h>
 #endif
 
+#include <malloc.h>
 #include <string.h>
 #include <stdio.h>
 #include "misc.h"
 
-char *getCurrentDirectory(bool appendFinal)
+std::string getCurrentDirectory(bool appendFinal)
 {
+	std::string currentDir;
 #ifdef _MSC_VER	
 #if _MSC_VER > 1200
 	char *szCurrentDir = _getcwd(NULL, 0);
@@ -40,16 +42,25 @@ char *getCurrentDirectory(bool appendFinal)
 	char *szCurrentDir = getcwd(NULL, 0);
 #endif
 	
-	if (szCurrentDir && appendFinal)
+	if (szCurrentDir)
 	{
+		currentDir.assign(szCurrentDir);
+		
+		// because we passed in NULL as the buffer, getcwd() (at least on Linux) allocates the memory,
+		// so we need to free it
+		free(szCurrentDir);
+		
+		if (appendFinal)
+		{
 #ifdef _MSC_VER
-		strcat(szCurrentDir, "\\");
+			currentDir += "\\";
 #else
-		strcat(szCurrentDir, "/");
+			currentDir += "/";
 #endif
+		}
 	}
-	
-	return szCurrentDir;
+		
+	return currentDir;
 }
 
 // this gets the path the Sitemon executable file is in

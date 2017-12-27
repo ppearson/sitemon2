@@ -217,14 +217,14 @@ void LoadTestResultsSaver::fileStore()
 	if (m_filePath[0] != '/')
 #endif
 	{
-		char *szCurrentDir = getCurrentDirectory();
-		if (szCurrentDir == 0)
+		std::string currentDir = getCurrentDirectory();
+		if (currentDir.empty())
 		{
 			printf("can't get current dir - try using a full path\n");
 			return;
 		}
 		
-		std::string strFullPath = szCurrentDir;
+		std::string strFullPath = currentDir;
 		strFullPath += m_filePath;
 		
 		finalPath = strFullPath;

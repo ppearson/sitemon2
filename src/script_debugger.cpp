@@ -50,14 +50,14 @@ void ScriptDebugger::run()
 		
 		if (!isFullPath(outputPath))
 		{
-			char *szCurrentDir = getCurrentDirectory();
-			if (szCurrentDir == 0)
+			std::string currentDir = getCurrentDirectory();
+			if (currentDir.empty())
 			{
 				printf("can't get current dir - try using a full path\n");
 				return;
 			}
 			
-			fullPath = szCurrentDir;
+			fullPath = currentDir;
 			fullPath += outputPath;
 		}
 		else

@@ -54,13 +54,16 @@ class Config
 public:
 	Config(ConfigSettings &configSettings);
 	
-	bool loadConfigFile(const std::string &configFilePath = "");
+	bool loadConfigFile();
 	
-	void loadProxySettings(TiXmlElement *pElement);
+protected:
+	bool loadXMLConfigFile(const std::string& filename);
+	
+	void loadXMLProxySettings(TiXmlElement* pElement);
 	
 protected:
 	std::string		m_configFilePath;
-	ConfigSettings &m_configSettings;
+	ConfigSettings& m_configSettings;
 };
 
 

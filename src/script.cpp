@@ -52,14 +52,14 @@ bool Script::loadScriptFile(const std::string &file)
 	// handle relative paths
 	if (!isFullPath(file))
 	{
-		char *szCurrentDir = getCurrentDirectory();
-		if (szCurrentDir == 0)
+		std::string currentDir = getCurrentDirectory();
+		if (currentDir.empty())
 		{
 			printf("can't get current dir - try using a full path\n");
 			return false;
 		}
 
-		std::string strFullPath = szCurrentDir;
+		std::string strFullPath = currentDir;
 		strFullPath += file;
 
 		finalPath = strFullPath;

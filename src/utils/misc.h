@@ -21,7 +21,7 @@
 
 #include <string>
 
-char *getCurrentDirectory(bool appendFinal = true);
+std::string getCurrentDirectory(bool appendFinal = true);
 std::string getExecutablePath(bool appendFinal = true);
 
 bool isFullPath(const std::string &path);

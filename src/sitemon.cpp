@@ -34,11 +34,7 @@
 void SitemonApp::loadConfigSettings()
 {
 	Config configFile(m_configSettings);
-#ifndef _MSC_VER
-	configFile.loadConfigFile("");
-#else
 	configFile.loadConfigFile();
-#endif
 }
 
 bool SitemonApp::runWebServerAndScheduler()
@@ -56,12 +52,12 @@ bool SitemonApp::runWebServerAndScheduler()
 
 	if (!pMonitoringDB)
 	{
-		std::cout << "Can't open SQLite database connection.\n";
+		std::cerr << "Can't open SQLite database connection.\n";
 	}
 
 	if (!pMonitoringDB->isThreadSafe())
 	{
-		std::cout << "SQLite is not thread safe!\n";
+		std::cerr << "SQLite is not thread safe!\n";
 	}
 
 	SQLiteDB *pLoadTestingDB = NULL;
@@ -85,11 +81,11 @@ bool SitemonApp::runWebServerAndScheduler()
 	Scheduler schedulerThread(pMonitoringDB);
 	schedulerThread.start();
 
-	std::cout << "Scheduler thread started...\n";
+	std::cerr << "Scheduler thread started...\n";
 
 	int port = m_configSettings.m_webServerPort;
 
-	std::cout << "Starting web server on http://localhost:" << port << "/...\n";
+	std::cerr << "Starting web server on http://localhost:" << port << "/...\n";
 
 	Socket::initWinsocks();
 
