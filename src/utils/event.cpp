@@ -26,7 +26,7 @@ Event::Event()
 	pthread_mutexattr_t mutexAttr;
 	pthread_mutexattr_init(&mutexAttr);
 	pthread_mutex_init(&m_lock, &mutexAttr);
-//	pthread_cond_init(&m_ready, 0);
+	pthread_cond_init(&m_ready, 0);
 #endif
 }
 
