@@ -115,12 +115,16 @@ bool HTMLParser::parse()
 
 bool HTMLParser::extractQuotedAttribute(const std::string &tagContent, const std::string &name, std::string &value)
 {
-	int attributeStart = tagContent.find(name, 0);
+	// because we're looking for a token's attribute, add " " in front of the actual token we're looking for
+	// in order to ensure we're more likely to get the correct thing and not some actual content from another tag.
+	// TODO: We should probably also look for a trailing "=" char as well to be more robust...
+	std::string actualSearchToken = " " + name;
+	int attributeStart = tagContent.find(actualSearchToken, 0);
 	
 	if (attributeStart == -1)
 		return false;
 	
-	int afterAttributePos = attributeStart + name.size();
+	int afterAttributePos = attributeStart + actualSearchToken.size();
 
 	// need to cope with single and double quotes, and potentially spaces either
 	// side of the equals...
