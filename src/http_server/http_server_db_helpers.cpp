@@ -800,7 +800,7 @@ bool generateEditScriptScheduledTestForm(SQLiteDB *pDB, int testID, std::string 
 						"<a href=\"JavaScript:deleteScriptStep(%i, %ld)\" title=\"Delete Step\"><image src=\"images/delete.png\"></a>"
 						"</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>"
 				" <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n", pageNum, pageID, testID, pageID, description.c_str(), url.c_str(), strRequestType.c_str(),
-				expectedPhrase.c_str(), testID);
+				expectedPhrase.c_str());
 
 		pages.append(szTemp);
 
