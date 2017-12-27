@@ -24,7 +24,7 @@
 #include <unistd.h>
 #endif
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "misc.h"

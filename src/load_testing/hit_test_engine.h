@@ -19,8 +19,12 @@
 #ifndef HIT_TEST_ENGINE_H
 #define HIT_TEST_ENGINE_H
 
+// Modern OS X versions (i.e. 10.11 and later) don't have openssl headers any more,
+// it just works without these includes...
+#ifndef __APPLE__
 #include <openssl/ssl.h>
 #include <openssl/crypto.h>
+#endif
 
 #include <vector>
 #include <set>
