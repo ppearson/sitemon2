@@ -21,6 +21,8 @@
 
 #include <fstream>
 
+#include "utils/string_helper.h"
+
 #include "http_server_responses.h"
 
 HTTPServerResponse::HTTPServerResponse(int returnCode, const std::string &text) : m_returnCode(returnCode), m_text(text)
@@ -88,7 +90,7 @@ std::string HTTPServerAuthenticationResponse::responseString()
 	response += szTemp;
 	
 	//
-	std::string authName = "peter";
+	std::string authName = generateRandomASCIIString(8) + "_";
 	memset(szTemp, 0, 128);
 	sprintf(szTemp, "WWW-Authenticate: Basic realm=\"%s\"\n", authName.c_str());
 	response += szTemp;

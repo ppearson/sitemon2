@@ -28,4 +28,6 @@ void toLower(std::string& str);
 std::string base64Encode(const std::string& inputString);
 std::string base64Decode(const std::string& inputString);
 
+std::string generateRandomASCIIString(unsigned int length);
+
 #endif

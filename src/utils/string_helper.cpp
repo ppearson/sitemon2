@@ -18,6 +18,10 @@
 
 #include "string_helper.h"
 
+#include <time.h>
+#include <stdlib.h>
+#include <string.h> // for memset
+
 static const std::string kBase64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 void split(const std::string& str, std::vector<std::string>& tokens, const std::string& sep)
@@ -104,4 +108,20 @@ std::string base64Decode(const std::string& inputString)
 	}
 		
 	return outputString;
+}
+
+std::string generateRandomASCIIString(unsigned int length)
+{
+	srand(time(NULL));
+	
+	char szRandomString[9];
+	memset(szRandomString, 0, 9);
+	
+	for (unsigned int i = 0; i < 8; i++)
+	{
+		unsigned int index = rand() % 56;
+		szRandomString[i] = kBase64Chars[index] ;
+	}
+	
+	return std::string(szRandomString);
 }
