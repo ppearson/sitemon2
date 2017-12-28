@@ -20,25 +20,56 @@
 #define HTTP_SERVER_H
 
 #include <string>
+
 #include "../utils/sqlite_db.h"
 #include "../scheduler/scheduled_results_saver.h"
+
+#include "http_server_common.h"
 
 class HTTPServer
 {
 public:
-	HTTPServer(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB = NULL, int port = 8080);
+	HTTPServer(const std::string& webContentPath, SQLiteDB* pMonitoringDB, SQLiteDB* pLoadTestingDB = NULL, int port = 8080);
 
-	void setScheduledResultSaver(ScheduledResultsSaver *pSaver) { m_pResultsSaver = pSaver; }
+	void setScheduledResultSaver(ScheduledResultsSaver* pSaver)
+	{
+		m_pResultsSaver = pSaver;
+	}
+	
+	void setAuthenticationType(HTTPServerAuthenticationType authenticationType, const std::string& username, const std::string& password)
+	{
+		m_authenticationType = authenticationType;
+		m_authenticationUser = username;
+		m_authenticationPassword = password;
+	}
+	
+	HTTPServerAuthenticationType getAuthenticationType() const
+	{
+		return m_authenticationType;
+	}
+	
+	bool areAuthCredentialsValid(const std::string& authUsername, const std::string& authPassword) const;
+	
+	const std::string& getWebContentPath() const
+	{
+		return m_webContentPath;
+	}
 	
 	bool start();
 	
 protected:
-	int m_port;
-	std::string m_webContentPath;
+	HTTPServerAuthenticationType	m_authenticationType;
+	std::string						m_authenticationUser;
+	std::string						m_authenticationPassword;
+	
+	int						m_port;
+	
+	std::string				m_webContentPath;
+	
 	SQLiteDB *m_pMonitoringDB;
 	SQLiteDB *m_pLoadTestingDB;
 
-	ScheduledResultsSaver	*m_pResultsSaver;
+	ScheduledResultsSaver*	m_pResultsSaver;
 };
 
 #endif

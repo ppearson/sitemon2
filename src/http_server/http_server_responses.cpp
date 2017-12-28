@@ -56,6 +56,7 @@ HTTPServerRedirectResponse::HTTPServerRedirectResponse(const std::string &url) :
 
 std::string HTTPServerRedirectResponse::responseString()
 {
+	
 	std::string response;
 
 	char szTemp[128];
@@ -67,6 +68,32 @@ std::string HTTPServerRedirectResponse::responseString()
 	memset(szTemp, 0, 128);
 	sprintf(szTemp, "Location: %s\n\n", m_url.c_str());
 	response += szTemp;
+
+	return response;
+}
+
+HTTPServerAuthenticationResponse::HTTPServerAuthenticationResponse()
+{
+
+}
+
+std::string HTTPServerAuthenticationResponse::responseString()
+{
+	std::string response;
+
+	char szTemp[128];
+	memset(szTemp, 0, 128);
+
+	sprintf(szTemp, "HTTP/1.1 %i Access Denied\n", 401);
+	response += szTemp;
+	
+	//
+	std::string authName = "peter";
+	memset(szTemp, 0, 128);
+	sprintf(szTemp, "WWW-Authenticate: Basic realm=\"%s\"\n", authName.c_str());
+	response += szTemp;
+
+	response += "Content-Length: 0\n\n";
 
 	return response;
 }

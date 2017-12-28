@@ -24,6 +24,8 @@
 #include <iostream>
 #include <sstream>
 
+// TODO: use inheritance here?
+
 class HTTPServerResponse
 {
 public:
@@ -45,6 +47,17 @@ public:
 	
 protected:
 	std::string m_url;
+};
+
+class HTTPServerAuthenticationResponse
+{
+public:
+	HTTPServerAuthenticationResponse();
+	
+	std::string responseString();
+	
+protected:
+
 };
 
 class HTTPServerFileResponse

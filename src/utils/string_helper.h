@@ -22,7 +22,10 @@
 #include <string>
 #include <vector>
 
-void split(const std::string &str, std::vector<std::string> &lines, const std::string &sep = "\n");
-void toLower(std::string &str);
+void split(const std::string& str, std::vector<std::string>& lines, const std::string& sep = "\n");
+void toLower(std::string& str);
+
+std::string base64Encode(const std::string& inputString);
+std::string base64Decode(const std::string& inputString);
 
 #endif

@@ -109,6 +109,27 @@ bool Config::loadXMLConfigFile(const std::string& filename)
 		{
 			loadXMLProxySettings(pItem);
 		}
+		else if (elementName == "httpServerAuth")
+		{
+			if (content == "on" || content == "enabled")
+			{
+				m_configSettings.m_useHTTPAuthentication = true;
+			}
+		}
+		else if (elementName == "httpServerAuth_user")
+		{
+			m_configSettings.m_authUsername = content;
+		}
+		else if (elementName == "httpServerAuth_pass")
+		{
+			m_configSettings.m_authPassword = content;
+		}
+	}
+	
+	if (m_configSettings.m_useHTTPAuthentication && (m_configSettings.m_authUsername.empty() || m_configSettings.m_authPassword.empty()))
+	{
+		fprintf(stderr, "Error: HTTP server authentication was turned on in config file, but without valid credentials. Authentication will be disabled.\n");
+		m_configSettings.m_useHTTPAuthentication = false;
 	}
 	
 	return true;

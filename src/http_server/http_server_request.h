@@ -28,12 +28,45 @@ class HTTPServerRequest
 public:
 	HTTPServerRequest(const std::string &request);
 	
+	enum AuthenticationType
+	{
+		eAuthNone,
+		eAuthMalformed,
+		eAuthUnknown,
+		eAuthBasic,
+		eAuthDigest
+	};
+	
 	bool parse();
 	
 	const std::string &getPath() const { return m_path; }
 	const std::map<std::string, std::string> &getParams() const { return m_aParams; }
 	
-	bool isPost() const { return  m_post; }
+	bool isPost() const
+	{
+		return  m_post;
+	}
+	
+	bool hasAuthenticationHeader() const
+	{
+		return m_authenticationHeaderType != eAuthNone;
+	}
+	
+	bool isAcceptedAuthenticationHeader() const
+	{
+		return m_authenticationHeaderType == eAuthBasic;
+	}
+	
+	const std::string& getAuthUsername() const
+	{
+		return m_authUsername;
+	}
+	
+	const std::string& getAuthPassword() const
+	{
+		return m_authPassword;
+	}
+	
 	bool hasParams() const { return !m_aParams.empty(); }
 	bool hasParam(const std::string &name);
 	std::string getParam(const std::string &name) { return m_aParams[name]; }
@@ -43,12 +76,16 @@ protected:
 	void addParams(const std::string &params);
 	
 protected:
-	std::string		m_request;
+	std::string			m_request;
 	
-	std::string		m_path;
-	bool			m_post;
+	std::string			m_path;
+	bool				m_post;
+	
+	AuthenticationType	m_authenticationHeaderType; // note: this doesn't mean it's valid...
+	std::string			m_authUsername;
+	std::string			m_authPassword;
+	
 	std::map<std::string, std::string> m_aParams;	
-	
 };
 
 #endif

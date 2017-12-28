@@ -91,6 +91,12 @@ bool SitemonApp::runWebServerAndScheduler()
 
 	HTTPServer server(webContentPath, pMonitoringDB, pLoadTestingDB, port);
 	server.setScheduledResultSaver(schedulerThread.getScheduledResultsSaver());
+	
+	if (m_configSettings.m_useHTTPAuthentication)
+	{
+		server.setAuthenticationType(eHTTPAuthBasic, m_configSettings.m_authUsername, m_configSettings.m_authPassword);
+	}
+	
 	// keep in mind this halts execution, by design
 	server.start();
 

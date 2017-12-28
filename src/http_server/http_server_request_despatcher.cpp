@@ -24,14 +24,18 @@
 
 #include "../http_engine.h"
 
+#include "http_server.h"
+
 #include "http_server_db_helpers.h"
 #include "http_server_html_formatters.h"
 #include "http_server_load_testing_helpers.h"
 
-HTTPServerRequestDespatcher::HTTPServerRequestDespatcher(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB) :
-								m_webContentPath(webContentPath), m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB), m_pResultsSaver(NULL)
+HTTPServerRequestDespatcher::HTTPServerRequestDespatcher(HTTPServer& httpServer, SQLiteDB* pMonitoringDB, SQLiteDB* pLoadTestingDB) :
+								m_server(httpServer),
+								m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB), m_pResultsSaver(NULL)
 {
-
+	m_webContentPath = httpServer.getWebContentPath();
+	m_authenticationType = httpServer.getAuthenticationType();
 }
 
 void HTTPServerRequestDespatcher::registerMappings()
@@ -64,6 +68,37 @@ void HTTPServerRequestDespatcher::registerMappings()
 
 void HTTPServerRequestDespatcher::handleRequest(HTTPServerRequest &request, std::string &response)
 {
+	if (m_authenticationType != eHTTPAuthNone)
+	{
+		if (!request.hasAuthenticationHeader())
+		{
+			HTTPServerAuthenticationResponse resp;
+			response = resp.responseString();
+			return;
+		}
+		
+		// otherwise, see if the authentication is valid
+		if (!request.isAcceptedAuthenticationHeader())
+		{
+			// TODO: do this properly
+			HTTPServerAuthenticationResponse resp;
+			response = resp.responseString();
+			return;
+		}
+		
+		// now check username and password
+		const std::string& authUsername = request.getAuthUsername();
+		const std::string& authPassword = request.getAuthPassword();
+		
+		if (!m_server.areAuthCredentialsValid(authUsername, authPassword))
+		{
+			// TODO: again, do this properly, maybe with some counter to delay responses...
+			HTTPServerAuthenticationResponse resp;
+			response = resp.responseString();
+			return;
+		}
+	}
+	
 	std::map<std::string, MFP>::iterator itFind = m_requestMappings.find(request.getPath());
 
 	if (itFind != m_requestMappings.end())

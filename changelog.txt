@@ -1,4 +1,12 @@
-0.65
+0.66 - December 2017
+----
+
+* Fixed some build issues with recent compilers
+* Fixed some HTML parsing issues
+* Added support for specifying config file search path with $SITEMON_PATH env variable
+* Added basic support for HTTP Basic authentication in the webserver.
+
+0.65 - July 2010
 ----
 
 * Added support for global hostname at a script level, with @ denoting the host for url entries
@@ -6,7 +14,7 @@
 * Added support for outputting the request header Sitemon sends for failed steps when using the
   script debugger
 
-0.6
+0.6 - June 2010
 ---
 
 * Added support for dynamic parameters: date parameters and extracted item parameters

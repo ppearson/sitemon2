@@ -26,7 +26,8 @@
 #include "http_server_request.h"
 #include "../utils/string_helper.h"
 
-HTTPServerRequest::HTTPServerRequest(const std::string &request) : m_request(request), m_post(false)
+HTTPServerRequest::HTTPServerRequest(const std::string &request) : m_request(request), m_post(false),
+	m_authenticationHeaderType(eAuthNone)
 {
 	
 }
@@ -78,6 +79,64 @@ bool HTTPServerRequest::parse()
 			std::string params = path.substr(nQuestionMark + 1);
 		
 			addParams(params);
+		}
+	}
+	
+	// now try and find an authentication line...
+	std::vector<std::string>::const_iterator itLine = lines.begin();
+	++ itLine; // skip the first line which we've processed already
+	for (; itLine != lines.end(); ++itLine)
+	{
+		const std::string& otherLine = *itLine;
+		
+		if (otherLine.compare(0, 14, "Authorization:") == 0)
+		{
+			std::string authorizationString = otherLine.substr(15);
+			
+			size_t sepPos = authorizationString.find(" ");
+			if (sepPos == std::string::npos)
+			{
+				m_authenticationHeaderType = eAuthMalformed;
+				break;
+			}
+			
+			std::string authenticationType = authorizationString.substr(0, sepPos);
+			
+			if (authenticationType != "Basic")
+			{
+				m_authenticationHeaderType = eAuthUnknown;
+				break;
+			}
+			
+			m_authenticationHeaderType = eAuthBasic;
+			
+			std::string authorizationToken = authorizationString.substr(sepPos + 1);
+			
+			// remove any trailing "\r" char
+			if (authorizationToken[authorizationToken.size() - 1] == '\r')
+			{
+				authorizationToken = authorizationToken.substr(0, authorizationToken.size() - 1);
+			}
+			
+			authorizationToken = base64Decode(authorizationToken);
+			
+			if (m_authenticationHeaderType == eAuthBasic)
+			{
+				size_t passSep = authorizationToken.find(":");
+				if (passSep == std::string::npos)
+				{
+					m_authenticationHeaderType = eAuthMalformed;
+					break;
+				}
+				
+				std::string authUser = authorizationToken.substr(0, passSep);
+				std::string authPass = authorizationToken.substr(passSep + 1);
+				
+				m_authUsername = authUser;
+				m_authPassword = authPass;
+			}
+			
+			break;
 		}
 	}
 	

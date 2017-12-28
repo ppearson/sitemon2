@@ -29,7 +29,7 @@
 HTTPServer::HTTPServer(const std::string &webContentPath, SQLiteDB *pMonitoringDB, SQLiteDB *pLoadTestingDB, int port) : m_port(port), m_webContentPath(webContentPath),
 			m_pMonitoringDB(pMonitoringDB), m_pLoadTestingDB(pLoadTestingDB), m_pResultsSaver(NULL)
 {
-	
+	m_authenticationType = eHTTPAuthNone;
 }
 
 bool HTTPServer::start()
@@ -51,9 +51,9 @@ bool HTTPServer::start()
 		return false;
 	}
 	
-	HTTPServerRequestDespatcher despatcher(m_webContentPath, m_pMonitoringDB, m_pLoadTestingDB);
+	HTTPServerRequestDespatcher despatcher(*this, m_pMonitoringDB, m_pLoadTestingDB);
 	despatcher.setResultsSaver(m_pResultsSaver);
-
+	
 	despatcher.registerMappings();
 	
 	while (true)
@@ -83,3 +83,10 @@ bool HTTPServer::start()
 	return true;
 }
 
+bool HTTPServer::areAuthCredentialsValid(const std::string& authUsername, const std::string& authPassword) const
+{
+	if (authUsername == m_authenticationUser && authPassword == m_authenticationPassword)
+		return true;
+	
+	return false;
+}

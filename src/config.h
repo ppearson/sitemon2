@@ -35,6 +35,7 @@ struct ConfigSettings
 	{
 		m_useProxy = false;
 		m_webServerPort = 8080;
+		m_useHTTPAuthentication = false;
 	}
 	std::string		m_webContentPath;
 	std::string		m_monitoringDBPath;
@@ -44,6 +45,9 @@ struct ConfigSettings
 	ProxySettings	m_proxySettings;
 	
 	int				m_webServerPort;
+	bool			m_useHTTPAuthentication;
+	std::string		m_authUsername;
+	std::string		m_authPassword;
 	
 	//
 	ProxySettings & getProxySettings() { return m_proxySettings; }

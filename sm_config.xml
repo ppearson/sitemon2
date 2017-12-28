@@ -3,6 +3,12 @@
 <config>
 	<web_content_path>/</web_content_path>
 	<mon_db_path></mon_db_path>
+	
+	<loadtest_db_path></loadtest_db_path>
 
 	<web_server_port>9393</web_server_port>
+	
+	<httpServerAuth>off</httpServerAuth>
+	<httpServerAuth_user></httpServerAuth_user>
+	<httpServerAuth_pass></httpServerAuth_pass>
 </config>

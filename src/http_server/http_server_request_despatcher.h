@@ -24,15 +24,24 @@
 
 #include "http_server_request.h"
 #include "http_server_responses.h"
+#include "http_server_common.h"
 
 #include "../utils/sqlite_query.h"
 #include "../scheduler/scheduled_results_saver.h"
 
+class HTTPServer;
+
 class HTTPServerRequestDespatcher
 {
 public:
-	HTTPServerRequestDespatcher(const std::string &webContentPath = "", SQLiteDB *pMonitoringDB = NULL, SQLiteDB *pLoadTestingDB = NULL);
-	void setResultsSaver(ScheduledResultsSaver *pSaver) { m_pResultsSaver = pSaver; }
+	HTTPServerRequestDespatcher(HTTPServer& httpServer, SQLiteDB* pMonitoringDB = NULL, SQLiteDB* pLoadTestingDB = NULL);
+	
+	void setResultsSaver(ScheduledResultsSaver *pSaver)
+	{
+		m_pResultsSaver = pSaver;
+	}
+	
+
 	
 	void registerMappings();
 	
@@ -69,9 +78,14 @@ public:
 	void loadTestingRunResults(HTTPServerRequest &request, std::string &response);
 	
 protected:
+	HTTPServer&			m_server;
+	
+	HTTPServerAuthenticationType	m_authenticationType;
+	
+	std::string			m_webContentPath;
+	
 	std::map<std::string, MFP>	m_requestMappings;	
 	
-	std::string	m_webContentPath;
 	SQLiteDB *	m_pMonitoringDB;
 	SQLiteDB *	m_pLoadTestingDB;
 	ScheduledResultsSaver	*m_pResultsSaver;
