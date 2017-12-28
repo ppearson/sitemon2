@@ -153,6 +153,7 @@ void HTTPServerRequestDespatcher::inlineSimple(HTTPServerRequest &request, std::
 	{
 		std::string url = request.getParam("url");
 		std::string acceptCompressed = request.getParam("accept_compressed");
+		std::string downloadContent = request.getParam("download_content");
 
 		std::string content;
 
@@ -161,6 +162,10 @@ void HTTPServerRequestDespatcher::inlineSimple(HTTPServerRequest &request, std::
 		if (acceptCompressed == "1")
 		{
 			httpTestRequest.setAcceptCompressed(true);
+		}
+		if (downloadContent == "1")
+		{
+			httpTestRequest.setDownloadContent(true);
 		}
 		HTTPResponse httpTestResponse;
 

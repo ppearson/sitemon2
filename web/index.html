@@ -14,6 +14,10 @@ function performTest()
 		{
 			fullGETURL = fullGETURL + "&accept_compressed=1";
 		}
+		if (document.getElementById('download_content').checked)
+		{
+			fullGETURL = fullGETURL + "&download_content=1";
+		}
 		xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = resultsCallback;
 		xmlhttp.open("GET", fullGETURL, true);
@@ -45,6 +49,8 @@ Run a single page request test.
 <input type="text" id="url" value="http://" size="40"/></p>
 <p><label for="accept_compressed"><small>Accept compressed content</small></label>
 <input type="checkbox" id="accept_compressed" checked/></p>
+<p><label for="download_content"><small>Download component content</small></label>
+<input type="checkbox" id="download_content" checked/></p>
 <p><input type='submit' value='Run Test'/></p>
 <div id="results" class="results">
 </div>

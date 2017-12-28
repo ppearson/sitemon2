@@ -5,6 +5,7 @@
 * Fixed some HTML parsing issues
 * Added support for specifying config file search path with $SITEMON_PATH env variable
 * Added basic support for HTTP Basic authentication in the webserver.
+* Added Download Content option to inline test index page.
 
 0.65 - July 2010
 ----
