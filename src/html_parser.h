@@ -30,8 +30,9 @@ public:
 	
 	bool parse();
 	
-	std::set<std::string> &getImages() { return m_aImages; }
-	std::set<std::string> &getScripts() { return m_aScripts; }
+	std::set<std::string>& getImages() { return m_aImages; }
+	std::set<std::string>& getScripts() { return m_aScripts; }
+	std::set<std::string>& getCSS() { return m_aCSS; }
 	
 protected:
 	bool extractQuotedAttribute(const std::string &tagContent, const std::string &name, std::string &value);
@@ -42,6 +43,7 @@ protected:
 	
 	std::set<std::string> m_aImages;
 	std::set<std::string> m_aScripts;
+	std::set<std::string> m_aCSS;
 };
 
 #endif

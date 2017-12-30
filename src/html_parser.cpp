@@ -46,68 +46,109 @@ bool HTMLParser::parse()
 	while ((tagStart = m_content.find("<", pos)) != -1)
 	{
 		tagStart++;
-		tagNameEnd = m_content.find(" ", tagStart);
+		
+		// doing this here is unoptimal, but is useful for guarding size for comment check below
 		tagEnd = m_content.find(">", tagStart);
 		
-		if (tagNameEnd != -1 && tagNameEnd < tagEnd)
+		// first of all, see if we're a comment
+		if (tagEnd > tagStart + 5 && m_content[tagStart] == '!' && m_content[tagStart + 1] == '-' && m_content[tagStart + 2] == '-')
 		{
-			std::string tagName = m_content.substr(tagStart, tagNameEnd - tagStart);
-			toLower(tagName);
-			
-			if (tagEnd != -1)
+			// because of conditional comments, we need to search for the end position, which may be a completely different tag
+			int commentEndPos = m_content.find("-->", tagStart);
+			if (commentEndPos != -1)
 			{
-				const std::string &tagContent = m_content.substr(tagStart, tagEnd - tagStart);
-			
-				if (tagName == "img")
-				{
-					std::string path;
-					if (extractQuotedAttribute(tagContent, "src", path))
-					{						
-						URIBuilder uriBuilder(m_currentPath, path);					
-						std::string fullPath = uriBuilder.getFullLocation();
-						
-						if (!m_aImages.count(fullPath))
-						{
-							m_aImages.insert(fullPath);
-						}
-					}
-				}
-				else if (tagName == "script")
-				{
-					std::string path;
-					if (extractQuotedAttribute(tagContent, "src", path))
-					{						
-						URIBuilder uriBuilder(m_currentPath, path);					
-						std::string fullPath = uriBuilder.getFullLocation();
-						
-						if (!m_aScripts.count(fullPath))
-						{
-							m_aScripts.insert(fullPath);
-						}
-					}
-					
-					// we can ignore the stuff within the opening and closing tags, as we don't want to parse this
-					
-					int finalEnd = m_content.find("</script>", tagEnd);
-					
-					if (finalEnd != -1)
-					{
-						tagEnd = finalEnd + 9;
-					}
-				}
-				
-				pos = tagEnd;
+				// skip directly to end of comment tag
+				pos = commentEndPos + 3;
+				continue;
 			}
 			else
 			{
-				// unmatched tag, so break out
-				break;
+				// just skip the current tag
+				pos = tagEnd;
+				continue;
 			}
 		}
-		else
+		
+		tagNameEnd = m_content.find(" ", tagStart);
+		
+		if (tagNameEnd == -1 || tagNameEnd >= tagEnd)
 		{
+			// skip to end of tag
 			pos = tagEnd;
+			continue;
 		}
+		
+		if (tagEnd == -1)
+		{
+			// unmatched tag, so break out
+			break;
+		}
+		
+		std::string tagName = m_content.substr(tagStart, tagNameEnd - tagStart);
+		toLower(tagName);
+		
+		const std::string &tagContent = m_content.substr(tagStart, tagEnd - tagStart);
+		
+		if (tagName == "img")
+		{
+			std::string path;
+			if (extractQuotedAttribute(tagContent, "src", path))
+			{						
+				URIBuilder uriBuilder(m_currentPath, path);
+				std::string fullPath = uriBuilder.getFullLocation();
+				
+				if (!m_aImages.count(fullPath))
+				{
+					m_aImages.insert(fullPath);
+				}
+			}
+		}
+		else if (tagName == "script")
+		{
+			std::string path;
+			if (extractQuotedAttribute(tagContent, "src", path))
+			{						
+				URIBuilder uriBuilder(m_currentPath, path);
+				std::string fullPath = uriBuilder.getFullLocation();
+				
+				if (!m_aScripts.count(fullPath))
+				{
+					m_aScripts.insert(fullPath);
+				}
+			}
+			
+			// we can ignore the stuff within the opening and closing tags, as we don't want to parse this
+			
+			int finalEnd = m_content.find("</script>", tagEnd);
+			
+			if (finalEnd != -1)
+			{
+				tagEnd = finalEnd + 9;
+			}
+		}
+		else if (tagName == "link")
+		{
+			std::string relType;
+			if (extractQuotedAttribute(tagContent, "rel", relType))
+			{
+				if (relType == "stylesheet")
+				{
+					std::string linkHref;
+					if (extractQuotedAttribute(tagContent, "href", linkHref))
+					{
+						URIBuilder uriBuilder(m_currentPath, linkHref);
+						std::string fullPath = uriBuilder.getFullLocation();
+						
+						if (!m_aCSS.count(fullPath))
+						{
+							m_aCSS.insert(fullPath);
+						}
+					}
+				}
+			}
+		}
+		
+		pos = tagEnd;
 	}	
 	
 	return true;

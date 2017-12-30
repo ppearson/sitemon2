@@ -276,8 +276,9 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	HTMLParser parser(response.content, response.finalURL);
 	parser.parse();
 
-	std::set<std::string> &aScripts = parser.getScripts();
-	std::set<std::string> &aImages = parser.getImages();
+	std::set<std::string>& aScripts = parser.getScripts();
+	std::set<std::string>& aImages = parser.getImages();
+	std::set<std::string>& aCSS = parser.getCSS();
 
 	ComponentDownloader compDownloader(mainHandle, kUserAgent, response, acceptCompressed);
 
@@ -285,7 +286,7 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	std::set<std::string>::iterator itEnd = aScripts.end();
 	for (; it != itEnd; ++it)
 	{
-		const std::string &url = *it;
+		const std::string& url = *it;
 
 		compDownloader.addURL(url);
 	}
@@ -294,7 +295,16 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	itEnd = aImages.end();
 	for (; it != itEnd; ++it)
 	{
-		const std::string &url = *it;
+		const std::string& url = *it;
+
+		compDownloader.addURL(url);
+	}
+	
+	it = aCSS.begin();
+	itEnd = aCSS.end();
+	for (; it != itEnd; ++it)
+	{
+		const std::string& url = *it;
 
 		compDownloader.addURL(url);
 	}
