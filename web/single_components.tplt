@@ -17,8 +17,8 @@
 	<th scope="col" width="50">Error</th>
 	<th scope="col" width="80" title="Response Code">RC</th>
 	<th scope="col" width="80">Total time</th>
-	<th scope="col" width="80">Content Size</th>
 	<th scope="col" width="80">Download Size</th>
+	<th scope="col" width="80">Content Size</th>
 </tr>
 <%%>
 </table>
