@@ -67,6 +67,15 @@ public:
 	
 	std::string responseString();
 	
+	enum FileContentType
+	{
+		eContentTextHTML,
+		eContentTextCSS,
+		eContentTextJS,
+		eContentImagePNG,
+		eContentUnknown
+	};
+	
 protected:
 	std::string m_path;
 	bool		m_binary;

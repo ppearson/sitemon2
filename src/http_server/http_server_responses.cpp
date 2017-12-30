@@ -110,13 +110,25 @@ std::string HTTPServerFileResponse::responseString()
 	std::string response;
 
 	bool image = false;
+	FileContentType contentType = eContentTextHTML;
 	// work out if it's an image
 	int extensionPos = m_path.rfind(".");
 	if (extensionPos != -1)
 	{
-		if (m_path.substr(extensionPos + 1) == "png")
+		std::string extension = m_path.substr(extensionPos + 1);
+		
+		if (extension == "png")
 		{
 			image = true;
+			contentType = eContentImagePNG;
+		}
+		else if (extension == "css")
+		{
+			contentType = eContentTextCSS;
+		}
+		else if (extension == "js")
+		{
+			contentType = eContentTextJS;
 		}
 	}
 
@@ -165,14 +177,30 @@ std::string HTTPServerFileResponse::responseString()
 
 	sprintf(szTemp, "HTTP/1.1 %i \n", returnCode);
 	response += szTemp;
-
-	if (!image)
+	
+	std::string contentTypeString;
+	
+	switch (contentType)
 	{
-		response += "Content-Type: text/html; charset=UTF-8\n";
+		case eContentImagePNG:
+			contentTypeString = "image/png";
+			break;
+		case eContentTextCSS:
+			contentTypeString = "text/css; charset=UTF-8";
+			break;
+		case eContentTextJS:
+			contentTypeString = "application/javascript";
+			break;
+		case eContentTextHTML:
+			contentTypeString = "text/html; charset=UTF-8";
+			break;
+		default:
+			break;
 	}
-	else
+
+	if (!contentTypeString.empty())
 	{
-		response += "Content-Type: image/png\n";
+		response += "Content-Type: " + contentTypeString + "\n";
 	}
 
 	memset(szTemp, 0, 64);
