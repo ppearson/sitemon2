@@ -31,16 +31,17 @@ public:
 	
 	void addResponse(HTTPResponse &response);
 	
-	Time				getRequestStartTime() { return m_requestStartTime; }
-	HTTPResponseError	getOverallError() { return m_overallError; }
-	long				getLastResponseCode() { return m_lastResponseCode; }
+	Time				getRequestStartTime() const { return m_requestStartTime; }
+	HTTPResponseError	getOverallError() const { return m_overallError; }
+	long				getLastResponseCode() const { return m_lastResponseCode; }
 	
-	HTTPResponse &		getFirstResponse() { return m_stepResponses.front(); }
+	HTTPResponse&		getFirstResponse() { return m_stepResponses.front(); }
+	const HTTPResponse&	getFirstResponse() const { return m_stepResponses.front(); }
 	
-	int					getResponseCount() { return m_stepResponses.size(); }
+	int					getResponseCount() const { return m_stepResponses.size(); }
 	
-	inline std::vector<HTTPResponse>::iterator begin() { return m_stepResponses.begin(); }
-	inline std::vector<HTTPResponse>::iterator end() { return m_stepResponses.end(); }
+	inline std::vector<HTTPResponse>::const_iterator begin() const { return m_stepResponses.begin(); }
+	inline std::vector<HTTPResponse>::const_iterator end() const { return m_stepResponses.end(); }
 	
 protected:
 	Time				m_requestStartTime;

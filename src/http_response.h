@@ -111,7 +111,8 @@ public:
 	bool	componentProblem;
 	
 	void addComponent(HTTPComponentResponse &component);
-	std::vector<HTTPComponentResponse> &getComponents() { return m_aComponents; }
+	std::vector<HTTPComponentResponse>& getComponents() { return m_aComponents; }
+	const std::vector<HTTPComponentResponse>& getComponents() const { return m_aComponents; }
 	
 protected:
 	std::vector<HTTPComponentResponse> m_aComponents;

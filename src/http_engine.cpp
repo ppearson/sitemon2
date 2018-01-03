@@ -23,9 +23,10 @@
 #include "html_parser.h"
 #include "component_downloader.h"
 
-//static const char *kUserAgent = "Sitemon/0.65";
-//static const char *kUserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.125 Safari/533.4";
-static const char* kUserAgent = "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.120 Safari/535.2";
+//static const char* kUserAgent = "Sitemon/0.66";
+//static const char* kUserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.125 Safari/533.4";
+//static const char* kUserAgent = "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.120 Safari/535.2";
+static const char* kUserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/63.0.3239.84 Chrome/63.0.3239.84 Safari/537.36";
 
 HTTPEngine::HTTPEngine(bool debug) : m_debug(debug)
 {
@@ -281,9 +282,18 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	std::set<std::string>& aCSS = parser.getCSS();
 
 	ComponentDownloader compDownloader(mainHandle, kUserAgent, response, acceptCompressed);
+	
+	std::set<std::string>::iterator it = aCSS.begin();
+	std::set<std::string>::iterator itEnd = aCSS.end();
+	for (; it != itEnd; ++it)
+	{
+		const std::string& url = *it;
 
-	std::set<std::string>::iterator it = aScripts.begin();
-	std::set<std::string>::iterator itEnd = aScripts.end();
+		compDownloader.addURL(url);
+	}
+
+	it = aScripts.begin();
+	itEnd = aScripts.end();
 	for (; it != itEnd; ++it)
 	{
 		const std::string& url = *it;
@@ -298,16 +308,7 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 		const std::string& url = *it;
 
 		compDownloader.addURL(url);
-	}
-	
-	it = aCSS.begin();
-	itEnd = aCSS.end();
-	for (; it != itEnd; ++it)
-	{
-		const std::string& url = *it;
-
-		compDownloader.addURL(url);
-	}
+	}	
 
 	compDownloader.downloadComponents();
 }

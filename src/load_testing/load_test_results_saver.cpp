@@ -167,11 +167,11 @@ void LoadTestResultsSaver::databaseStore()
 		{
 			unsigned long overallResultID = q.getInsertRowID();
 		
-			std::vector<HTTPResponse>::iterator itResponse = result.begin();
-			std::vector<HTTPResponse>::iterator itResponseEnd = result.end();
+			std::vector<HTTPResponse>::const_iterator itResponse = result.begin();
+			std::vector<HTTPResponse>::const_iterator itResponseEnd = result.end();
 			for (int step = 1; itResponse != itResponseEnd; ++itResponse, step++)
 			{
-				HTTPResponse &httpResponse = *itResponse;
+				const HTTPResponse& httpResponse = *itResponse;
 				
 				std::string sqlPageResult = "insert into load_test_page_results values (";
 				
@@ -295,11 +295,11 @@ void LoadTestResultsSaver::fileStore()
 			
 			// add individual results to step-based map of results
 			
-			std::vector<HTTPResponse>::iterator itResponse = result.begin();
-			std::vector<HTTPResponse>::iterator itResponseEnd = result.end();
+			std::vector<HTTPResponse>::const_iterator itResponse = result.begin();
+			std::vector<HTTPResponse>::const_iterator itResponseEnd = result.end();
 			for (int step = 1; itResponse != itResponseEnd; ++itResponse, step++)
 			{
-				HTTPResponse &httpResponse = *itResponse;
+				const HTTPResponse& httpResponse = *itResponse;
 				
 				std::map<int, StepResults>::iterator itFind = aFullResults.find(step);
 				

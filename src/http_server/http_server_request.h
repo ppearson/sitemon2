@@ -40,7 +40,6 @@ public:
 	bool parse();
 	
 	const std::string &getPath() const { return m_path; }
-	const std::map<std::string, std::string> &getParams() const { return m_aParams; }
 	
 	bool isPost() const
 	{
@@ -68,9 +67,14 @@ public:
 	}
 	
 	bool hasParams() const { return !m_aParams.empty(); }
-	bool hasParam(const std::string &name);
-	std::string getParam(const std::string &name) { return m_aParams[name]; }
-	unsigned long getParamAsLong(const std::string &name);
+	bool hasParam(const std::string& name);
+	std::string getParam(const std::string& name) { return m_aParams[name]; }
+	unsigned long getParamAsLong(const std::string& name);
+	
+	bool hasCookies() const { return !m_aCookies.empty(); }
+	bool hasCookie(const std::string& name);
+	std::string getCookie(const std::string& name) { return m_aCookies[name]; }
+	int getParamAsInt(const std::string& name);
 	
 protected:
 	void addParams(const std::string &params);
@@ -85,7 +89,8 @@ protected:
 	std::string			m_authUsername;
 	std::string			m_authPassword;
 	
-	std::map<std::string, std::string> m_aParams;	
+	std::map<std::string, std::string>	m_aParams;
+	std::map<std::string, std::string>	m_aCookies;
 };
 
 #endif

@@ -40,7 +40,7 @@ void ScheduledResultsSaver::run()
 {
 	while (m_isRunning)
 	{
-		sleep(20); // sleep for 20 secs
+		sleep(10); // sleep for 10 secs
 		
 		storeResults();
 	}
@@ -48,9 +48,9 @@ void ScheduledResultsSaver::run()
 
 void ScheduledResultsSaver::addResult(const HTTPResponse &response, unsigned long testID)
 {
-	m_mutex.lock();
-	
 	ScheduledResult newResult(response, testID);
+	
+	m_mutex.lock();	
 	
 	m_aSingleResults.push_back(newResult);
 	
@@ -59,9 +59,9 @@ void ScheduledResultsSaver::addResult(const HTTPResponse &response, unsigned lon
 
 void ScheduledResultsSaver::addResult(const ScriptResult &scriptResult, unsigned long testID)
 {
-	m_mutex.lock();
-	
 	ScheduledResult newResult(scriptResult, testID);
+	
+	m_mutex.lock();	
 	
 	m_aScriptResults.push_back(newResult);
 	
@@ -89,8 +89,8 @@ void ScheduledResultsSaver::storeSingleResults()
 	if (m_aSingleResults.empty())
 		return;
 	
-	std::vector<ScheduledResult>::iterator it = m_aSingleResults.begin();
-	std::vector<ScheduledResult>::iterator itEnd = m_aSingleResults.end();
+	std::vector<ScheduledResult>::const_iterator it = m_aSingleResults.begin();
+	std::vector<ScheduledResult>::const_iterator itEnd = m_aSingleResults.end();
 	
 	SQLiteQuery q(*m_pMainDB, true);
 	
@@ -101,14 +101,14 @@ void ScheduledResultsSaver::storeSingleResults()
 		return;
 	}
 	
-	char szTemp[1024];
+	char szTemp[2048];
 	for (; it != itEnd; ++it)
 	{
-		ScheduledResult &result = *it;
+		const ScheduledResult& result = *it;
 		
 		std::string sql = "insert into scheduled_single_test_results values (";
 		
-		memset(szTemp, 0, 1024);
+		memset(szTemp, 0, 2048);
 		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, result.m_response.timestamp.get32bitLong(), result.m_response.errorCode,
 				result.m_response.responseCode, result.m_response.lookupTime, result.m_response.connectTime, result.m_response.dataStartTime, result.m_response.totalTime,
 				result.m_response.redirectCount, result.m_response.contentSize, result.m_response.downloadSize, result.m_response.componentContentSize, result.m_response.componentDownloadSize);
@@ -129,7 +129,7 @@ void ScheduledResultsSaver::storeSingleResults()
 			{
 				const HTTPComponentResponse &compResult = *itComponent;
 				std::string sqlComponentResults = "insert into scheduled_single_test_component_results values(";
-				memset(szTemp, 0, 1024);
+				memset(szTemp, 0, 2048);
 				sprintf(szTemp, "%ld, %ld, %i, %ld, '%s', %f, %f, %f, %f, %ld, %ld)", result.m_testID, runID, compResult.errorCode, compResult.responseCode, compResult.requestedURL.c_str(),
 						compResult.lookupTime, compResult.connectTime, compResult.dataStartTime, compResult.totalTime, compResult.contentSize, compResult.downloadSize);
 				sqlComponentResults.append(szTemp);
@@ -154,8 +154,8 @@ void ScheduledResultsSaver::storeScriptResults()
 	if (m_aScriptResults.empty())
 		return;
 	
-	std::vector<ScheduledResult>::iterator it = m_aScriptResults.begin();
-	std::vector<ScheduledResult>::iterator itEnd = m_aScriptResults.end();
+	std::vector<ScheduledResult>::const_iterator it = m_aScriptResults.begin();
+	std::vector<ScheduledResult>::const_iterator itEnd = m_aScriptResults.end();
 	
 	SQLiteQuery q(*m_pMainDB, true);
 	
@@ -166,14 +166,14 @@ void ScheduledResultsSaver::storeScriptResults()
 		return;
 	}
 	
-	char szTemp[1024];
+	char szTemp[2048];
 	for (; it != itEnd; ++it)
 	{
-		ScheduledResult &result = *it;
+		const ScheduledResult& result = *it;
 		
 		std::string sql = "insert into scheduled_script_test_results values (";
 		
-		memset(szTemp, 0, 1024);
+		memset(szTemp, 0, 2048);
 		sprintf(szTemp, "%ld, datetime(%ld, 'unixepoch'), %i, %ld, %i)", result.m_testID, result.m_scriptResult.getRequestStartTime().get32bitLong(), result.m_scriptResult.getOverallError(),
 				result.m_scriptResult.getLastResponseCode(), result.m_scriptResult.getResponseCount());
 		
@@ -191,7 +191,7 @@ void ScheduledResultsSaver::storeScriptResults()
 			{
 				const HTTPResponse &resp = *itResponse;
 				std::string sqlPageResults = "insert into scheduled_script_test_page_results values(";
-				memset(szTemp, 0, 1024);
+				memset(szTemp, 0, 2048);
 				sprintf(szTemp, "%ld, %ld, %i, datetime(%ld, 'unixepoch'), '%s', %i, %ld, %f, %f, %f, %f, %ld, %ld, %ld, %ld, %ld)", result.m_testID, runID, page, resp.timestamp.get32bitLong(), resp.requestedURL.c_str(),
 						resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime, resp.totalTime, resp.redirectCount, resp.contentSize, resp.downloadSize,
 						resp.componentContentSize, resp.componentDownloadSize);
