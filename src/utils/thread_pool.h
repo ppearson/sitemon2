@@ -26,7 +26,7 @@
 #include "mutex.h"
 #include "event.h"
 
-#define MAX_THREADS 16
+#define MAX_THREADS 32
 
 class ThreadPool;
 
@@ -92,7 +92,7 @@ public:
 	
 protected:
 	int					m_numberOfThreads;
-	ThreadPoolThread *m_pThreads[MAX_THREADS];
+	ThreadPoolThread*	m_pThreads[MAX_THREADS];
 	ThreadController	m_controller;
 	std::deque<Task*>	m_aTasks;
 	Mutex				m_lock;	

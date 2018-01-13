@@ -35,7 +35,6 @@ public:
 	virtual void run();
 	
 protected:
-	SQLiteDB	*m_pMainDB;
 	ScheduledResultsSaver	*m_pSaver;
 
 	unsigned long m_testID;

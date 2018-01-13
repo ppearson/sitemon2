@@ -50,38 +50,38 @@ void ScheduledResultsSaver::addResult(const HTTPResponse &response, unsigned lon
 {
 	ScheduledResult newResult(response, testID);
 	
-	m_mutex.lock();	
+	m_resultsSaverMutex.lock();
 	
 	m_aSingleResults.push_back(newResult);
 	
-	m_mutex.unlock();	
+	m_resultsSaverMutex.unlock();
 }
 
 void ScheduledResultsSaver::addResult(const ScriptResult &scriptResult, unsigned long testID)
 {
 	ScheduledResult newResult(scriptResult, testID);
 	
-	m_mutex.lock();	
+	m_resultsSaverMutex.lock();
 	
 	m_aScriptResults.push_back(newResult);
 	
-	m_mutex.unlock();	
+	m_resultsSaverMutex.unlock();
 }
 
 void ScheduledResultsSaver::storeResults()
 {
-	m_mutex.lock();
+	m_resultsSaverMutex.lock();
 	
 	if (m_aSingleResults.empty() && m_aScriptResults.empty())
 	{
-		m_mutex.unlock();
+		m_resultsSaverMutex.unlock();
 		return;
 	}
 	
 	storeSingleResults();
 	storeScriptResults();
 		
-	m_mutex.unlock();
+	m_resultsSaverMutex.unlock();
 }
 
 void ScheduledResultsSaver::storeSingleResults()

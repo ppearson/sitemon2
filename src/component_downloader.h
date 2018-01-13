@@ -59,13 +59,16 @@ public:
 	bool extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response);
 
 protected:
-	CURLSH *m_CURLSharedData;
-	cdLocks m_locks;
+	CURLSH*		m_CURLSharedData;
+	cdLocks		m_locks;
 
-	CURL *m_aCURLHandles[2];
-	Mutex	m_lock;
-	HTTPResponse &	m_response;
-	bool	m_acceptCompressed;
+	CURL*		m_aCURLHandles[2];
+
+
+	Mutex		m_componentLock;
+
+	HTTPResponse&	m_response;
+	bool		m_acceptCompressed;
 	
 	std::string	m_userAgent;
 };

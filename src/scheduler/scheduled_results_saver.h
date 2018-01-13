@@ -66,7 +66,7 @@ protected:
 	
 	std::vector<ScheduledResult>	m_aSingleResults;
 	std::vector<ScheduledResult>	m_aScriptResults;
-	Mutex							m_mutex;
+	Mutex							m_resultsSaverMutex;
 	
 	SQLiteDB *						m_pMainDB;	
 };

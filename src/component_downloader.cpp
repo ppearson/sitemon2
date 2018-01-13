@@ -24,7 +24,8 @@ ComponentTask::ComponentTask(const std::string &url, const std::string &referrer
 }
 
 ComponentDownloader::ComponentDownloader(CURL *mainCURLHandle, const std::string &userAgent, HTTPResponse &response, bool acceptCompressed) : ThreadPool(),
-											m_response(response), m_acceptCompressed(acceptCompressed), m_userAgent(userAgent)
+								m_CURLSharedData(NULL),
+								m_response(response), m_acceptCompressed(acceptCompressed), m_userAgent(userAgent)
 {
 	// reuse the original curl handle for the first thread, and init second one
 	m_aCURLHandles[0] = mainCURLHandle;
@@ -170,9 +171,9 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 	
 //	printf("T: %i, Res: %ld for: %s\n", threadID, newResponse.responseCode, pThisTask->getURL().c_str());
 
-	m_lock.lock();
+	m_componentLock.lock();
 	m_response.addComponent(newResponse);
-	m_lock.unlock();
+	m_componentLock.unlock();
 }
 
 bool ComponentDownloader::extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response)

@@ -18,7 +18,7 @@
 
 #include "thread_pool.h"
 
-Task::Task()
+Task::Task() : m_pThreadPool(NULL)
 {
 	
 }
