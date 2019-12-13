@@ -160,7 +160,7 @@ void ComponentDownloader::doTask(Task *pTask, int threadID)
 				break;
 			default:
 				newResponse.errorCode = HTTP_UNKNOWN_ERROR;
-				newResponse.errorString = "Unknown error.";
+				newResponse.errorString = "Unknown error from CURL: " + std::to_string(res) + " for URL: " + pThisTask->getURL();
 				break;
 		}
 	}
@@ -198,6 +198,7 @@ bool ComponentDownloader::extractResponseFromCURLHandle(CURL *handle, HTTPCompon
 	if (!curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type) && content_type)
 		response.contentType.assign(content_type);
 	
+	// Note: CURL 7.62 changed the behaviour of this...
 	if (!curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &actual_url) && actual_url)
 		response.finalURL.assign(actual_url);
 	

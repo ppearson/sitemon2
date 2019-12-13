@@ -2,6 +2,7 @@
 function submitPostParams(url, params)
 {
 	var form = document.createElement('form');
+	document.body.appendChild(form);
 	form.action = url;
 	form.method = 'POST';
 	

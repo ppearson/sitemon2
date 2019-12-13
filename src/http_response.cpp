@@ -49,6 +49,11 @@ void HTTPResponse::addComponent(HTTPComponentResponse &component)
 	}
 	else
 	{
+		fprintf(stderr, "Had component problem with EC: %i\n", component.errorCode);
+		if (component.errorCode == HTTP_UNKNOWN_ERROR)
+		{
+			fprintf(stderr, "Component Curl error: %s\n", component.errorString.c_str());
+		}
 		componentProblem = true;
 	}	
 		

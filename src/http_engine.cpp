@@ -160,6 +160,7 @@ bool HTTPEngine::extractResponseFromCURLHandle(CURL *handle, HTTPResponse &respo
 	curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
 	response.contentType.assign(content_type);
 
+	// Note: CURL 7.62 changed the behaviour of this...
 	curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &actual_url);
 	response.finalURL.assign(actual_url);
 
@@ -288,7 +289,7 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	for (; it != itEnd; ++it)
 	{
 		const std::string& url = *it;
-
+		
 		compDownloader.addURL(url);
 	}
 

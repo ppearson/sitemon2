@@ -30,6 +30,9 @@ public:
 	void fixRelative();
 	std::string getFullLocation();
 	
+	std::string getHostname() const;
+	std::string getProtocolAndHostname() const;
+	
 protected:
 	std::string		m_base;
 	std::string		m_relative;

@@ -28,12 +28,14 @@
 
 HTMLParser::HTMLParser(const std::string &content, const std::string &currentPath) : m_content(content)
 {
-	int lastSlash = currentPath.rfind("/");
+	int lastSlash = currentPath.rfind('/');
 	
-	if (lastSlash != currentPath.size() - 1 && lastSlash != 6)
+	if (lastSlash != -1 && lastSlash != currentPath.size() - 1 && lastSlash > 7)
 		m_currentPath = currentPath.substr(0, lastSlash);
 	else
+	{
 		m_currentPath = currentPath;
+	}
 }
 
 bool HTMLParser::parse()
@@ -43,12 +45,14 @@ bool HTMLParser::parse()
 	int tagEnd = 0;
 	int tagNameEnd = 0;
 	
-	while ((tagStart = m_content.find("<", pos)) != -1)
+	std::string baseHRef = m_currentPath;
+	
+	while ((tagStart = m_content.find('<', pos)) != -1)
 	{
 		tagStart++;
 		
 		// doing this here is unoptimal, but is useful for guarding size for comment check below
-		tagEnd = m_content.find(">", tagStart);
+		tagEnd = m_content.find('>', tagStart);
 		
 		// first of all, see if we're a comment
 		if (tagEnd > tagStart + 5 && m_content[tagStart] == '!' && m_content[tagStart + 1] == '-' && m_content[tagStart + 2] == '-')
@@ -69,7 +73,7 @@ bool HTMLParser::parse()
 			}
 		}
 		
-		tagNameEnd = m_content.find(" ", tagStart);
+		tagNameEnd = m_content.find(' ', tagStart);
 		
 		if (tagNameEnd == -1 || tagNameEnd >= tagEnd)
 		{
@@ -94,12 +98,26 @@ bool HTMLParser::parse()
 			std::string path;
 			if (extractQuotedAttribute(tagContent, "src", path))
 			{						
-				URIBuilder uriBuilder(m_currentPath, path);
+				URIBuilder uriBuilder(baseHRef, path);
 				std::string fullPath = uriBuilder.getFullLocation();
 				
 				if (!m_aImages.count(fullPath))
 				{
 					m_aImages.insert(fullPath);
+				}
+			}
+			else
+			{
+				// attempt backup stuff
+				if (extractQuotedAttribute(tagContent, "data-src", path))
+				{
+					URIBuilder uriBuilder(baseHRef, path);
+					std::string fullPath = uriBuilder.getFullLocation();
+					
+					if (!m_aImages.count(fullPath))
+					{
+						m_aImages.insert(fullPath);
+					}
 				}
 			}
 		}
@@ -108,7 +126,7 @@ bool HTMLParser::parse()
 			std::string path;
 			if (extractQuotedAttribute(tagContent, "src", path))
 			{						
-				URIBuilder uriBuilder(m_currentPath, path);
+				URIBuilder uriBuilder(baseHRef, path);
 				std::string fullPath = uriBuilder.getFullLocation();
 				
 				if (!m_aScripts.count(fullPath))
@@ -136,7 +154,7 @@ bool HTMLParser::parse()
 					std::string linkHref;
 					if (extractQuotedAttribute(tagContent, "href", linkHref))
 					{
-						URIBuilder uriBuilder(m_currentPath, linkHref);
+						URIBuilder uriBuilder(baseHRef, linkHref);
 						std::string fullPath = uriBuilder.getFullLocation();
 						
 						if (!m_aCSS.count(fullPath))
@@ -144,6 +162,22 @@ bool HTMLParser::parse()
 							m_aCSS.insert(fullPath);
 						}
 					}
+				}
+			}
+		}
+		else if (tagName == "base")
+		{
+			std::string href;
+			if (extractQuotedAttribute(tagContent, "href", href))
+			{
+				if (href.substr(0, 1) == "/")
+				{
+					URIBuilder uriBuilder(m_currentPath, "");
+					baseHRef = uriBuilder.getProtocolAndHostname() + href;
+				}
+				else
+				{
+					baseHRef += href;
 				}
 			}
 		}
@@ -171,7 +205,7 @@ bool HTMLParser::extractQuotedAttribute(const std::string &tagContent, const std
 	// side of the equals...
 	int quoteStartPos = -1;
 	int quoteEndPos = -1;
-	
+		
 	int singleQuote = tagContent.find("'", afterAttributePos);
 	int doubleQuote = tagContent.find("\"", afterAttributePos);
 	

@@ -123,7 +123,7 @@ bool formatResponseToHTMLDL(HTTPResponse &response, std::string &output)
 	format += "</dl>\n";
 	
 	sprintf(szTemp, format.c_str(), response.finalURL.c_str(), response.responseCode, response.lookupTime, response.connectTime,
-			response.dataStartTime, response.totalTime, response.contentSize, response.downloadSize);
+			response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
 	
 	output.assign(szTemp);
 	

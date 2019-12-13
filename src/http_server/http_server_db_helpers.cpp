@@ -62,17 +62,23 @@ bool addResponseToSingleTestHistoryTable(SQLiteDB *pDB, HTTPResponse &response)
 	return q.execute(sql);
 }
 
-bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, int offset)
+bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, unsigned int limit, unsigned int offset)
 {
 	if (!pDB)
 		return false;
 
 	std::string sql = "select rowid, datetime(run_time,'localtime') as rtime, requested_url, error_code, return_code, total_time, download_size,"
-							"content_size, component_download_size, component_content_size from single_test_history limit 20 offset ";
+							"content_size, component_download_size, component_content_size from single_test_history limit ";
+	
+	char szLimit[8];
+	sprintf(szLimit, "%u", limit);
+	sql.append(szLimit);
+	
+	sql += " offset ";
 
 	char szOffset[8];
 	memset(szOffset, 0, 8);
-	sprintf(szOffset, "%i", offset);
+	sprintf(szOffset, "%u", offset);
 	sql.append(szOffset);
 
 	SQLiteQuery q(*pDB);
@@ -322,7 +328,7 @@ bool editSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::str
 	return q.execute(sql);
 }
 
-bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output)
+bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output, unsigned int limit, unsigned int offset)
 {
 	if (!pDB)
 	{
@@ -353,7 +359,12 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 	std::string sql = "select rowid, datetime(run_time,'localtime') as rtime, error_code, response_code, lookup_time, connect_time, data_start_time, total_time,"
 						"download_size, content_size, component_download_size, component_content_size from scheduled_single_test_results where test_id = ";
 	sql.append(szTestID);
-	sql += " order by rowid desc limit 40";
+	sql += " order by rowid desc limit ";
+	
+	sql += std::to_string(limit) + " ";
+	
+	sql += "offset ";
+	sql += std::to_string(offset);
 
 	SQLiteQuery q(*pDB);
 

@@ -187,16 +187,22 @@ void HTTPServerRequestDespatcher::inlineSimple(HTTPServerRequest &request, std::
 
 void HTTPServerRequestDespatcher::history(HTTPServerRequest &request, std::string &response)
 {
-	int offset = 0;
-	if (request.hasParams())
+	unsigned int offset = 0;
+	if (request.hasParam("start"))
 	{
 		offset = atoi(request.getParam("start").c_str());
+	}
+	
+	unsigned int limit = 80;
+	if (request.hasParam("limit"))
+	{
+		limit = atoi(request.getParam("limit").c_str());
 	}
 
 	std::string filePath = m_webContentPath + "history.tplt";
 
 	std::string dataContent;
-	getSingleTestHistoryList(m_pMonitoringDB, dataContent, offset);
+	getSingleTestHistoryList(m_pMonitoringDB, dataContent, limit, offset);
 
 	HTTPServerTemplateFileResponse resp(filePath, dataContent);
 	response = resp.responseString();
@@ -418,10 +424,22 @@ void HTTPServerRequestDespatcher::viewSingleTest(HTTPServerRequest &request, std
 	std::string strTestID = request.getParam("testid");
 	if (!strTestID.empty())
 		testID = atoi(strTestID.c_str());
+	
+	unsigned int offset = 0;
+	if (request.hasParam("start"))
+	{
+		offset = atoi(request.getParam("start").c_str());
+	}
+	
+	unsigned int limit = 80;
+	if (request.hasParam("limit"))
+	{
+		limit = atoi(request.getParam("limit").c_str());
+	}
 
 	std::string description;
 	std::string dataContent;
-	getSingleScheduledTestResultsList(m_pMonitoringDB, testID, description, dataContent);
+	getSingleScheduledTestResultsList(m_pMonitoringDB, testID, description, dataContent, limit, offset);
 
 	HTTPServerTemplateFileResponse resp(filePath, description, dataContent);
 	response = resp.responseString();

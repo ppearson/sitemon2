@@ -123,6 +123,64 @@ std::string URIBuilder::getFullLocation()
 	return fullLocation;
 }
 
+std::string URIBuilder::getHostname() const
+{
+	if (m_base.substr(0, 7) != "http://" && m_base.substr(0, 8) != "https://")
+		return "";
+
+	bool bSecure = false;
+	
+	if (m_base.find("https://") != -1)
+		bSecure = true;
+	
+	const std::string &itemsString = bSecure ? m_base.substr(8) : m_base.substr(7);
+	
+	std::vector<std::string> aParts;
+	split(itemsString, aParts, "/");
+	
+	if (aParts.empty()) // not even a hostname specified
+		return "";
+	
+	// first part is hostname
+	std::string hostname = aParts[0];
+	return hostname;
+}
+
+std::string URIBuilder::getProtocolAndHostname() const
+{
+	if (m_base.substr(0, 7) != "http://" && m_base.substr(0, 8) != "https://")
+		return "";
+
+	bool bSecure = false;
+	
+	if (m_base.find("https://") != -1)
+		bSecure = true;
+	
+	const std::string itemsString = bSecure ? m_base.substr(8) : m_base.substr(7);
+	
+	std::vector<std::string> aParts;
+	split(itemsString, aParts, "/");
+	
+	if (aParts.empty()) // not even a hostname specified
+		return "";
+	
+	// first part is hostname
+	std::string hostname = aParts[0];
+	
+	std::string fullLocation;
+	
+	if (bSecure)
+	{
+		fullLocation = "https://" + hostname;
+	}
+	else
+	{
+		fullLocation = "http://" + hostname;
+	}
+	
+	return fullLocation;
+}
+
 void URIBuilder::fixRelative()
 {
 	// replace &amp with &

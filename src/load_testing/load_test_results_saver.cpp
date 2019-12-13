@@ -265,8 +265,8 @@ void LoadTestResultsSaver::fileStore()
 			pTimeinfo = localtime(&runTime);
 			strftime(szTime, 64, "%H:%M:%S", pTimeinfo);
 			
-			fprintf(fp, "%s, %i, %ld, %f, %f, %f, %f, %ld,\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
-					resp.totalTime, resp.contentSize);				
+			fprintf(fp, "%s, %i, %ld, %f, %f, %f, %f, %ld, %ld\n", szTime, resp.errorCode, resp.responseCode, resp.lookupTime, resp.connectTime, resp.dataStartTime,
+					resp.totalTime, resp.contentSize, resp.componentContentSize);
 		}		
 	}
 	else // otherwise, print a summary of each overall request, then each step separately underneath

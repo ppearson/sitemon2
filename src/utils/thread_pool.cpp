@@ -188,6 +188,8 @@ Task *ThreadPool::getNextTask()
 void ThreadPool::startPoolAndWaitForCompletion()
 {
 	int threadID = -1;
+	
+	unsigned int threadsStarted = 0;
 
 	for (int j = 0; j < m_numberOfThreads; j++)
 	{
@@ -211,6 +213,8 @@ void ThreadPool::startPoolAndWaitForCompletion()
 					m_pThreads[threadID]->start();
 				}
 				
+				threadsStarted ++;
+				
 				m_aTasks.pop_front();
 			}
 			
@@ -221,12 +225,14 @@ void ThreadPool::startPoolAndWaitForCompletion()
 			// something weird happened - we shouldn't have got here, but we often do...
 			
 			Thread::sleep(1);
+			
+			fprintf(stderr, "Oh dear...\n");
 		}
 	}
 	
 	// now need to make sure any active threads have finished before we go out of scope
 	
-	for (int i = 0; i < m_numberOfThreads; i++)
+	for (int i = 0; i < threadsStarted; i++)
 	{
 		if (m_controller.isActive(i))
 		{

@@ -29,14 +29,14 @@ bool createNeededHTTPServerTables(SQLiteDB *pDB);
 bool createSingleTestHistoryTable(SQLiteDB *pDB);
 bool addResponseToSingleTestHistoryTable(SQLiteDB *pDB, HTTPResponse &response);
 
-bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, int offset = 0);
+bool getSingleTestHistoryList(SQLiteDB *pDB, std::string &output, unsigned int limit, unsigned int offset);
 bool formatDBSingleTestResponseToHTMLDL(SQLiteDB *pDB, long rowID, std::string &output);
 
 bool getSingleScheduledTestsList(SQLiteDB *pDB, std::string &output);
 bool addSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
 bool editSingleScheduledTest(SQLiteDB *pDB, HTTPServerRequest &request, std::string &output);
 
-bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output);
+bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &description, std::string &output, unsigned int limit, unsigned int offset);
 bool getSingleScheduledTestComponentsList(SQLiteDB *pDB, long testID, long runID, std::string &output);
 bool generateEditSingleScheduledTestForm(SQLiteDB *pDB, int testID, std::string &output);
 
