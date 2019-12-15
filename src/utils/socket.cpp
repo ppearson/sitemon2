@@ -228,16 +228,13 @@ int Socket::recv(std::string &data) const
 
 std::string Socket::getClientHost()
 {
-#ifndef _MSC_VER
 	if (m_clientHost.empty())
 	{
 		if (!isValid())
 			return "";
-#ifndef _MSC_VER		
+	
 		struct sockaddr_storage addr;
-#else
-		struct sockaddr_in addr;
-#endif
+
 		int addrLen = sizeof(addr);
 		
 		int ret = getpeername(m_sock, (sockaddr*)&addr, (socklen_t*)&addrLen);
@@ -252,7 +249,6 @@ std::string Socket::getClientHost()
 		
 		m_clientHost = clientHost;
 	}
-#endif
 
 	return m_clientHost;
 }

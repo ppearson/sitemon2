@@ -144,9 +144,9 @@ bool SitemonApp::performScriptRequest(Script &script)
 {
 	HTTPEngine engine;
 
-	for (std::vector<HTTPRequest>::iterator it = script.begin(); it != script.end(); ++it)
+	for (std::vector<HTTPRequest>::const_iterator it = script.begin(); it != script.end(); ++it)
 	{
-		HTTPRequest &request = *it;
+		const HTTPRequest &request = *it;
 		HTTPResponse response;
 
 		std::cout << "Testing... " << request.getDescription() << "\n";
@@ -446,7 +446,7 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 	return true;
 }
 
-void SitemonApp::outputResponse(HTTPRequest &request, HTTPResponse &response)
+void SitemonApp::outputResponse(const HTTPRequest &request, const HTTPResponse &response)
 {
 	std::cout << "Final URL:\t\t" << response.finalURL << "\n";
 	std::cout << "Respone code:\t\t" << response.responseCode << "\n\n";

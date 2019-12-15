@@ -382,7 +382,7 @@ static size_t writeHeaderData(void *buffer, size_t size, size_t nmemb, void *use
 
 	std::string headerLine = reinterpret_cast<char *>(buffer);
 
-	int nColon = headerLine.find(":");
+	int nColon = headerLine.find(':');
 
 	if (nColon > 0)
 	{

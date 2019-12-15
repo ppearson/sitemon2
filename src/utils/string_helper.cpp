@@ -1,6 +1,6 @@
 /*
  Sitemon
- Copyright 2010 Peter Pearson.
+ Copyright 2010-2019 Peter Pearson.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  You may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h> // for memset
+#include <algorithm>
 
 static const std::string kBase64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-void split(const std::string& str, std::vector<std::string>& tokens, const std::string& sep)
+void StringHelpers::split(const std::string& str, std::vector<std::string>& tokens, const std::string& sep)
 {
     int lastPos = str.find_first_not_of(sep, 0);
     int pos = str.find_first_of(sep, lastPos);
@@ -37,14 +38,78 @@ void split(const std::string& str, std::vector<std::string>& tokens, const std::
     }
 }
 
-void toLower(std::string& str)
+void StringHelpers::toLower(std::string& str)
 {
 	unsigned int size = str.size();
 	for (unsigned int i = 0; i < size; i++)
 		str[i] = tolower(str[i]);
 }
 
-std::string base64Encode(const std::string& inputString)
+std::string StringHelpers::formatSize(size_t amount)
+{
+	char szMemAvailable[16];
+	std::string units;
+	unsigned int size = 0;
+	char szDecimalSize[12];
+	if (amount >= 1024 * 1024 * 1024) // GB
+	{
+		size = amount / (1024 * 1024);
+		float fSize = (float)size / 1024.0f;
+		sprintf(szDecimalSize, "%.2f", fSize);
+		units = "GB";
+	}
+	else if (amount >= 1024 * 1024) // MB
+	{
+		size = amount / 1024;
+		float fSize = (float)size / 1024.0f;
+		sprintf(szDecimalSize, "%.2f", fSize);
+		units = "MB";
+	}
+	else if (amount >= 1024) // KB
+	{
+		size = amount;
+		float fSize = (float)size / 1024.0f;
+		sprintf(szDecimalSize, "%.1f", fSize);
+		units = "KB";
+	}
+	else
+	{
+		sprintf(szDecimalSize, "0");
+		units = "B"; // just so it makes sense
+	}
+
+	sprintf(szMemAvailable, "%s %s", szDecimalSize, units.c_str());
+	std::string final(szMemAvailable);
+	return final;
+}
+
+std::string StringHelpers::formatNumberThousandsSeparator(size_t value)
+{
+	char szRawNumber[32];
+	sprintf(szRawNumber, "%zu", value);
+
+	std::string temp(szRawNumber);
+
+	std::string final;
+	int i = temp.size() - 1;
+	unsigned int count = 0;
+	for (; i >= 0; i--)
+	{
+		final += temp[i];
+
+		if (count++ == 2 && i != 0)
+		{
+			final += ",";
+			count = 0;
+		}
+	}
+
+	std::reverse(final.begin(), final.end());
+
+	return final;
+}
+
+std::string StringHelpers::base64Encode(const std::string& inputString)
 {
 	std::string outputString;
 	
@@ -77,7 +142,7 @@ std::string base64Encode(const std::string& inputString)
 	return outputString;
 }
 
-std::string base64Decode(const std::string& inputString)
+std::string StringHelpers::base64Decode(const std::string& inputString)
 {
 	std::string outputString;
 	
@@ -110,7 +175,7 @@ std::string base64Decode(const std::string& inputString)
 	return outputString;
 }
 
-std::string generateRandomASCIIString(unsigned int length)
+std::string StringHelpers::generateRandomASCIIString(unsigned int length)
 {
 	srand(time(NULL));
 	

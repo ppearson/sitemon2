@@ -44,7 +44,7 @@ public:
 	bool performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath);
 	bool performProfileLoadTest(Script &script, const std::string &outputPath);
 	
-	void outputResponse(HTTPRequest &request, HTTPResponse &response);
+	void outputResponse(const HTTPRequest &request, const HTTPResponse &response);
 	
 protected:
 	ConfigSettings	m_configSettings;

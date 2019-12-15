@@ -57,9 +57,9 @@ void HitLoadRequestThread::run()
 		ScriptResult result;
 		
 		int step = 1;		
-		for (std::vector<HTTPRequest>::iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
+		for (std::vector<HTTPRequest>::const_iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
 		{
-			HTTPRequest &request = *it;
+			const HTTPRequest &request = *it;
 			
 			HTTPResponse response;
 			response.m_thread = m_threadID;

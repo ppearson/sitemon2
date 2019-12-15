@@ -55,9 +55,9 @@ void SchedulerTestThread::run()
 	{
 		ScriptResult result;
 		
-		for (std::vector<HTTPRequest>::iterator it = m_script.begin(); it != m_script.end(); ++it)
+		for (std::vector<HTTPRequest>::const_iterator it = m_script.begin(); it != m_script.end(); ++it)
 		{
-			HTTPRequest &request = *it;
+			const HTTPRequest &request = *it;
 			
 			HTTPResponse response;
 				

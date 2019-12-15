@@ -78,9 +78,10 @@ void ScriptDebugger::run()
 	
 	int step = 1;
 	
-	for (std::vector<HTTPRequest>::iterator it = m_script.begin(); it != m_script.end(); ++it, step++)
+	for (std::vector<HTTPRequest>::const_iterator it = m_script.begin(); it != m_script.end(); ++it, step++)
 	{
-		HTTPRequest &request = *it;
+		const HTTPRequest &request = *it;
+		
 		HTTPResponse response;
 		
 		std::cout << "Running step " << step << ": " << request.getDescription() << "... ";

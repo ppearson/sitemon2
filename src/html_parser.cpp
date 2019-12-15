@@ -89,7 +89,7 @@ bool HTMLParser::parse()
 		}
 		
 		std::string tagName = m_content.substr(tagStart, tagNameEnd - tagStart);
-		toLower(tagName);
+		StringHelpers::toLower(tagName);
 		
 		const std::string &tagContent = m_content.substr(tagStart, tagEnd - tagStart);
 		
@@ -137,7 +137,8 @@ bool HTMLParser::parse()
 			
 			// we can ignore the stuff within the opening and closing tags, as we don't want to parse this
 			
-			int finalEnd = m_content.find("</script>", tagEnd);
+			// purposefully skip looking for trailing '>', as sometimes this is on the next line...
+			int finalEnd = m_content.find("</script", tagEnd);
 			
 			if (finalEnd != -1)
 			{
@@ -206,8 +207,8 @@ bool HTMLParser::extractQuotedAttribute(const std::string &tagContent, const std
 	int quoteStartPos = -1;
 	int quoteEndPos = -1;
 		
-	int singleQuote = tagContent.find("'", afterAttributePos);
-	int doubleQuote = tagContent.find("\"", afterAttributePos);
+	int singleQuote = tagContent.find('\'', afterAttributePos);
+	int doubleQuote = tagContent.find('\"', afterAttributePos);
 	
 	if (singleQuote == -1 && doubleQuote == -1)
 		return false;
@@ -215,24 +216,24 @@ bool HTMLParser::extractQuotedAttribute(const std::string &tagContent, const std
 	if (singleQuote != -1 && doubleQuote == -1) // only a single quote found
 	{
 		quoteStartPos = singleQuote + 1;
-		quoteEndPos = tagContent.find("'", quoteStartPos);
+		quoteEndPos = tagContent.find('\'', quoteStartPos);
 	}
 	else if (doubleQuote != -1 && singleQuote == -1) // only a double quote found
 	{
 		quoteStartPos = doubleQuote + 1;
-		quoteEndPos = tagContent.find("\"", quoteStartPos);
+		quoteEndPos = tagContent.find('\"', quoteStartPos);
 	}
 	else // both quotes are found! - use first, and hope the ending one matches the first
 	{
 		if (singleQuote < doubleQuote)
 		{
 			quoteStartPos = singleQuote + 1;
-			quoteEndPos = tagContent.find("'", quoteStartPos);
+			quoteEndPos = tagContent.find('\'', quoteStartPos);
 		}
 		else
 		{
 			quoteStartPos = doubleQuote + 1;
-			quoteEndPos = tagContent.find("\"", quoteStartPos);
+			quoteEndPos = tagContent.find('\"', quoteStartPos);
 		}
 	}
 	

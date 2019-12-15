@@ -35,23 +35,23 @@ public:
 	Script(HTTPRequest *pRequest);
 	~Script();
 	
-	std::string getDescription() { return m_description; }
-	std::string getHostName() { return m_hostName; }
+	const std::string& getDescription() const { return m_description; }
+	const std::string& getHostName() const { return m_hostName; }
 
 	void copyScript(Script *pScript);
 	
 	bool loadScriptFile(const std::string &file);
 
-	inline std::vector<HTTPRequest>::iterator begin() { return m_aSteps.begin(); }
-	inline std::vector<HTTPRequest>::iterator end() { return m_aSteps.end(); }
+	inline std::vector<HTTPRequest>::const_iterator begin() const { return m_aSteps.begin(); }
+	inline std::vector<HTTPRequest>::const_iterator end() const { return m_aSteps.end(); }
 	
-	int getStepCount() { return m_aSteps.size(); }
+	int getStepCount() const { return m_aSteps.size(); }
 
 	// functions to set stuff for all steps
 	void setAcceptCompressed(bool acceptCompressed);
 	void setDownloadContent(bool downloadContent);
 	
-	bool hasLoadTestSettings() { return m_hasLoadTestSettings; }
+	bool hasLoadTestSettings() const { return m_hasLoadTestSettings; }
 	LoadTestSettings &getLoadTestSettings() { return m_loadTestSettings; }
 	
 	void addStep(HTTPRequest &request) { m_aSteps.push_back(request); }

@@ -78,7 +78,8 @@ bool Script::loadScriptFile(const std::string &file)
 	}
 	
 	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem = NULL, *pScriptElem = NULL;
+	TiXmlElement* pElem = NULL;
+	TiXmlElement* pScriptElem = NULL;
 	TiXmlHandle hRoot(0);
 	
 	pScriptElem = hDoc.FirstChildElement("script").Element();
@@ -155,9 +156,9 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 		if (elementName == "url")
 		{
 			// replace @ with hostname if we have one
-			if (!m_hostName.empty() && content.find("@") != -1)
+			if (!m_hostName.empty() && content.find('@') != -1)
 			{
-				int hostPos = content.find("@");
+				int hostPos = content.find('@');
 
 				content.erase(hostPos, 1);
 				content.insert(hostPos, m_hostName);

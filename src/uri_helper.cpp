@@ -21,7 +21,7 @@
 
 URIBuilder::URIBuilder(const std::string &base, const std::string &relative) : m_base(base), m_relative(relative)
 {
-	toLower(m_base);
+	StringHelpers::toLower(m_base);
 //	toLower(m_relative);
 	
 	fixRelative();
@@ -53,7 +53,7 @@ std::string URIBuilder::getFullLocation()
 	
 	std::vector<std::string> aParts;
 	
-	split(itemsString, aParts, "/");
+	StringHelpers::split(itemsString, aParts, "/");
 	
 	if (aParts.empty()) // not even a hostname specified
 		return "";
@@ -90,7 +90,7 @@ std::string URIBuilder::getFullLocation()
 	// now we need to do the same for the relative path
 	
 	std::vector<std::string> aRelativeParts;
-	split(relative, aRelativeParts, "/");
+	StringHelpers::split(relative, aRelativeParts, "/");
 	
 	std::vector<std::string>::iterator it = aRelativeParts.begin() + partStart;
 	std::vector<std::string>::iterator itEnd = aRelativeParts.end();
@@ -136,7 +136,7 @@ std::string URIBuilder::getHostname() const
 	const std::string &itemsString = bSecure ? m_base.substr(8) : m_base.substr(7);
 	
 	std::vector<std::string> aParts;
-	split(itemsString, aParts, "/");
+	StringHelpers::split(itemsString, aParts, "/");
 	
 	if (aParts.empty()) // not even a hostname specified
 		return "";
@@ -159,7 +159,7 @@ std::string URIBuilder::getProtocolAndHostname() const
 	const std::string itemsString = bSecure ? m_base.substr(8) : m_base.substr(7);
 	
 	std::vector<std::string> aParts;
-	split(itemsString, aParts, "/");
+	StringHelpers::split(itemsString, aParts, "/");
 	
 	if (aParts.empty()) // not even a hostname specified
 		return "";

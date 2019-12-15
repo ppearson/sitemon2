@@ -431,7 +431,7 @@ void HTTPServerRequestDespatcher::viewSingleTest(HTTPServerRequest &request, std
 		offset = atoi(request.getParam("start").c_str());
 	}
 	
-	unsigned int limit = 80;
+	unsigned int limit = 100;
 	if (request.hasParam("limit"))
 	{
 		limit = atoi(request.getParam("limit").c_str());

@@ -276,8 +276,8 @@ void LoadTestResultsSaver::fileStore()
 		
 		std::map<int, StepResults> aFullResults;
 		
-		std::vector<HTTPRequest>::iterator itScriptSteps = m_script.begin();
-		std::vector<HTTPRequest>::iterator itScriptStepsEnd = m_script.end();
+		std::vector<HTTPRequest>::const_iterator itScriptSteps = m_script.begin();
+		std::vector<HTTPRequest>::const_iterator itScriptStepsEnd = m_script.end();
 		for (int step = 1; itScriptSteps != itScriptStepsEnd; ++itScriptSteps, step++)
 		{
 			StepResults newStep(step, (*itScriptSteps).getDescription());

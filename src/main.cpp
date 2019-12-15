@@ -474,7 +474,7 @@ int main(int argc, char *const argv[])
 
 void printUsage()
 {
-	printf("Sitemon version 0.66\nUsage:\nSingle test:\t\t\tsitemon [<options>] <URL>\n"
+	printf("Sitemon version 0.7\nUsage:\nSingle test:\t\t\tsitemon [<options>] <URL>\n"
 		   "Single Script test:\t\tsitemon [<options>] script <script_path>\n"
 		   "Debug script:\t\t\tsitemon debug <script_path> [body_response_file_path.html]\n\n"
 		   "Load Testing:\n"
@@ -484,7 +484,7 @@ void printUsage()
 		   "Profile test Script:\tsitemon lt-profile <script_path> [<conc._requests> <time_in_min>] [<output_results_file.csv>]\n\n"
 		   "Run local web server for interface:\tsitemon -web\n\n"
 		   "Options:\n-ac\t\t: Accept compressed content\n"
-		   "-dc\t\t: Download linked JS and Image content\n"
+		   "-dc\t\t: Download linked CSS, JS and Image content\n"
 		   "-oh\t\t: Output header\n"
 		   "-ob\t\t: Output body\n");
 }

@@ -19,7 +19,10 @@
 #include "http_server_db_helpers.h"
 #include "http_server_html_formatters.h"
 #include "http_form_generator.h"
+
 #include "../script.h"
+
+#include "utils/string_helper.h"
 
 bool createNeededHTTPServerTables(SQLiteDB *pDB)
 {
@@ -385,10 +388,15 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 		float connectTime = q.getDouble();
 		float dataStartTime = q.getDouble();
 		float totalTime = q.getDouble();
+		
 		long downloadSize = q.getLong();
+		std::string downloadSizeString = StringHelpers::formatNumberThousandsSeparator(downloadSize);
 		long contentSize = q.getLong();
+		std::string contentSizeString = StringHelpers::formatNumberThousandsSeparator(contentSize);
 		long componentDownloadSize = q.getLong();
+		std::string componentDownloadSizeString = StringHelpers::formatNumberThousandsSeparator(componentDownloadSize);
 		long componentContentSize = q.getLong();
+		std::string componentContentSizeString = StringHelpers::formatNumberThousandsSeparator(componentContentSize);
 
 		char szResult[6];
 		memset(szResult, 0, 6);
@@ -401,9 +409,10 @@ bool getSingleScheduledTestResultsList(SQLiteDB *pDB, int testID, std::string &d
 			sprintf(szResult, "%ld", errorCode);
 		}
 
-		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n <td>%ld</td>\n"
-				"<td>%ld</td>\n <td><a href=\"/single_components?test_id=%i&run_id=%ld\">View</a></td>\n</tr>\n", time.c_str(), szResult,
-				responseCode, lookupTime, connectTime, dataStartTime, totalTime, downloadSize, contentSize, componentDownloadSize, componentContentSize, testID, rowID);
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td id=\"l\">%s</td>\n <td id=\"l\">%ld</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%f</td>\n <td>%s</td>\n <td>%s</td>\n <td>%s</td>\n"
+				"<td>%s</td>\n <td><a href=\"/single_components?test_id=%i&run_id=%ld\">View</a></td>\n</tr>\n", time.c_str(), szResult,
+				responseCode, lookupTime, connectTime, dataStartTime, totalTime, downloadSizeString.c_str(), contentSizeString.c_str(),
+				componentDownloadSizeString.c_str(), componentContentSizeString.c_str(), testID, rowID);
 
 		output.append(szTemp);
 	}
@@ -1674,9 +1683,9 @@ bool runManualScriptTest(SQLiteDB *pDB, ScheduledResultsSaver *pSaver, unsigned 
 			HTTPEngine engine;
 			ScriptResult result;
 
-			for (std::vector<HTTPRequest>::iterator it = newScript.begin(); it != newScript.end(); ++it)
+			for (std::vector<HTTPRequest>::const_iterator it = newScript.begin(); it != newScript.end(); ++it)
 			{
-				HTTPRequest &request = *it;
+				const HTTPRequest &request = *it;
 
 				HTTPResponse response;
 

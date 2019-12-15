@@ -1,6 +1,6 @@
 /*
  Sitemon
- Copyright 2010 Peter Pearson.
+ Copyright 2010-2019 Peter Pearson.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  You may not use this file except in compliance with the License.
@@ -22,12 +22,21 @@
 #include <string>
 #include <vector>
 
-void split(const std::string& str, std::vector<std::string>& lines, const std::string& sep = "\n");
-void toLower(std::string& str);
+class StringHelpers
+{
+public:
 
-std::string base64Encode(const std::string& inputString);
-std::string base64Decode(const std::string& inputString);
+	static void split(const std::string& str, std::vector<std::string>& lines, const std::string& sep = "\n");
+	static void toLower(std::string& str);
+	
+	static std::string formatSize(size_t amount);
+	static std::string formatNumberThousandsSeparator(size_t value);
 
-std::string generateRandomASCIIString(unsigned int length);
+	static std::string base64Encode(const std::string& inputString);
+	static std::string base64Decode(const std::string& inputString);
+
+	static std::string generateRandomASCIIString(unsigned int length);
+	
+};
 
 #endif

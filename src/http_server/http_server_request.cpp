@@ -36,7 +36,7 @@ bool HTTPServerRequest::parse()
 {
 	// TODO: doing it this way is very hacky as it means we lose blank lines (end of header, etc)...
 	std::vector<std::string> lines;
-	split(m_request, lines);
+	StringHelpers::split(m_request, lines);
 	
 	if (lines.empty())
 		return false;
@@ -57,14 +57,14 @@ bool HTTPServerRequest::parse()
 	
 	int pathStart = m_post ? 5 : 4;
 	
-	int pathEnd = line.rfind(" "); // should be the space before the HTTP version
+	int pathEnd = line.rfind(' '); // should be the space before the HTTP version
 	
 	if (pathEnd == -1)
 		return false;
 	
 	const std::string path = line.substr(pathStart, pathEnd - pathStart);
 	
-	int nQuestionMark = path.find("?");
+	int nQuestionMark = path.find('?');
 	if (nQuestionMark == -1)
 	{
 		m_path = path;
@@ -93,7 +93,7 @@ bool HTTPServerRequest::parse()
 		{
 			std::string authorizationString = otherLine.substr(15);
 			
-			size_t sepPos = authorizationString.find(" ");
+			size_t sepPos = authorizationString.find(' ');
 			if (sepPos == std::string::npos)
 			{
 				m_authenticationHeaderType = eAuthMalformed;
@@ -118,11 +118,11 @@ bool HTTPServerRequest::parse()
 				authorizationToken = authorizationToken.substr(0, authorizationToken.size() - 1);
 			}
 			
-			authorizationToken = base64Decode(authorizationToken);
+			authorizationToken = StringHelpers::base64Decode(authorizationToken);
 			
 			if (m_authenticationHeaderType == eAuthBasic)
 			{
-				size_t passSep = authorizationToken.find(":");
+				size_t passSep = authorizationToken.find(':');
 				if (passSep == std::string::npos)
 				{
 					m_authenticationHeaderType = eAuthMalformed;
@@ -163,7 +163,7 @@ bool HTTPServerRequest::parse()
 void HTTPServerRequest::addParams(const std::string &params)
 {
 	std::vector<std::string> items;
-	split(params, items, "&");
+	StringHelpers::split(params, items, "&");
 	
 	std::vector<std::string>::iterator it = items.begin();
 	std::vector<std::string>::iterator itEnd = items.end();
@@ -171,7 +171,7 @@ void HTTPServerRequest::addParams(const std::string &params)
 	{
 		const std::string &item = *it;
 		
-		int sep = item.find("=");
+		int sep = item.find('=');
 		if (sep != -1)
 		{
 			std::string name = item.substr(0, sep);
@@ -180,7 +180,7 @@ void HTTPServerRequest::addParams(const std::string &params)
 			// convert hex encoding strings to native strings
 			
 			int nHex = 0;
-			while ((nHex = value.find("%", nHex)) != -1)
+			while ((nHex = value.find('%', nHex)) != -1)
 			{
 				std::string strHex = "0x" + value.substr(nHex + 1, 2);
 				char cChar = static_cast<char>(strtol(strHex.c_str(), 0, 16));
@@ -195,7 +195,7 @@ void HTTPServerRequest::addParams(const std::string &params)
 			// + to spaces
 
 			int nSpace = 0;
-			while ((nSpace = value.find("+", nSpace)) != -1)
+			while ((nSpace = value.find('+', nSpace)) != -1)
 			{
 				value.replace(nSpace, 1, " ");
 			}

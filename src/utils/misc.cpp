@@ -99,7 +99,7 @@ std::string getExecutablePath(bool appendFinal)
 	{
 		std::string path(DlInfo.dli_fname);
 		
-		int finalSlash = path.rfind("/");
+		int finalSlash = path.rfind('/');
 		if (finalSlash != -1)
 		{
 			if (appendFinal)

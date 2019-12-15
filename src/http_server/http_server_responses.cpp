@@ -90,7 +90,7 @@ std::string HTTPServerAuthenticationResponse::responseString()
 	response += szTemp;
 	
 	//
-	std::string authName = generateRandomASCIIString(8) + "_";
+	std::string authName = StringHelpers::generateRandomASCIIString(8) + "_";
 	memset(szTemp, 0, 128);
 	sprintf(szTemp, "WWW-Authenticate: Basic realm=\"%s\"\n", authName.c_str());
 	response += szTemp;
