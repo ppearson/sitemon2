@@ -32,7 +32,7 @@ public:
 
 	virtual DynamicParameter* clone() = 0;
 	
-	std::string		getName() { return m_name; }
+	const std::string& getName() const { return m_name; }
 	virtual std::string	getValue(HTTPEngine &engine) = 0;
 	
 protected:

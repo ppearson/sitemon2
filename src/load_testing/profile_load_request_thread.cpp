@@ -44,15 +44,14 @@ void ProfileLoadRequestThread::run()
 {
 	m_active = true;
 	
+	if (m_debugging)
+		printf("Starting thread %i...\n", m_threadID);
+		
 	while (m_active)
 	{
 		HTTPEngine engine;
-		
-		if (m_debugging)
-			printf("Starting thread %i...\n", m_threadID);
-
 		ScriptResult result;
-		
+				
 		int step = 1;
 		for (std::vector<HTTPRequest>::const_iterator it = m_Script.begin(); it != m_Script.end(); ++it, step++)
 		{

@@ -268,15 +268,8 @@ int main(int argc, char *const argv[])
 			HTTPRequest newRequest(szURL);
 			
 			// command prompt options override settings for certain things
-			if (acceptCompressed)
-			{
-				newRequest.setAcceptCompressed(true);
-			}
-			
-			if (downloadContent)
-			{
-				newRequest.setDownloadContent(true);
-			}
+			newRequest.setAcceptCompressed(acceptCompressed);
+			newRequest.setDownloadContent(downloadContent);
 			
 			std::cout << "Starting constant Profile Load test with " << threads << " threads, for " << minutes << " minutes...\n";
 			
@@ -298,7 +291,8 @@ int main(int argc, char *const argv[])
 				return -1;
 			}
 			
-			// command prompt options override script settings for certain things
+			// command prompt options override script settings for certain things.
+			// for scripts, only override if set from the command line...
 			if (acceptCompressed)
 			{
 				script.setAcceptCompressed(true);
@@ -354,15 +348,8 @@ int main(int argc, char *const argv[])
 			HTTPRequest newRequest(szURL);
 			
 			// command prompt options override settings for certain things
-			if (acceptCompressed)
-			{
-				newRequest.setAcceptCompressed(true);
-			}
-			
-			if (downloadContent)
-			{
-				newRequest.setDownloadContent(true);
-			}
+			newRequest.setAcceptCompressed(acceptCompressed);
+			newRequest.setDownloadContent(downloadContent);
 			
 			std::cout << "Starting Hit Load test with " << threads << " threads...\n";
 			
@@ -384,7 +371,8 @@ int main(int argc, char *const argv[])
 				return -1;
 			}
 			
-			// command prompt options override script settings for certain things
+			// command prompt options override script settings for certain things.
+			// for scripts, only override if set from the command line...
 			if (acceptCompressed)
 			{
 				script.setAcceptCompressed(true);
@@ -432,15 +420,9 @@ int main(int argc, char *const argv[])
 	{
 		HTTPRequest request(szURL);
 
-		if (acceptCompressed)
-		{
-			request.setAcceptCompressed(true);
-		}
-		
-		if (downloadContent)
-		{
-			request.setDownloadContent(true);
-		}
+		// command prompt options override settings for certain things
+		request.setAcceptCompressed(acceptCompressed);
+		request.setDownloadContent(downloadContent);
 
 		sitemon.performSingleRequest(request, outputHeader, outputBody);
 	}
@@ -453,7 +435,8 @@ int main(int argc, char *const argv[])
 			return -1;
 		}
 
-		// command prompt options override script settings for certain things
+		// command prompt options override script settings for certain things.
+		// for scripts, only override if set from the command line...
 		if (acceptCompressed)
 		{
 			script.setAcceptCompressed(true);

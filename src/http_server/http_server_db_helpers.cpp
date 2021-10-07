@@ -897,11 +897,10 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 	std::string sql2 = "select name, value from scheduled_script_test_page_params where page_id = ";
 	sql2.append(szPageID);
 
-	char szLabel[16];
+	char szLabel[32];
 
-	char szEditName[16];
-	char szEditValue[16];
-
+	char szEditName[32];
+	char szEditValue[32];
 
 	int paramNum = 1;
 
@@ -914,9 +913,9 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 			std::string paramName = q.getString();
 			std::string paramValue = q.getString();
 
-			memset(szLabel, 0, 16);
-			memset(szEditName, 0, 16);
-			memset(szEditValue, 0, 16);
+			memset(szLabel, 0, 32);
+			memset(szEditName, 0, 32);
+			memset(szEditValue, 0, 32);
 
 			sprintf(szLabel, "Param %i", paramNum);
 			sprintf(szEditName, "n%i", paramNum);
@@ -934,9 +933,9 @@ bool generateEditScriptScheduledTestPageForm(SQLiteDB *pDB, int pageID, std::str
 
 	for (int i = 0; i < 5; i++)
 	{
-		memset(szLabel, 0, 16);
-		memset(szEditName, 0, 16);
-		memset(szEditValue, 0, 16);
+		memset(szLabel, 0, 32);
+		memset(szEditName, 0, 32);
+		memset(szEditValue, 0, 32);
 
 		sprintf(szLabel, "Param %i", paramNum);
 		sprintf(szEditName, "n%i", paramNum);

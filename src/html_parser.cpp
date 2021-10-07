@@ -46,6 +46,7 @@ bool HTMLParser::parse()
 	int tagNameEnd = 0;
 	
 	std::string baseHRef = m_currentPath;
+	URIBuilderFast uriBuilder(baseHRef);
 	
 	while ((tagStart = m_content.find('<', pos)) != -1)
 	{
@@ -98,9 +99,7 @@ bool HTMLParser::parse()
 			std::string path;
 			if (extractQuotedAttribute(tagContent, "src", path))
 			{						
-				URIBuilder uriBuilder(baseHRef, path);
-				std::string fullPath = uriBuilder.getFullLocation();
-				
+				std::string fullPath = uriBuilder.getFullLocation(path);
 				if (!m_aImages.count(fullPath))
 				{
 					m_aImages.insert(fullPath);
@@ -111,9 +110,7 @@ bool HTMLParser::parse()
 				// attempt backup stuff
 				if (extractQuotedAttribute(tagContent, "data-src", path))
 				{
-					URIBuilder uriBuilder(baseHRef, path);
-					std::string fullPath = uriBuilder.getFullLocation();
-					
+					std::string fullPath = uriBuilder.getFullLocation(path);
 					if (!m_aImages.count(fullPath))
 					{
 						m_aImages.insert(fullPath);
@@ -126,9 +123,7 @@ bool HTMLParser::parse()
 			std::string path;
 			if (extractQuotedAttribute(tagContent, "src", path))
 			{						
-				URIBuilder uriBuilder(baseHRef, path);
-				std::string fullPath = uriBuilder.getFullLocation();
-				
+				std::string fullPath = uriBuilder.getFullLocation(path);
 				if (!m_aScripts.count(fullPath))
 				{
 					m_aScripts.insert(fullPath);
@@ -155,9 +150,7 @@ bool HTMLParser::parse()
 					std::string linkHref;
 					if (extractQuotedAttribute(tagContent, "href", linkHref))
 					{
-						URIBuilder uriBuilder(baseHRef, linkHref);
-						std::string fullPath = uriBuilder.getFullLocation();
-						
+						std::string fullPath = uriBuilder.getFullLocation(linkHref);
 						if (!m_aCSS.count(fullPath))
 						{
 							m_aCSS.insert(fullPath);
@@ -173,13 +166,15 @@ bool HTMLParser::parse()
 			{
 				if (href.substr(0, 1) == "/")
 				{
-					URIBuilder uriBuilder(m_currentPath, "");
-					baseHRef = uriBuilder.getProtocolAndHostname() + href;
+					URIBuilder uriBuilderFull(m_currentPath, "");
+					baseHRef = uriBuilderFull.getProtocolAndHostname() + href;
 				}
 				else
 				{
 					baseHRef += href;
 				}
+				
+				uriBuilder.setBase(baseHRef);
 			}
 		}
 		

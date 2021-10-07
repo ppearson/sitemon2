@@ -27,6 +27,7 @@ URIBuilder::URIBuilder(const std::string &base, const std::string &relative) : m
 	fixRelative();
 }
 
+// TODO: this is pretty inefficient and shows up in profiling...
 std::string URIBuilder::getFullLocation()
 {
 	if (m_relative.substr(0, 7) == "http://" || m_relative.substr(0, 8) == "https://")
@@ -117,7 +118,7 @@ std::string URIBuilder::getFullLocation()
 		std::string &part = *itFinal;
 		
 		fullLocation += "/";
-		fullLocation += part;				
+		fullLocation += part;
 	}
 	
 	return fullLocation;
@@ -190,4 +191,136 @@ void URIBuilder::fixRelative()
 	{
 		m_relative.replace(pos, 5, "&");
 	}
+}
+
+//
+
+URIBuilderFast::URIBuilderFast(const std::string& base) : m_baseNotRelative(false),
+	m_secure(false), m_error(false)
+{
+	setBase(base);
+}
+
+void URIBuilderFast::setBase(const std::string& base)
+{
+	m_base = base;
+	StringHelpers::toLower(m_base);
+	
+	m_aParts.clear();
+	
+	m_baseNotRelative = m_base.substr(0, 7) != "http://" && m_base.substr(0, 8) != "https://";
+	if (m_baseNotRelative)
+		return;
+
+	m_secure = m_base.find("https://") != std::string::npos;
+		
+	const std::string &itemsString = m_secure ? m_base.substr(8) : m_base.substr(7);
+	
+	std::vector<std::string> aParts;
+	StringHelpers::split(itemsString, aParts, "/");
+	
+	// not even a hostname specified
+	m_error = aParts.empty();
+	if (m_error)
+	{
+		return;
+	}
+	
+	// first part is hostname
+	m_hostname = aParts[0];
+	
+	if (m_secure)
+	{
+		m_fullLocationStart = "https://" + m_hostname;
+	}
+	else
+	{
+		m_fullLocationStart = "http://" + m_hostname;
+	}
+	
+	std::copy(aParts.begin() + 1, aParts.end(), std::inserter(m_aParts, m_aParts.end()));
+}
+
+std::string URIBuilderFast::getFullLocation(const std::string& relative) const
+{
+	if (relative.substr(0, 7) == "http://" || relative.substr(0, 8) == "https://")
+	{
+		return relative;
+	}
+	
+	// TODO: we probably want to call fixRelative() ?
+	
+	if (m_baseNotRelative || m_error)
+		return "";
+	
+	// if the relative path starts with "//", it's a URL pointing to a completely different domain, so
+	if (relative.substr(0, 2) == "//")
+	{
+		// TODO: not sure what to do about http vs https? Inherit base's? Try https first? Just use redirect status?
+		return "http:" + relative;
+	}
+	
+	// check that relative path isn't actually a full path
+	std::string realRelative;
+	std::string fullLocation = m_fullLocationStart;
+	int partStart = 0;
+	if (relative.substr(0, 1) == "/")
+	{
+		fullLocation += relative;
+		return fullLocation;
+	}
+	else
+	{
+		realRelative = relative;
+	}
+	
+	std::vector<std::string> aRelativeParts;
+	StringHelpers::split(realRelative, aRelativeParts, "/");
+	
+	if (aRelativeParts.size() == 1)
+	{
+		// fast path...
+		if (fullLocation.substr(fullLocation.size() - 1, 1) == "/")
+		{
+			fullLocation += realRelative;
+		}
+		else
+		{
+			fullLocation += "/" + realRelative;
+		}
+	}
+	else
+	{
+		std::deque<std::string> localParts = m_aParts;
+		
+		std::vector<std::string>::iterator it = aRelativeParts.begin() + partStart;
+		std::vector<std::string>::iterator itEnd = aRelativeParts.end();
+		for (; it != itEnd; ++it)
+		{
+			std::string &part = *it;
+			
+			if (part == "..")
+			{
+				// need to make sure we can pop them
+				if (localParts.empty())
+					return m_base;
+					
+				localParts.pop_back();
+			}
+			else
+				localParts.push_back(*it);
+		}	
+		
+		std::deque<std::string>::iterator itFinal = localParts.begin();
+		std::deque<std::string>::iterator itFinalEnd = localParts.end();
+		for (; itFinal != itFinalEnd; ++itFinal)
+		{
+			std::string &part = *itFinal;
+			
+			fullLocation += "/";
+			fullLocation += part;
+		}
+	}
+	
+	return fullLocation;
 }

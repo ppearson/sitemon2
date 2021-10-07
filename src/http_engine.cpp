@@ -314,7 +314,7 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	compDownloader.downloadComponents();
 }
 
-void HTTPEngine::processExtractionItems(const HTTPRequest &request, HTTPResponse &response)
+void HTTPEngine::processExtractionItems(const HTTPRequest &request, const HTTPResponse &response)
 {
 	std::vector<ExtractionItem>::const_iterator it = request.extractionItems_begin();
 	std::vector<ExtractionItem>::const_iterator itEnd = request.extractionItems_end();

@@ -42,15 +42,15 @@ public:
 
 	void setRequestHeader(const std::string &value) { m_debugRequestHeader = value; }
 
-	std::string getRequestHeader() { return m_debugRequestHeader; }
+	std::string getRequestHeader() const { return m_debugRequestHeader; }
 
 protected:
 	bool setupCURLHandleFromRequest(CURL *handle, const HTTPRequest &request);
-	bool extractResponseFromCURLHandle(CURL *handle, HTTPResponse &response);
+	static bool extractResponseFromCURLHandle(CURL *handle, HTTPResponse &response);
 
 	void downloadContent(CURL *mainHandle, HTTPResponse &response, bool acceptCompressed);
 
-	void processExtractionItems(const HTTPRequest &request, HTTPResponse &response);
+	void processExtractionItems(const HTTPRequest &request, const HTTPResponse &response);
 
 protected:
 	CURL *	m_handle;

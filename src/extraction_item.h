@@ -30,9 +30,9 @@ public:
 
 	}
 
-	std::string		getName() const { return m_name; }
-	std::string		getStartText() const { return m_startText; }
-	std::string		getEndText() const { return m_endText; }
+	const std::string& getName() const { return m_name; }
+	const std::string& getStartText() const { return m_startText; }
+	const std::string& getEndText() const { return m_endText; }
 	int				getItemNum() const { return m_itemNum; }
 
 protected:

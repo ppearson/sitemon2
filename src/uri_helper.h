@@ -43,4 +43,28 @@ protected:
 };
 
 
+// more optimised version which is used for more minimal use-cases...
+class URIBuilderFast
+{
+public:
+	URIBuilderFast(const std::string& base);
+	
+	void setBase(const std::string& base);
+
+	std::string getFullLocation(const std::string& relative) const;
+	
+protected:
+	std::string		m_base;
+	
+	std::deque<std::string>	m_aParts;
+	
+	std::string		m_hostname;
+	std::string		m_fullLocationStart;
+	
+	bool			m_baseNotRelative;
+	bool			m_secure;
+	bool			m_error; // no hostname
+};
+
+
 #endif

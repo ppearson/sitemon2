@@ -22,7 +22,6 @@
 
 DynamicParameter::DynamicParameter(const std::string &name) : m_name(name)
 {
-	
 }
 
 DynamicDateParameter::DynamicDateParameter(const std::string &name, const std::string &dateFormat, int daysInFuture) : DynamicParameter(name), m_dateFormat(dateFormat),
@@ -31,11 +30,9 @@ DynamicDateParameter::DynamicDateParameter(const std::string &name, const std::s
 
 }
 
-DynamicDateParameter::DynamicDateParameter(const DynamicDateParameter &rhs)
+DynamicDateParameter::DynamicDateParameter(const DynamicDateParameter &rhs) : DynamicParameter(rhs.m_name), m_dateFormat(rhs.m_dateFormat),
+										m_daysInFuture(rhs.m_daysInFuture)
 {
-	m_name = rhs.m_name;
-	m_dateFormat = rhs.m_dateFormat;
-	m_daysInFuture = rhs.m_daysInFuture;
 }
 
 std::string DynamicDateParameter::getValue(HTTPEngine &engine)
@@ -52,14 +49,11 @@ std::string DynamicDateParameter::getValue(HTTPEngine &engine)
 DynamicDateParameter* DynamicDateParameter::clone()
 {
 	DynamicDateParameter *pNew = new DynamicDateParameter(*this);
-	
 	return pNew;
 }
 
-DynamicExtractionParameter::DynamicExtractionParameter(const DynamicExtractionParameter &rhs)
+DynamicExtractionParameter::DynamicExtractionParameter(const DynamicExtractionParameter &rhs) : DynamicParameter(rhs.m_name), m_key(rhs.m_key)
 {
-	m_name = rhs.m_name;
-	m_key = rhs.m_key;
 }
 
 DynamicExtractionParameter::DynamicExtractionParameter(const std::string &name, const std::string &key) : DynamicParameter(name), m_key(key)
@@ -77,6 +71,5 @@ std::string DynamicExtractionParameter::getValue(HTTPEngine &engine)
 DynamicExtractionParameter* DynamicExtractionParameter::clone()
 {
 	DynamicExtractionParameter *pNew = new DynamicExtractionParameter(*this);
-	
 	return pNew;
 }

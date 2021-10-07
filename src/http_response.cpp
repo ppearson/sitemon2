@@ -18,22 +18,26 @@
 
 #include "http_response.h"
 
-HTTPComponentResponse::HTTPComponentResponse() : contentSize(0), downloadSize(0), errorCode(HTTP_OK), responseCode(0),
-									lookupTime(0.0), connectTime(0.0), dataStartTime(0.0), totalTime(0.0)
+HTTPComponentResponse::HTTPComponentResponse() : lookupTime(0.0), connectTime(0.0), dataStartTime(0.0), totalTime(0.0),
+													errorCode(HTTP_OK), responseCode(0),
+													contentSize(0), downloadSize(0)
 {
 	
 }
 
-HTTPResponse::HTTPResponse(bool storeHeader, bool storeBody) : contentSize(0), downloadSize(0), totalContentSize(0), totalDownloadSize(0), m_storeHeader(storeHeader), m_storeBody(storeBody),
-															errorCode(HTTP_OK), responseCode(0), redirectCount(0), redirectTime(0.0), componentProblem(false),
-															lookupTime(0.0), connectTime(0.0), dataStartTime(0.0), dataTransferTime(0.0),
-															totalTime(0.0), m_thread(0), m_repeat(0), componentContentSize(0),
-															componentDownloadSize(0)
+HTTPResponse::HTTPResponse(bool storeHeader, bool storeBody) : lookupTime(0.0), connectTime(0.0), dataStartTime(0.0), dataTransferTime(0.0),
+															totalTime(0.0), redirectTime(0.0),
+															errorCode(HTTP_OK), responseCode(0), redirectCount(0),
+															contentSize(0), downloadSize(0), componentContentSize(0), componentDownloadSize(0),
+															totalContentSize(0), totalDownloadSize(0), m_thread(0), m_repeat(0), 
+															m_storeHeader(storeHeader), m_storeBody(storeBody),
+															componentProblem(false)
+															
 {
 
 }
 
-void HTTPResponse::addComponent(HTTPComponentResponse &component)
+void HTTPResponse::addComponent(const HTTPComponentResponse &component)
 {
 	if (component.errorCode == HTTP_OK)
 	{
@@ -49,7 +53,7 @@ void HTTPResponse::addComponent(HTTPComponentResponse &component)
 	}
 	else
 	{
-		fprintf(stderr, "Had component problem with EC: %i\n", component.errorCode);
+//		fprintf(stderr, "Had component problem with EC: %i\n", component.errorCode);
 		if (component.errorCode == HTTP_UNKNOWN_ERROR)
 		{
 			fprintf(stderr, "Component Curl error: %s\n", component.errorString.c_str());

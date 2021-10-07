@@ -40,27 +40,27 @@ class HTTPComponentResponse
 {
 public:
 	HTTPComponentResponse();
-
-	Time		timestamp;
-	
-	HTTPResponseError errorCode;
-	long		responseCode;
 	
 	std::string errorString;
+	
+	std::string	requestedURL;
+	std::string	finalURL;
+	
+	std::string	contentType;
+	std::string	contentEncoding;
+
+	Time		timestamp;
 	
 	double		lookupTime;
 	double		connectTime;
 	double		dataStartTime;
 	double		totalTime;
 	
-	std::string		requestedURL;
-	std::string		finalURL;
+	HTTPResponseError errorCode;
+	long		responseCode;
 	
 	long		contentSize;
 	long		downloadSize;
-	
-	std::string		contentType;
-	std::string		contentEncoding;
 };	
 
 class HTTPResponse
@@ -68,12 +68,19 @@ class HTTPResponse
 public:
 	HTTPResponse(bool storeHeader = true, bool storeBody = true);
 	
-	Time		timestamp;
-
-	HTTPResponseError errorCode;
-	long		responseCode;
-
 	std::string errorString;
+	
+	std::string	requestedURL;
+	std::string	finalURL;
+
+	std::string	content;
+	std::string	header;
+	
+	std::string	contentType;
+	std::string	contentEncoding;
+	std::string	server;
+	
+	Time		timestamp;
 	
 	double		lookupTime;
 	double		connectTime;
@@ -82,14 +89,12 @@ public:
 	double		totalTime;
 
 	double		redirectTime;
+
+	HTTPResponseError errorCode;
+	long		responseCode;
+	
 	long		redirectCount;
 	
-	std::string		requestedURL;
-	std::string		finalURL;
-
-	std::string		content;
-	std::string		header;
-
 	long		contentSize;
 	long		downloadSize;
 	
@@ -98,10 +103,6 @@ public:
 	
 	long		totalContentSize;
 	long		totalDownloadSize;
-
-	std::string		contentType;
-	std::string		contentEncoding;
-	std::string		server;
 	
 	int		m_thread;
 	int		m_repeat;
@@ -110,7 +111,7 @@ public:
 	
 	bool	componentProblem;
 	
-	void addComponent(HTTPComponentResponse &component);
+	void addComponent(const HTTPComponentResponse &component);
 	std::vector<HTTPComponentResponse>& getComponents() { return m_aComponents; }
 	const std::vector<HTTPComponentResponse>& getComponents() const { return m_aComponents; }
 	

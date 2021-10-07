@@ -143,12 +143,12 @@ HTTPRequest& HTTPRequest::operator=(const HTTPRequest& rhs)
 	return *this;
 }
 
-void HTTPRequest::addParameter(std::string &name, std::string &value)
+void HTTPRequest::addParameter(const std::string &name, const std::string &value)
 {
 	m_aParameters[name] = value;
 }
 
-void HTTPRequest::addCookie(std::string &name, std::string &value)
+void HTTPRequest::addCookie(const std::string &name, const std::string &value)
 {
 	HTTPCookie param;
 	param.name = name;
@@ -198,7 +198,7 @@ void HTTPRequest::cleanupDynamicParameters()
 	m_aDynamicParameters.clear();
 }
 
-void HTTPRequest::addExtractionItem(ExtractionItem &item)
+void HTTPRequest::addExtractionItem(const ExtractionItem &item)
 {
 	m_aExtractionItems.push_back(item);
 }

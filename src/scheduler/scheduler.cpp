@@ -50,7 +50,7 @@ void Scheduler::run()
 	{
 		// strictly speaking, these mutexes aren't needed, as this function is the only thing which controls
 		// the vectors of ScheduledItems. However, they guarentee that the processor doesn't start doing some
-		// out-of-order execution (however unlikely) which could mess things up
+		// out-of-order execution (however unlikely) which could mess things up... 2021: Really?! :)
 		m_scheduledItemsLock.lock();
 		
 		Time timeNow;
@@ -63,10 +63,9 @@ void Scheduler::run()
 			
 			if (item.isEnabled() && item.getNextTime() < timeNow)
 			{
-				printf("Firing off single test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
+//				printf("Firing off single test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
 
 				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, item);
-
 				if (pNewTest)
 				{
 					pNewTest->start();
@@ -85,10 +84,9 @@ void Scheduler::run()
 			
 			if (item.isEnabled() && item.getNextTime() < timeNow)
 			{
-				printf("Firing off script test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
+//				printf("Firing off script test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
 				
 				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, item);
-				
 				if (pNewTest)
 				{
 					pNewTest->start();
