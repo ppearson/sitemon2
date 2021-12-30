@@ -36,6 +36,15 @@ enum HTTPResponseError
 	HTTP_UNKNOWN_ERROR = -20
 };
 
+enum class HTTPResponseVersion
+{
+	eUnknown,
+	e1_0,
+	e1_1,
+	e2_0,
+	e3_0
+};
+
 class HTTPComponentResponse
 {
 public:
@@ -84,6 +93,7 @@ public:
 	
 	double		lookupTime;
 	double		connectTime;
+	double		sslHandshakeTime;
 	double		dataStartTime;
 	double		dataTransferTime;
 	double		totalTime;
@@ -92,6 +102,8 @@ public:
 
 	HTTPResponseError errorCode;
 	long		responseCode;
+	
+	HTTPResponseVersion	httpVersion;
 	
 	long		redirectCount;
 	

@@ -25,9 +25,10 @@ HTTPComponentResponse::HTTPComponentResponse() : lookupTime(0.0), connectTime(0.
 	
 }
 
-HTTPResponse::HTTPResponse(bool storeHeader, bool storeBody) : lookupTime(0.0), connectTime(0.0), dataStartTime(0.0), dataTransferTime(0.0),
+HTTPResponse::HTTPResponse(bool storeHeader, bool storeBody) : lookupTime(0.0), connectTime(0.0), sslHandshakeTime(0.0), dataStartTime(0.0), dataTransferTime(0.0),
 															totalTime(0.0), redirectTime(0.0),
-															errorCode(HTTP_OK), responseCode(0), redirectCount(0),
+															errorCode(HTTP_OK), responseCode(0),
+															httpVersion(HTTPResponseVersion::eUnknown), redirectCount(0),
 															contentSize(0), downloadSize(0), componentContentSize(0), componentDownloadSize(0),
 															totalContentSize(0), totalDownloadSize(0), m_thread(0), m_repeat(0), 
 															m_storeHeader(storeHeader), m_storeBody(storeBody),

@@ -448,11 +448,27 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 
 void SitemonApp::outputResponse(const HTTPRequest &request, const HTTPResponse &response)
 {
+	std::string httpVersion = "Unknown";
+	if (response.httpVersion == HTTPResponseVersion::e1_0)
+		httpVersion = "1.0";
+	else if (response.httpVersion == HTTPResponseVersion::e1_1)
+		httpVersion = "1.1";
+	else if (response.httpVersion == HTTPResponseVersion::e2_0)
+		httpVersion = "2.0";
+	
+	std::cout << "HTTP version:\t\t" << httpVersion << "\n";
+	
 	std::cout << "Final URL:\t\t" << response.finalURL << "\n";
-	std::cout << "Respone code:\t\t" << response.responseCode << "\n\n";
+	std::cout << "Response code:\t\t" << response.responseCode << "\n\n";
 
 	std::cout << "DNS Lookup:\t\t" << response.lookupTime << " seconds.\n";
 	std::cout << "Connection:\t\t" << response.connectTime << " seconds.\n";
+	
+	if (response.sslHandshakeTime > 0.0)
+	{
+		std::cout << "TLS handshake:\t\t" << response.sslHandshakeTime << " seconds.\n";
+	}
+	
 	std::cout << "Data start:\t\t" << response.dataStartTime << " seconds.\n";
 
 	if (response.redirectCount)
@@ -461,7 +477,7 @@ void SitemonApp::outputResponse(const HTTPRequest &request, const HTTPResponse &
 		std::cout << "Redirect time:\t\t" << response.redirectTime << " seconds.\n";
 	}
 
-//	std::cout << "Data transfer:\t\t" << response.dataTransferTime << " seconds.\n";
+	std::cout << "Data transfer:\t\t" << response.dataTransferTime << " seconds.\n";
 	std::cout << "Total time:\t\t" << response.totalTime << " seconds.\n\n";
 
 	std::cout << "HTML Content size:\t" << response.contentSize << "\n";

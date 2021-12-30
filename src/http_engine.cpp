@@ -23,7 +23,7 @@
 #include "html_parser.h"
 #include "component_downloader.h"
 
-//static const char* kUserAgent = "Sitemon/0.66";
+//static const char* kUserAgent = "Sitemon/0.7.1";
 //static const char* kUserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.125 Safari/533.4";
 //static const char* kUserAgent = "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.120 Safari/535.2";
 static const char* kUserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/63.0.3239.84 Chrome/63.0.3239.84 Safari/537.36";
@@ -51,6 +51,10 @@ bool HTTPEngine::setupCURLHandleFromRequest(CURL *handle, const HTTPRequest &req
 		return false;
 
 	if (curl_easy_setopt(handle, CURLOPT_USERAGENT, kUserAgent) != 0)
+		return false;
+	
+	// Note: Newer CURL versions have this default set anyway...
+	if (curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS) != 0)
 		return false;
 
 	m_url = request.getUrl();
@@ -126,39 +130,66 @@ bool HTTPEngine::extractResponseFromCURLHandle(CURL *handle, HTTPResponse &respo
 	char *actual_url = 0;
 	char *content_type = 0;
 	double download = 0.0;
+	
+	CURLcode retCode = CURLE_OK;
 
 	curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &response.responseCode);
 
 	curl_easy_getinfo(handle, CURLINFO_TOTAL_TIME, &response.totalTime);
 	curl_easy_getinfo(handle, CURLINFO_NAMELOOKUP_TIME, &response.lookupTime);
 	curl_easy_getinfo(handle, CURLINFO_CONNECT_TIME, &response.connectTime);
+	curl_easy_getinfo(handle, CURLINFO_APPCONNECT_TIME, &response.sslHandshakeTime);
 	curl_easy_getinfo(handle, CURLINFO_STARTTRANSFER_TIME, &response.dataStartTime);
 
 	curl_easy_getinfo(handle, CURLINFO_REDIRECT_COUNT, &response.redirectCount);
 	curl_easy_getinfo(handle, CURLINFO_REDIRECT_TIME, &response.redirectTime);
 
 	// try and get the times on a per-item basis, as opposed to the time since the request was started
-/*
-	response.dataTransferTime = response.totalTime - response.dataStartTime;
-	response.dataStartTime -= response.connectTime;
-	response.connectTime -= response.lookupTime;
-
-	if (response.redirectCount > 0)
+	const bool genIndividualTimes = true;
+	if (genIndividualTimes)
 	{
-		response.redirectTime -= response.dataStartTime;
-		response.dataTransferTime -= response.redirectTime;
+		response.dataTransferTime = response.totalTime - response.dataStartTime;
+		
+		response.connectTime -= response.lookupTime;
+		
+		response.sslHandshakeTime -= response.lookupTime;
+		response.sslHandshakeTime -= response.connectTime;
+		
+//		response.dataStartTime -= response.lookupTime;
+//		response.dataStartTime -= response.connectTime;
+	
+		if (response.redirectCount > 0)
+		{
+			response.redirectTime -= response.dataStartTime;
+			response.dataTransferTime -= response.redirectTime;
+		}
 	}
-*/
-
 
 	curl_easy_getinfo(handle, CURLINFO_SIZE_DOWNLOAD, &download);
 	response.downloadSize = (long)download;
 
 	response.totalContentSize = response.contentSize;
 	response.totalDownloadSize = response.downloadSize;
+	
+	long httpVersion;
+	if (curl_easy_getinfo(handle, CURLINFO_HTTP_VERSION, &httpVersion) == CURLE_OK)
+	{
+		if (httpVersion == CURL_HTTP_VERSION_1_0)
+			response.httpVersion = HTTPResponseVersion::e1_0;
+		else if (httpVersion == CURL_HTTP_VERSION_1_1)
+			response.httpVersion = HTTPResponseVersion::e1_1;
+		else if (httpVersion == CURL_HTTP_VERSION_2_0)
+			response.httpVersion = HTTPResponseVersion::e2_0;
+	}
 
-	curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
-	response.contentType.assign(content_type);
+	retCode = curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
+	// TODO: there appears to be an issue with redirects here... if the first response was a 301
+	//       redirecting somewhere else (with no content type), we get CURLE_OK, but no valid char*
+	//       pointer set...
+	if (content_type)
+	{
+		response.contentType.assign(content_type);
+	}
 
 	// Note: CURL 7.62 changed the behaviour of this...
 	curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &actual_url);
@@ -289,7 +320,6 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	for (; it != itEnd; ++it)
 	{
 		const std::string& url = *it;
-		
 		compDownloader.addURL(url);
 	}
 
@@ -298,7 +328,6 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	for (; it != itEnd; ++it)
 	{
 		const std::string& url = *it;
-
 		compDownloader.addURL(url);
 	}
 
@@ -307,7 +336,6 @@ void HTTPEngine::downloadContent(CURL *mainHandle, HTTPResponse &response, bool 
 	for (; it != itEnd; ++it)
 	{
 		const std::string& url = *it;
-
 		compDownloader.addURL(url);
 	}	
 
