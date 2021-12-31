@@ -69,14 +69,16 @@ HTTPRequest::HTTPRequest(const HTTPRequest &request)
 	m_aExtractionItems = request.m_aExtractionItems;
 }
 
-HTTPRequest::HTTPRequest(const std::string &url) : m_url(url), m_requestType(HTTP_GET), m_pauseTime(0), m_acceptCompressed(false), m_storeHeader(true), m_storeBody(true),
-								m_downloadContent(false), m_connectTimeout(30), m_totalTimeout(240)
+HTTPRequest::HTTPRequest(const std::string &url) : m_url(url), m_requestType(HTTP_GET), m_connectTimeout(30), m_totalTimeout(240), m_pauseTime(0),
+				m_acceptCompressed(false), m_downloadContent(false),
+				m_storeHeader(true), m_storeBody(true)
+
 {
 
 }
 
-HTTPRequest::HTTPRequest(const std::string &url, const std::string &description, bool post) : m_url(url), m_description(description), m_pauseTime(0), m_acceptCompressed(false),
-								m_storeHeader(true), m_storeBody(true), m_downloadContent(false), m_connectTimeout(30), m_totalTimeout(240)
+HTTPRequest::HTTPRequest(const std::string &url, const std::string &description, bool post) : m_url(url), m_description(description), m_connectTimeout(30), m_totalTimeout(240),
+					m_pauseTime(0), m_acceptCompressed(false), m_downloadContent(false), m_storeHeader(true), m_storeBody(true)
 {
 	if (post)
 	{

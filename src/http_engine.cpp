@@ -277,7 +277,7 @@ bool HTTPEngine::performRequest(const HTTPRequest &request, HTTPResponse &respon
 
 		if (!expectedPhrase.empty())
 		{
-			if (response.content.find(expectedPhrase) == -1)
+			if (response.content.find(expectedPhrase) == std::string::npos)
 			{
 				response.errorCode = HTTP_EXPECTED_PHRASE_NOT_FOUND;
 				response.errorString = "Expected phrase not found.";
@@ -439,15 +439,13 @@ static int debugFunction(CURL *handle, curl_infotype type, unsigned char *data, 
 {
 	HTTPEngine *pEngine = static_cast<HTTPEngine *>(userp);
 
-	switch (type)
+	if (type == CURLINFO_HEADER_OUT)
 	{
-		case CURLINFO_HEADER_OUT:
-			if (data)
-			{
-				std::string header((char *)data, size);
-				pEngine->setRequestHeader(header);
-			}
-			break;
+		if (data)
+		{
+			std::string header((char *)data, size);
+			pEngine->setRequestHeader(header);
+		}
 	}
 
 	return 0;

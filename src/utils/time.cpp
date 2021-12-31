@@ -30,13 +30,6 @@ Time::Time(unsigned long timestamp) : m_time(timestamp)
 	
 }
 
-Time& Time::operator=(const Time& rhs)
-{
-	m_time = rhs.m_time;
-	
-	return *this;
-}
-
 Time& Time::operator=(time_t time)
 {
 	m_time = time;

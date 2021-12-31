@@ -975,7 +975,7 @@ bool generateAddScriptScheduledTestPageForm(SQLiteDB *pDB, int scriptID, std::st
 
 	long numberOfPages = q.getLong();
 
-	char szPageNumber[4];
+	char szPageNumber[32];
 	sprintf(szPageNumber, "%ld", numberOfPages + 1);
 	std::string pageNumber(szPageNumber);
 

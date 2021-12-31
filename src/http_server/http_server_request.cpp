@@ -44,7 +44,7 @@ bool HTTPServerRequest::parse()
 	// first line should contain main request
 	const std::string &line = lines[0];
 	
-	if (line.find("HTTP/") == -1)
+	if (line.find("HTTP/") == std::string::npos)
 		return false;
 	
 	if (line.substr(0, 3) != "GET")
