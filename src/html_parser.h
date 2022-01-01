@@ -35,7 +35,7 @@ public:
 	std::set<std::string>& getCSS() { return m_aCSS; }
 	
 protected:
-	bool extractQuotedAttribute(const std::string &tagContent, const std::string &name, std::string &value);
+	static bool extractQuotedAttribute(const std::string &tagContent, const std::string &name, std::string &value);
 
 protected:
 	std::string		m_content;

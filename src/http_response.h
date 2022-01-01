@@ -127,6 +127,9 @@ public:
 	std::vector<HTTPComponentResponse>& getComponents() { return m_aComponents; }
 	const std::vector<HTTPComponentResponse>& getComponents() const { return m_aComponents; }
 	
+	// not the best place for it, but...
+	static std::string getHTTPResponseVersionAsString(HTTPResponseVersion version);
+	
 protected:
 	std::vector<HTTPComponentResponse> m_aComponents;
 };

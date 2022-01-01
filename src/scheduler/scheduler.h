@@ -37,18 +37,18 @@ class ScheduledItem
 {
 public:
 	ScheduledItem() { }
-	ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, Time & currentTime);
+	ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, const Time& currentTime);
 	~ScheduledItem() { }
 	
 	void setEnabled(bool enabled) { m_enabled = enabled; }
 	void setTestID(unsigned long testID) { m_testID = testID; }
 	void setInterval(unsigned long interval) { m_interval = interval; }
-	void setDescription(std::string &description) { m_description = description; }
+	void setDescription(const std::string &description) { m_description = description; }
 
 	void setRequest(const HTTPRequest &request) { m_request = request; }
 	void setScript(const Script &script) { m_script = script; }
 	
-	void setModifiedTime(Time &time) { m_modifiedTime = time; }
+	void setModifiedTime(const Time &time) { m_modifiedTime = time; }
 	void setModifiedTime(unsigned long timestamp) { m_modifiedTime = timestamp; }
 	
 	void incrementNextTime();
@@ -65,7 +65,7 @@ public:
 	HTTPRequest & getRequest() { return m_request; }
 	Script & getScript() { return m_script; }
 	
-	Time			getModifiedTime() { return m_modifiedTime; }
+	Time			getModifiedTime() const { return m_modifiedTime; }
 	
 protected:
 	unsigned long	m_id;

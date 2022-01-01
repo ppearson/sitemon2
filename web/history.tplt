@@ -10,7 +10,7 @@
 <li><a href="/load_testing">Load Testing</a></li>
 <li><a href="/help.html">Help</a></li>
 </ul><br><br>
-<table>
+<table class="main">
 <tr>
 	<th scope="col">Run ID</th>
 	<th scope="col">Time</th>

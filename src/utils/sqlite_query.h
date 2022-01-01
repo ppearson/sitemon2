@@ -37,7 +37,7 @@ public:
 	bool execute(const std::string &sql);
 	static int busyCallback(void *pArg, int busy);
 
-	void sleep(long ms);
+	static void sleep(long ms);
 
 	sqlite3_stmt *getResult(const std::string &sql);
 	void freeResults();
@@ -45,10 +45,10 @@ public:
 
 	unsigned long getInsertRowID();
 
-	long rowCount();
-	int colCount();
+	long rowCount() const;
+	int colCount() const;
 
-	std::string getLastError();
+	std::string getLastError() const;
 
 	const char *executeGetString(const std::string &sql);
 	long executeGetLong(const std::string &sql);

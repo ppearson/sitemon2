@@ -67,14 +67,12 @@ public:
 	}
 	
 	bool hasParams() const { return !m_aParams.empty(); }
-	bool hasParam(const std::string& name);
-	std::string getParam(const std::string& name) { return m_aParams[name]; }
-	unsigned long getParamAsLong(const std::string& name);
+	bool hasParam(const std::string& name) const;
+	std::string getParam(const std::string& name) const;
+	unsigned long getParamAsLong(const std::string& name) const;
 	
 	bool hasCookies() const { return !m_aCookies.empty(); }
-	bool hasCookie(const std::string& name);
-	std::string getCookie(const std::string& name) { return m_aCookies[name]; }
-	int getParamAsInt(const std::string& name);
+	bool hasCookie(const std::string& name) const;
 	
 protected:
 	void addParams(const std::string &params);

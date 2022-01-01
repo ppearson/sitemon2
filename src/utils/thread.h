@@ -42,7 +42,7 @@ public:
 	void setRunning(bool running);
 
 	void setAutodestruct(bool autoDestruct) { m_autoDestruct = autoDestruct; }
-	bool shouldAutodestruct() { return m_autoDestruct; }
+	bool shouldAutodestruct() const { return m_autoDestruct; }
 
 	virtual void run() = 0;
 

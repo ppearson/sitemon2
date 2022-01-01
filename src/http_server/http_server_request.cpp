@@ -208,21 +208,38 @@ void HTTPServerRequest::addParams(const std::string &params)
 	}
 }
 
-bool HTTPServerRequest::hasParam(const std::string &name)
+bool HTTPServerRequest::hasParam(const std::string &name) const
 {
-	std::map<std::string, std::string>::iterator itFind = m_aParams.find(name);
+	std::map<std::string, std::string>::const_iterator itFind = m_aParams.find(name);
 
 	return itFind != m_aParams.end();
 }
 
-unsigned long HTTPServerRequest::getParamAsLong(const std::string &name)
+std::string HTTPServerRequest::getParam(const std::string& name) const
+{
+	std::map<std::string, std::string>::const_iterator itFind = m_aParams.find(name);
+	if (itFind != m_aParams.end())
+	{
+		return itFind->second;
+	}
+	
+	return "";
+}
+
+unsigned long HTTPServerRequest::getParamAsLong(const std::string &name) const
 {
 	std::string paramValue = getParam(name);
-
 	if (name.empty())
 	{
 		return -1;
 	}
 
 	return atol(paramValue.c_str());
+}
+
+bool HTTPServerRequest::hasCookie(const std::string& name) const
+{
+	std::map<std::string, std::string>::const_iterator itFind = m_aCookies.find(name);
+
+	return itFind != m_aCookies.end();
 }

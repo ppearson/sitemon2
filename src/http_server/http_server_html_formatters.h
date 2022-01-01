@@ -21,12 +21,19 @@
 
 #include "../http_engine.h"
 
-bool formatResponseToHTMLDL(HTTPResponse &response, std::string &output);
+void formatResponseToHTMLDL(const HTTPResponse& response, std::string &output);
 
 void addStringToDL(std::string &output, const std::string &title);
 void addIntToDL(std::string &output, const std::string &title);
 void addLongToDL(std::string &output, const std::string &title);
 void addFloatToDL(std::string &output, const std::string &title);
+
+void formatResponseToHTMLTable(const HTTPResponse& response, std::string &output);
+
+void addStringToTable(std::string &output, const std::string &title);
+void addIntToTable(std::string &output, const std::string &title);
+void addLongToTable(std::string &output, const std::string &title);
+void addFloatToTable(std::string &output, const std::string &title);
 
 bool generateAddSingleScheduledTestForm(std::string &output);
 bool generateAddScriptScheduledTestForm(std::string &output);

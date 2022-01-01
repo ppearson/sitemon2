@@ -81,7 +81,7 @@ public:
 	
 	std::string getClientHost();
 	std::string getClientAddress();
-	int getClientPort() { return m_clientPort; }
+	int getClientPort() const { return m_clientPort; }
 	
 	static bool initWinsocks();
 	static bool cleanupWinsocks();

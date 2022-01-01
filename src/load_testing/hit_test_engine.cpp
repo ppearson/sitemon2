@@ -38,7 +38,7 @@ bool HitTestEngine::initialise(Script &script, int numberOfThreads, int repeats)
 	return true;
 }
 
-bool HitTestEngine::initialise(HTTPRequest &request, int numberOfThreads, int repeats)
+bool HitTestEngine::initialise(const HTTPRequest &request, int numberOfThreads, int repeats)
 {
 	m_pRequest = &request;
 	

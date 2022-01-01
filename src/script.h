@@ -32,7 +32,7 @@ class Script
 {
 public:
 	Script();
-	Script(HTTPRequest *pRequest);
+	Script(const HTTPRequest* pRequest);
 	~Script();
 	
 	const std::string& getDescription() const { return m_description; }

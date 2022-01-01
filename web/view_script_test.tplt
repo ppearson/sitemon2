@@ -12,7 +12,7 @@
 </ul>
 <br>
 <%1%><br><br>
-<table>
+<table class="main">
 <tr>
 	<th scope="col">Time</th>
 	<th scope="col">Error</th>

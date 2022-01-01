@@ -48,8 +48,8 @@ public:
 	inline std::vector<LoadTestProfileSeg>::iterator begin() { return m_aProfileSegments.begin(); }
 	inline std::vector<LoadTestProfileSeg>::iterator end() { return m_aProfileSegments.end(); }
 	
-	int getHitThreads() { return m_threads; }
-	int getHitRepeats() { return m_repeats; }
+	int getHitThreads() const { return m_threads; }
+	int getHitRepeats() const { return m_repeats; }
 	
 	bool			m_set;
 	

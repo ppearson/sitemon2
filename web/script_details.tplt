@@ -11,7 +11,7 @@
 <li><a href="/help.html">Help</a></li>
 </ul>
 <br>
-<table>
+<table class="main">
 <tr>
 	<th scope="col" width="40">Page</th>
 	<th scope="col" width="50">Time</th>

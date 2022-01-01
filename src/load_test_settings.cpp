@@ -32,7 +32,7 @@ bool LoadTestSettings::loadLoadTestElement(TiXmlElement *pElement)
 {
 	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
 	{
-		const std::string elementName = pItem->ValueStr();
+		const std::string& elementName = pItem->ValueStr();
 		
 		std::string content;
 		if (pItem->GetText())

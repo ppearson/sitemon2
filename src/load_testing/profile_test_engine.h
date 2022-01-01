@@ -75,7 +75,7 @@ public:
 	void setResultsSaver(LoadTestResultsSaver *pSaver) { m_pSaver = pSaver; }
 	
 	bool initialise(Script &script);
-	bool initialise(HTTPRequest &request, int sleep = 2);
+	bool initialise(const HTTPRequest &request, int sleep = 2);
 	void addProfileSegment(int concurrentRequests, int duration);
 	
 	bool start();	
@@ -98,12 +98,12 @@ protected:
 	
 	std::vector<ProfileSegment>	m_aProfileSegments;
 	
-	Script *		m_pScript;
-	HTTPRequest *	m_pRequest;
-	int				m_sleep;
+	Script*				m_pScript;
+	const HTTPRequest*	m_pRequest;
+	int					m_sleep;
 	
-	bool			m_isScript;
-	bool			m_debugging;
+	bool				m_isScript;
+	bool				m_debugging;
 	
 	LoadTestResultsSaver *	m_pSaver;
 	

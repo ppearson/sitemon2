@@ -111,7 +111,7 @@ bool SitemonApp::runWebServerAndScheduler()
 	return true;
 }
 
-bool SitemonApp::performSingleRequest(HTTPRequest &request, bool outputHeader, bool outputBody)
+bool SitemonApp::performSingleRequest(const HTTPRequest &request, bool outputHeader, bool outputBody)
 {
 	HTTPEngine engine;
 	HTTPResponse response;
@@ -165,7 +165,7 @@ bool SitemonApp::performScriptRequest(Script &script)
 	return true;
 }
 
-bool SitemonApp::performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath)
+bool SitemonApp::performHitLoadTest(const HTTPRequest &request, int threads, const std::string &outputPath)
 {
 	LoadTestResultsSaver saver;
 
@@ -309,7 +309,7 @@ bool SitemonApp::performHitLoadTest(Script &script, const std::string &outputPat
 	return true;
 }
 
-bool SitemonApp::performProfileLoadTest(HTTPRequest &request, int threads, int duration, const std::string &outputPath)
+bool SitemonApp::performProfileLoadTest(const HTTPRequest &request, int threads, int duration, const std::string &outputPath)
 {
 	LoadTestResultsSaver saver;
 
@@ -448,18 +448,12 @@ bool SitemonApp::performProfileLoadTest(Script &script, const std::string &outpu
 
 void SitemonApp::outputResponse(const HTTPRequest &request, const HTTPResponse &response)
 {
-	std::string httpVersion = "Unknown";
-	if (response.httpVersion == HTTPResponseVersion::e1_0)
-		httpVersion = "1.0";
-	else if (response.httpVersion == HTTPResponseVersion::e1_1)
-		httpVersion = "1.1";
-	else if (response.httpVersion == HTTPResponseVersion::e2_0)
-		httpVersion = "2.0";
-	
-	std::cout << "HTTP version:\t\t" << httpVersion << "\n";
+	std::string httpVersion = HTTPResponse::getHTTPResponseVersionAsString(response.httpVersion);
 	
 	std::cout << "Final URL:\t\t" << response.finalURL << "\n";
 	std::cout << "Response code:\t\t" << response.responseCode << "\n\n";
+	
+	std::cout << "HTTP version:\t\t" << httpVersion << "\n";
 
 	std::cout << "DNS Lookup:\t\t" << response.lookupTime << " seconds.\n";
 	std::cout << "Connection:\t\t" << response.connectTime << " seconds.\n";

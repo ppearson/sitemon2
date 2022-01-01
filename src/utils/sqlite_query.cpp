@@ -215,17 +215,17 @@ unsigned long SQLiteQuery::getInsertRowID()
 	}
 }
 
-long SQLiteQuery::rowCount()
+long SQLiteQuery::rowCount() const
 {
 	return m_pConn && m_result ? m_rowCount : 0;
 }
 
-int SQLiteQuery::colCount()
+int SQLiteQuery::colCount() const
 {
 	return m_colCount;
 }
 
-std::string SQLiteQuery::getLastError()
+std::string SQLiteQuery::getLastError() const
 {
 	if (m_pConn)
 	{

@@ -56,7 +56,7 @@ public:
 	
 	virtual void doTask(Task *pTask, int threadID);
 	
-	bool extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response);
+	static bool extractResponseFromCURLHandle(CURL *handle, HTTPComponentResponse &response);
 
 protected:
 	CURLSH*		m_CURLSharedData;

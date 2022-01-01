@@ -70,12 +70,12 @@ int main(int argc, char *const argv[])
 		// it's the easiest way of doing things
 		for (int i = 1; i < argc; i++)
 		{
-			if (strcmp(argv[i], "script") == 0 && i < argc)
+			if (strcmp(argv[i], "script") == 0)
 			{
 				isScript = true;
 				szScript = (char *)argv[i++ + 1];
 			}
-			else if (strcmp(argv[i], "debug") == 0 && i < argc)
+			else if (strcmp(argv[i], "debug") == 0)
 			{
 				debug = true;
 				
@@ -88,7 +88,7 @@ int main(int argc, char *const argv[])
 					szOutputFile = (char *)argv[i + 1];
 				}				
 			}
-			else if (strcmp(argv[i], "lt-profile") == 0 && i < argc)
+			else if (strcmp(argv[i], "lt-profile") == 0)
 			{
 				loadTestProfile = true;
 				
@@ -457,7 +457,7 @@ int main(int argc, char *const argv[])
 
 void printUsage()
 {
-	printf("Sitemon version 0.7.1\nUsage:\nSingle test:\t\t\tsitemon [<options>] <URL>\n"
+	printf("Sitemon version 0.7.2\nUsage:\nSingle test:\t\t\tsitemon [<options>] <URL>\n"
 		   "Single Script test:\t\tsitemon [<options>] script <script_path>\n"
 		   "Debug script:\t\t\tsitemon debug <script_path> [body_response_file_path.html]\n\n"
 		   "Load Testing:\n"

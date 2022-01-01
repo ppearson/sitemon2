@@ -52,16 +52,16 @@ public:
 	HitTestEngine();
 	
 	bool initialise(Script &script, int numberOfThreads, int repeats = 0);
-	bool initialise(HTTPRequest &request, int numberOfThreads, int repeats = 0);
+	bool initialise(const HTTPRequest &request, int numberOfThreads, int repeats = 0);
 	
 	void setResultsSaver(LoadTestResultsSaver *pSaver) { m_pSaver = pSaver; }
 	
 	bool start();
 	
 protected:
-	HitTestType		m_hitTestType;
-	Script *		m_pScript;
-	HTTPRequest *	m_pRequest;
+	HitTestType			m_hitTestType;
+	Script*				m_pScript;
+	const HTTPRequest*	m_pRequest;
 	
 	int		m_numberOfThreads;
 	int		m_repeats;

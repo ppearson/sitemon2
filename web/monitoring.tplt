@@ -15,7 +15,7 @@
 <br>
 <br><a href="add_single_test">Add a Single test</a><br><br>
 
-<table>
+<table class="main">
 <tr>
 	<th scope="col" width="60">Modify</th>
 	<th scope="col" width="50">Enabled</th>
@@ -30,7 +30,7 @@
 </table>
 <br><a href="add_script_test">Add a Script test</a><br><br>
 
-<table>
+<table class="main">
 <tr>
 	<th scope="col" width="60">Modify</th>
 	<th scope="col" width="50">Enabled</th>

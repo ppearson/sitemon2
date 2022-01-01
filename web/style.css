@@ -41,42 +41,37 @@ img {
 	border: none;
 }
 
-table {
+table.main {
 	width:95%;
 	margin-left: 0px;
 	margin-right: auto;
-	border-top:1px solid 000080;
-	border-right:1px solid 000080;
 
 	border-collapse:collapse;
 	font-size:0.8em;
 }
-td {
-color:#black;
-border-bottom:1px solid #000080;
-border-left:1px solid #000080;
-padding:.1em .3em;
-text-align:center;
+table.main td {
+	color:black;
+	border-bottom:1px solid #06068f;
+	border-left:1px solid #06068f;
+	padding:.1em .3em;
+	text-align:center;
 }
-td#l {
+table.main td#l {
 	text-align:left;
 }
-td#r {
+table.main td#r {
 	text-align:right;
 }
-tr {
-border-bottom:1px solid #000080;
-border-left:1px solid #000080;
-border-right:1px solid #000080;
+table.main tr {
+	border-bottom:1px solid #06068f;
+	border-left:1px solid #06068f;
+	border-right:1px solid #06068f;
 }
 
-th {
-background:#000080;
-border-bottom:1px solid 000080;
-border-left:1px solid 000080;
-text-align:center;
-font:bold;
-color:white;
+table.main th {
+	background:#06068f;
+	text-align:center;
+	color:white;
 }
 
 div.def_wide {
@@ -133,4 +128,38 @@ div.def_thin div.sep {
 	clear:both;
 	width:100%;
 	height:14px;
+}
+
+table.params {
+	border-collapse: collapse;
+	font-size:0.9em;
+}
+
+table.params td, table.params th {
+    border: 1px solid rgb(165, 165, 165);
+    border-left: none;
+    border-right: none;
+    text-align: left;
+
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+table.params td {
+    text-align: left;
+    vertical-align: middle;
+    
+    &:last-child {
+       font-size: 0.95em;
+       line-height: 1.4;
+       text-align: right;
+    }
+}
+ 
+table.params th { 
+	text-align: left;
+	background-color: rgb(225, 225, 225);
+    font-weight: 700;
 }

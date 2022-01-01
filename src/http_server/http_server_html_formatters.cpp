@@ -106,7 +106,7 @@ bool generateAddScriptScheduledTestForm(std::string &output)
 	return true;
 }
 
-bool formatResponseToHTMLDL(HTTPResponse &response, std::string &output)
+void formatResponseToHTMLDL(const HTTPResponse& response, std::string &output)
 {
 	char szTemp[2048];
 	memset(szTemp, 0, 2048);
@@ -126,8 +126,6 @@ bool formatResponseToHTMLDL(HTTPResponse &response, std::string &output)
 			response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
 	
 	output.assign(szTemp);
-	
-	return true;
 }
 
 void addStringToDL(std::string &output, const std::string &title)
@@ -151,5 +149,68 @@ void addLongToDL(std::string &output, const std::string &title)
 void addFloatToDL(std::string &output, const std::string &title)
 {
 	std::string newString = " <dt>" + title + "</td>\n <dd>%f</dd>\n";
+	output += newString;
+}
+
+void formatResponseToHTMLTable(const HTTPResponse& response, std::string &output)
+{
+	char szTemp[4096];
+	memset(szTemp, 0, 4096);
+	
+	std::string format = "<table class=\"params\">\n";
+	addStringToTable(format, "Final URL:");
+	addLongToTable(format, "Response code:");
+	
+	addStringToTable(format, "HTTP Version:");
+	
+	addFloatToTable(format, "Lookup time:");
+	addFloatToTable(format, "Connect time:");
+	if (response.sslHandshakeTime > 0.0f)
+	{
+		addFloatToTable(format, "TLS time:");
+	}
+	addFloatToTable(format, "Data start time:");
+	addFloatToTable(format, "Total time:");
+	addLongToTable(format, "Download size:");
+	addLongToTable(format, "Content size:");
+	format += "</table>\n";
+	
+	std::string httpVersion = HTTPResponse::getHTTPResponseVersionAsString(response.httpVersion);
+	
+	if (response.sslHandshakeTime > 0.0f)
+	{
+		sprintf(szTemp, format.c_str(), response.finalURL.c_str(), response.responseCode, httpVersion.c_str(), response.lookupTime, response.connectTime,
+				response.sslHandshakeTime, response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
+	}
+	else
+	{
+		sprintf(szTemp, format.c_str(), response.finalURL.c_str(), response.responseCode, httpVersion.c_str(), response.lookupTime, response.connectTime,
+				response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
+	}
+	
+	output.assign(szTemp);
+}
+
+void addStringToTable(std::string &output, const std::string &title)
+{
+	std::string newString = " <tr><th>" + title + "</th><td>%s</td></tr>\n";
+	output += newString;
+}
+
+void addIntToTable(std::string &output, const std::string &title)
+{
+	std::string newString = " <tr><th>" + title + "</th><td>%i</td></tr>\n";
+	output += newString;
+}
+
+void addLongToTable(std::string &output, const std::string &title)
+{
+	std::string newString = " <tr><th>" + title + "</th><td>%ld</td></tr>\n";
+	output += newString;
+}
+
+void addFloatToTable(std::string &output, const std::string &title)
+{
+	std::string newString = " <tr><th>" + title + "</th><td>%f</td></tr>\n";
 	output += newString;
 }

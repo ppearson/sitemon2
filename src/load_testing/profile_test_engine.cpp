@@ -57,10 +57,14 @@ bool ProfileTestEngine::initialise(Script &script)
 	return true;
 }
 
-bool ProfileTestEngine::initialise(HTTPRequest &request, int sleep)
+bool ProfileTestEngine::initialise(const HTTPRequest &request, int sleep)
 {
 	m_pRequest = &request;
-	request.setPauseTime(sleep);
+	
+	// obviously disgusting, but it allows *some* const validation before we refactor to sort
+	// the mess with scripts out...
+	HTTPRequest& nonConstRequest = const_cast<HTTPRequest&>(request);
+	nonConstRequest.setPauseTime(sleep);
 	
 	m_isScript = false;
 	

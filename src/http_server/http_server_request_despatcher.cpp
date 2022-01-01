@@ -149,40 +149,40 @@ void HTTPServerRequestDespatcher::handleRequest(HTTPServerRequest &request, std:
 
 void HTTPServerRequestDespatcher::inlineSimple(HTTPServerRequest &request, std::string &response)
 {
-	if (request.hasParams())
+	if (!request.hasParams())
+		return;
+	
+	std::string url = request.getParam("url");
+	std::string acceptCompressed = request.getParam("accept_compressed");
+	std::string downloadContent = request.getParam("download_content");
+
+	HTTPEngine engine;
+	HTTPRequest httpTestRequest(url);
+	if (acceptCompressed == "1")
 	{
-		std::string url = request.getParam("url");
-		std::string acceptCompressed = request.getParam("accept_compressed");
-		std::string downloadContent = request.getParam("download_content");
-
-		std::string content;
-
-		HTTPEngine engine;
-		HTTPRequest httpTestRequest(url);
-		if (acceptCompressed == "1")
-		{
-			httpTestRequest.setAcceptCompressed(true);
-		}
-		if (downloadContent == "1")
-		{
-			httpTestRequest.setDownloadContent(true);
-		}
-		HTTPResponse httpTestResponse;
-
-		if (engine.performRequest(httpTestRequest, httpTestResponse))
-		{
-			formatResponseToHTMLDL(httpTestResponse, content);
-		}
-		else
-		{
-			content += "Couldn't perform test: " + httpTestResponse.errorString + "<br>\n";
-		}
-
-		addResponseToSingleTestHistoryTable(m_pMonitoringDB, httpTestResponse);
-
-		HTTPServerResponse resp(200, content);
-		response = resp.responseString();
+		httpTestRequest.setAcceptCompressed(true);
 	}
+	if (downloadContent == "1")
+	{
+		httpTestRequest.setDownloadContent(true);
+	}
+	
+	std::string content;
+	HTTPResponse httpTestResponse;
+	if (engine.performRequest(httpTestRequest, httpTestResponse))
+	{
+//		formatResponseToHTMLDL(httpTestResponse, content);
+		formatResponseToHTMLTable(httpTestResponse, content);
+	}
+	else
+	{
+		content += "Couldn't perform test: " + httpTestResponse.errorString + "<br>\n";
+	}
+
+	addResponseToSingleTestHistoryTable(m_pMonitoringDB, httpTestResponse);
+
+	HTTPServerResponse resp(200, content);
+	response = resp.responseString();
 }
 
 void HTTPServerRequestDespatcher::history(HTTPServerRequest &request, std::string &response)

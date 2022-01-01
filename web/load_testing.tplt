@@ -14,7 +14,7 @@
 
 <br><br>
 
-<table>
+<table class="main">
 <tr>
 	<th scope="col" width="60">Run Time</th>
 	<th scope="col" width="150">Description</th>

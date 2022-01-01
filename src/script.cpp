@@ -24,7 +24,7 @@ Script::Script() : m_scriptHasDebugSettings(false), m_hasLoadTestSettings(false)
 	
 }
 
-Script::Script(HTTPRequest *pRequest) : m_scriptHasDebugSettings(false), m_hasLoadTestSettings(false)
+Script::Script(const HTTPRequest *pRequest) : m_scriptHasDebugSettings(false), m_hasLoadTestSettings(false)
 {
 	m_aSteps.push_back(*pRequest);
 }
@@ -147,7 +147,7 @@ void Script::loadRequestElement(TiXmlElement *pElement)
 		
 	for (TiXmlElement *pItem = pElement->FirstChildElement(); pItem; pItem = pItem->NextSiblingElement())
 	{
-		const std::string elementName = pItem->ValueStr();
+		const std::string& elementName = pItem->ValueStr();
 
 		std::string content;
 		if (pItem->GetText())

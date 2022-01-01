@@ -65,3 +65,15 @@ void HTTPResponse::addComponent(const HTTPComponentResponse &component)
 	m_aComponents.push_back(component);
 }
 
+std::string HTTPResponse::getHTTPResponseVersionAsString(HTTPResponseVersion version)
+{
+	std::string httpVersion = "Unknown";
+	if (version == HTTPResponseVersion::e1_0)
+		httpVersion = "1.0";
+	else if (version == HTTPResponseVersion::e1_1)
+		httpVersion = "1.1";
+	else if (version == HTTPResponseVersion::e2_0)
+		httpVersion = "2.0";
+	
+	return httpVersion;
+}

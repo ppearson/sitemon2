@@ -361,15 +361,15 @@ void HTTPEngine::processExtractionItems(const HTTPRequest &request, const HTTPRe
 		// todo - need to cope with getting the n'th item
 		int itemNum = extrItem.getItemNum();
 
-		int nFindStart = content.find(startText);
+		size_t nFindStart = content.find(startText);
 
-		if (nFindStart >= 0)
+		if (nFindStart != std::string::npos)
 		{
-			int nItemStart = nFindStart + startText.size();
+			size_t nItemStart = nFindStart + startText.size();
 
-			int nFindEnd = content.find(endText, nItemStart);
+			size_t nFindEnd = content.find(endText, nItemStart);
 
-			if (nFindEnd >= 0)
+			if (nFindEnd != std::string::npos)
 			{
 				std::string extractedContent = content.substr(nItemStart, nFindEnd - nItemStart);
 

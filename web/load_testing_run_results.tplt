@@ -14,7 +14,7 @@
 
 <br><br>
 
-<table>
+<table class="main">
 <tr>
 	<th scope="col" width="60">Test Num</th>
 	<th scope="col" width="70">Time</th>

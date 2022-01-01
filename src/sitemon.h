@@ -33,14 +33,14 @@ public:
 	
 	bool runWebServerAndScheduler();
 	
-	bool performSingleRequest(HTTPRequest &request, bool outputHeader, bool outputBody);
+	bool performSingleRequest(const HTTPRequest &request, bool outputHeader, bool outputBody);
 	bool performScriptRequest(Script &script);
 
-	bool performHitLoadTest(HTTPRequest &request, int threads, const std::string &outputPath);
+	bool performHitLoadTest(const HTTPRequest &request, int threads, const std::string &outputPath);
 	bool performHitLoadTest(Script &script, int threads, const std::string &outputPath);
 	bool performHitLoadTest(Script &script, const std::string &outputPath);
 
-	bool performProfileLoadTest(HTTPRequest &request, int threads, int duration, const std::string &outputPath);
+	bool performProfileLoadTest(const HTTPRequest &request, int threads, int duration, const std::string &outputPath);
 	bool performProfileLoadTest(Script &script, int threads, int duration, const std::string &outputPath);
 	bool performProfileLoadTest(Script &script, const std::string &outputPath);
 	

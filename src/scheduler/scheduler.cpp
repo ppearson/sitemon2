@@ -66,10 +66,7 @@ void Scheduler::run()
 //				printf("Firing off single test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
 
 				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, item);
-				if (pNewTest)
-				{
-					pNewTest->start();
-				}
+				pNewTest->start();
 				
 				item.incrementNextTime();	
 			}
@@ -87,10 +84,7 @@ void Scheduler::run()
 //				printf("Firing off script test: %ld\t%s\n", item.getID(), item.getDescription().c_str());
 				
 				SchedulerTestThread *pNewTest = new SchedulerTestThread(m_pSaver, item);
-				if (pNewTest)
-				{
-					pNewTest->start();
-				}
+				pNewTest->start();
 				
 				item.incrementNextTime();				
 			}
@@ -122,7 +116,7 @@ void Scheduler::buildScheduledItemsFromDB(SQLiteDB *pDB)
 	m_scheduledItemsLock.unlock();
 }
 
-ScheduledItem::ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, Time & currentTime) : 
+ScheduledItem::ScheduledItem(bool single, unsigned long id, const std::string &description, unsigned long interval, const Time& currentTime) : 
 								m_single(single), m_id(id), m_description(description), m_interval(interval), m_enabled(true)
 {
 	m_nextTime = currentTime;
