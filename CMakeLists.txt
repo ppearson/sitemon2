@@ -1,13 +1,17 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0)
 project (sitemon)
 
 enable_language(CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
 
-#SET(DEBUG_WARNINGS "-Wall -Wextra")
-#SET(DEBUG_WARNINGS_SUPPRESS "-Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
-#SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG -D_GLIBCXX_DEBUG ${DEBUG_WARNINGS} ${DEBUG_WARNINGS_SUPPRESS}")
-SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG ${DEBUG_WARNINGS} ${DEBUG_WARNINGS_SUPPRESS}")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -fvisibility-inlines-hidden -fvisibility=hidden")
+set(QMAKE_CXXFLAGS "-std=c++11")
+
+#set(DEBUG_WARNINGS "-Wall -Wextra")
+#set(DEBUG_WARNINGS_SUPPRESS "-Wno-unused-function -Wno-unused-parameter -Wno-unused-variable")
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG -D_GLIBCXX_DEBUG ${DEBUG_WARNINGS} ${DEBUG_WARNINGS_SUPPRESS}")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG ${DEBUG_WARNINGS} ${DEBUG_WARNINGS_SUPPRESS}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -g -fvisibility-inlines-hidden -fvisibility=hidden")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING
@@ -18,18 +22,19 @@ if(CMAKE_FIRST_RUN)
 	message(STATUS "Setting Build Type to: ${CMAKE_BUILD_TYPE}")
 endif()
 
-FIND_PACKAGE(CURL REQUIRED)
-FIND_PACKAGE(ZLIB REQUIRED)
-FIND_PACKAGE(Threads)
+find_package(CURL REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(Threads)
 
 include_directories(src "${CURL_INCLUDE_DIRS}")
-FILE(GLOB_RECURSE sitemon_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE sitemon_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
+# statically link libc and libstdc++
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
-ADD_EXECUTABLE(sitemon ${sitemon_SOURCES} "${CMAKE_SOURCE_DIR}/src/utils/sqlite3.c")
+add_executable(sitemon ${sitemon_SOURCES} "${CMAKE_SOURCE_DIR}/src/utils/sqlite3.c")
 
-LINK_DIRECTORIES()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-TARGET_LINK_LIBRARIES(sitemon ${CURL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARY} dl )
+target_link_libraries(sitemon ${CURL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARY} dl)
 
