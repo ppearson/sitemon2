@@ -29,8 +29,10 @@ find_package(Threads)
 include_directories(src "${CURL_INCLUDE_DIRS}")
 file(GLOB_RECURSE sitemon_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
-# statically link libc and libstdc++
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	# statically link libc and libstdc++
+	set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+endif()
 
 add_executable(sitemon ${sitemon_SOURCES} "${CMAKE_SOURCE_DIR}/src/utils/sqlite3.c")
 
