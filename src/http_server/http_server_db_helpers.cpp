@@ -161,7 +161,7 @@ bool formatDBSingleTestResponseToHTMLDL(SQLiteDB *pDB, long rowID, std::string &
 		addLongToDL(format, "Redirect count");
 		addLongToDL(format, "Download size");
 		addLongToDL(format, "Content size");
-		addLongToDL(format, "Component ownload size");
+		addLongToDL(format, "Component download size");
 		addLongToDL(format, "Component content size");
 		format += "</dl>\n";
 
@@ -461,7 +461,9 @@ bool getSingleScheduledTestComponentsList(SQLiteDB *pDB, long testID, long runID
 		float dataStartTime = q.getDouble();
 		float totalTime = q.getDouble();
 		long downloadSize = q.getLong();
+		std::string downloadSizeStr = StringHelpers::formatNumberThousandsSeparator(downloadSize);
 		long contentSize = q.getLong();
+		std::string contentSizeStr = StringHelpers::formatNumberThousandsSeparator(contentSize);
 
 		char szResult[6];
 		memset(szResult, 0, 6);
@@ -474,8 +476,8 @@ bool getSingleScheduledTestComponentsList(SQLiteDB *pDB, long testID, long runID
 			sprintf(szResult, "%ld", errorCode);
 		}
 
-		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>\n <td>%ld</td>\n <td>%ld</td>\n</tr>\n",
-				url.c_str(), szResult, responseCode, totalTime, downloadSize, contentSize);
+		sprintf(szTemp, "<tr>\n <td id=\"l\">%s</td>\n <td>%s</td>\n <td>%ld</td>\n <td>%f</td>\n <td>%s</td>\n <td>%s</td>\n</tr>\n",
+				url.c_str(), szResult, responseCode, totalTime, downloadSizeStr.c_str(), contentSizeStr.c_str());
 
 		output.append(szTemp);
 	}

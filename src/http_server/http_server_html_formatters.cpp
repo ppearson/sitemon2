@@ -22,6 +22,8 @@
 #include "http_server_html_formatters.h"
 #include "http_form_generator.h"
 
+#include "utils/string_helper.h"
+
 bool generateAddSingleScheduledTestForm(std::string &output)
 {
 	HTTPFormGenerator formGen("add_single_test", "Add", true);
@@ -106,28 +108,6 @@ bool generateAddScriptScheduledTestForm(std::string &output)
 	return true;
 }
 
-void formatResponseToHTMLDL(const HTTPResponse& response, std::string &output)
-{
-	char szTemp[2048];
-	memset(szTemp, 0, 2048);
-	
-	std::string format = "<dl>\n";
-	addStringToDL(format, "Final URL");
-	addLongToDL(format, "Response code");
-	addFloatToDL(format, "Lookup time");
-	addFloatToDL(format, "Connect time");
-	addFloatToDL(format, "Data start time");
-	addFloatToDL(format, "Total time");
-	addLongToDL(format, "Download size");
-	addLongToDL(format, "Content size");
-	format += "</dl>\n";
-	
-	sprintf(szTemp, format.c_str(), response.finalURL.c_str(), response.responseCode, response.lookupTime, response.connectTime,
-			response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
-	
-	output.assign(szTemp);
-}
-
 void addStringToDL(std::string &output, const std::string &title)
 {
 	std::string newString = " <dt>" + title + "</td>\n <dd>%s</dd>\n";
@@ -154,63 +134,69 @@ void addFloatToDL(std::string &output, const std::string &title)
 
 void formatResponseToHTMLTable(const HTTPResponse& response, std::string &output)
 {
-	char szTemp[4096];
-	memset(szTemp, 0, 4096);
-	
-	std::string format = "<table class=\"params\">\n";
-	addStringToTable(format, "Final URL:");
-	addLongToTable(format, "Response code:");
-	
-	addStringToTable(format, "HTTP Version:");
-	
-	addFloatToTable(format, "Lookup time:");
-	addFloatToTable(format, "Connect time:");
-	if (response.sslHandshakeTime > 0.0f)
-	{
-		addFloatToTable(format, "TLS time:");
-	}
-	addFloatToTable(format, "Data start time:");
-	addFloatToTable(format, "Total time:");
-	addLongToTable(format, "Download size:");
-	addLongToTable(format, "Content size:");
-	format += "</table>\n";
+	std::string tableCode = "<table class=\"params\">\n";
+	addStringValueToHTMLTable(response.finalURL, "Final URL:", tableCode);
+	addLongValueToHTMLTable(response.responseCode, "Response code:", tableCode);
 	
 	std::string httpVersion = HTTPResponse::getHTTPResponseVersionAsString(response.httpVersion);
+	addStringValueToHTMLTable(httpVersion, "HTTP Version:", tableCode);
 	
+	if (response.redirectCount > 0)
+	{
+		addLongValueToHTMLTable(response.redirectCount, "Redirect count:", tableCode);
+	}
+	
+	if (!response.contentType.empty())
+	{
+		addStringValueToHTMLTable(response.contentType, "Content Type", tableCode);
+	}
+	
+	addDoubleValueToHTMLTable(response.lookupTime, "Lookup time:", tableCode);
+	addDoubleValueToHTMLTable(response.connectTime, "Connect time:", tableCode);
 	if (response.sslHandshakeTime > 0.0f)
 	{
-		sprintf(szTemp, format.c_str(), response.finalURL.c_str(), response.responseCode, httpVersion.c_str(), response.lookupTime, response.connectTime,
-				response.sslHandshakeTime, response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
+		addDoubleValueToHTMLTable(response.sslHandshakeTime, "TLS time:", tableCode);
 	}
-	else
-	{
-		sprintf(szTemp, format.c_str(), response.finalURL.c_str(), response.responseCode, httpVersion.c_str(), response.lookupTime, response.connectTime,
-				response.dataStartTime, response.totalTime, response.totalDownloadSize, response.totalContentSize);
-	}
+	addDoubleValueToHTMLTable(response.dataStartTime, "Data start time:", tableCode);
+	addDoubleValueToHTMLTable(response.totalTime, "Total time:", tableCode);
 	
-	output.assign(szTemp);
+	addLongValueToHTMLTable(response.downloadSize, "Download size:", tableCode);
+	addLongValueToHTMLTable(response.contentSize, "Content size:", tableCode);
+	
+	if (response.componentDownloadSize > 0)
+	{
+		addLongValueToHTMLTable(response.totalDownloadSize, "Comp. download size:", tableCode);
+		addLongValueToHTMLTable(response.totalContentSize, "Comp. content size:", tableCode);
+	}
+	tableCode += "</table>\n";
+	
+	output = tableCode;
 }
 
-void addStringToTable(std::string &output, const std::string &title)
+void addStringValueToHTMLTable(const std::string& value, const std::string &title, std::string &output)
 {
-	std::string newString = " <tr><th>" + title + "</th><td>%s</td></tr>\n";
+	std::string newString = " <tr><th>" + title + "</th><td>" + value + "</td></tr>\n";
 	output += newString;
 }
 
-void addIntToTable(std::string &output, const std::string &title)
+void addIntValueToHTMLTable(int value, const std::string &title, std::string &output, bool thousandsSep)
 {
-	std::string newString = " <tr><th>" + title + "</th><td>%i</td></tr>\n";
+	std::string strValue = thousandsSep ? StringHelpers::formatNumberThousandsSeparator(value) : std::to_string(value);
+	std::string newString = " <tr><th>" + title + "</th><td>" + strValue + "</td></tr>\n";
 	output += newString;
 }
 
-void addLongToTable(std::string &output, const std::string &title)
+void addLongValueToHTMLTable(long value, const std::string &title, std::string &output, bool thousandsSep)
 {
-	std::string newString = " <tr><th>" + title + "</th><td>%ld</td></tr>\n";
+	std::string strValue = thousandsSep ? StringHelpers::formatNumberThousandsSeparator(value) : std::to_string(value);
+	std::string newString = " <tr><th>" + title + "</th><td>" + strValue + "</td></tr>\n";
 	output += newString;
 }
 
-void addFloatToTable(std::string &output, const std::string &title)
+void addDoubleValueToHTMLTable(double value, const std::string &title, std::string &output)
 {
-	std::string newString = " <tr><th>" + title + "</th><td>%f</td></tr>\n";
+	// TODO: might want to use a different approach here, so we can control significant digits?
+	
+	std::string newString = " <tr><th>" + title + "</th><td>" + std::to_string(value) + "</td></tr>\n";
 	output += newString;
 }

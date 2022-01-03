@@ -34,26 +34,33 @@ function resultsCallback()
 }
 </script>
 </head>
+
 <body>
 <ul id="sitenav">
-<li><a href="/">Home</a></li>
-<li><a href="/history">History</a></li>
-<li><a href="/monitoring">Monitoring</a></li>
-<li><a href="/load_testing">Load Testing</a></li>
-<li><a href="/help.html">Help</a></li>
+	<li><a href="/">Home</a></li>
+	<li><a href="/history">History</a></li>
+	<li><a href="/monitoring">Monitoring</a></li>
+	<li><a href="/load_testing">Load Testing</a></li>
+	<li><a href="/help.html">Help</a></li>
 </ul>
-<br><br>
-Run a single page request test.
+<br>
+
+<br>
+Run a single manual request test:
+
 <form action="javascript:performTest();">
-<p><label for="url"><small>URL:</small></label>
-<input type="text" id="url" value="https://" size="40"/></p>
-<p><label for="accept_compressed"><small>Accept compressed content</small></label>
-<input type="checkbox" id="accept_compressed" checked/></p>
-<p><label for="download_content"><small>Download component content</small></label>
-<input type="checkbox" id="download_content" checked/></p>
-<p><input type='submit' value='Run Test'/></p>
-<div id="results" class="results">
-</div>
+	<p>
+		<label for="url"><small>URL:</small></label>
+		<input type="text" id="url" value="https://" size="40"/></p>
+		<p><label for="accept_compressed"><small>Accept compressed content</small></label>
+		<input type="checkbox" id="accept_compressed" checked/></p>
+		<p><label for="download_content"><small>Download component content</small></label>
+		<input type="checkbox" id="download_content" checked/></p>
+		<p><input type='submit' value='Run Test'/>
+	</p>
+	<div id="results" class="results">
+	</div>
 </form>
+
 </body>
 </html>
